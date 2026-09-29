@@ -8,12 +8,9 @@ import {
   Search,
   User,
   ShieldCheck,
-  MapPin,
   Globe,
   Menu,
   X,
-  Sparkles,
-  Zap,
   Maximize,
   Minimize,
   ExternalLink,
@@ -90,27 +87,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full transition-colors duration-300">
-      {/* Top Banner Ticker */}
-      <div className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white text-xs md:text-sm py-1.5 px-4 font-medium flex items-center justify-between shadow-sm">
-        <div className="container mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 animate-pulse text-yellow-300" />
-            <span>{t.hero_badge} — <strong>VOV2026</strong> promokodi orqali 20% chegirma oling!</span>
-          </div>
-          <div className="hidden sm:flex items-center gap-4">
-            <div className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5" />
-              <span>Toshkent, Amir Temur 108</span>
-            </div>
-            <span>|</span>
-            <div className="flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-300" />
-              <span>Telegram Bot integratsiyasi</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Glass Header */}
       <div className="glass-nav border-b border-gray-200 dark:border-gray-800 shadow-md">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
