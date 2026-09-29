@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Sparkles, 
-  ArrowRight, 
-  Zap, 
-  Smartphone, 
-  Laptop, 
-  Headphones, 
-  Watch, 
-  Gamepad2, 
-  ShieldCheck, 
-  Truck, 
-  Clock, 
+import {
+  Sparkles,
+  ArrowRight,
+  Zap,
+  Smartphone,
+  Laptop,
+  Headphones,
+  Watch,
+  Gamepad2,
+  ShieldCheck,
+  Truck,
+  Clock,
   RefreshCw,
   Gift
 } from 'lucide-react';
@@ -57,7 +57,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 pb-16">
-      
+
       {/* 1. HERO SECTION */}
       <section className="relative overflow-hidden bg-gradient-to-b from-indigo-950 via-gray-900 to-gray-950 text-white rounded-3xl mt-4 p-8 md:p-16 border border-indigo-900/50 shadow-2xl">
         {/* Decorative background lights */}
@@ -65,6 +65,11 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-300">
+            <Sparkles className="w-4 h-4 text-yellow-400 animate-spin-slow" />
+            <span>{t.hero_badge}</span>
+          </div>
+
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
             {t.hero_title}
           </h1>
@@ -212,7 +217,7 @@ export default function HomePage() {
           <h2 className="text-center text-2xl font-black text-gray-900 dark:text-white mb-8">
             {t.why_us_title}
           </h2>
-          
+
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: Truck, title: t.feature_1_title, desc: t.feature_1_desc, color: 'text-indigo-500' },
