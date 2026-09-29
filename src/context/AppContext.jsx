@@ -161,6 +161,7 @@ export const AppProvider = ({ children }) => {
 
   // 4. Products CRUD state
   const REAL_POWERBANK_IMAGE = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+  const REAL_GAMING_MOUSE_IMAGE = "https://images.unsplash.com/photo-1629121291243-7b5e885cce9b?q=80&w=800&auto=format&fit=crop";
   const FALLBACK_PRODUCT_IMAGE = REAL_POWERBANK_IMAGE;
 
   const [products, setProducts] = useState(() => {
@@ -177,6 +178,9 @@ export const AppProvider = ({ children }) => {
     return loaded.map(p => {
       if (p.id === 'p8' || !p.image || p.image.includes('1544816155-12df9643f363') || p.image.includes('1583863788434') || p.image.includes('1609592424074')) {
         return { ...p, image: REAL_POWERBANK_IMAGE };
+      }
+      if (p.id === 'p24' || (p.image && p.image.includes('1626806787461'))) {
+        return { ...p, image: REAL_GAMING_MOUSE_IMAGE };
       }
       return p;
     });

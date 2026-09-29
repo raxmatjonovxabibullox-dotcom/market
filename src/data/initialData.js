@@ -475,7 +475,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 67,
     isFlashSale: false,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1626806787461-102c1bfaaea1?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1629121291243-7b5e885cce9b?q=80&w=800&auto=format&fit=crop",
     description: "Professional kibersportchilar tanlovi: 63 gramm yengillik va 30,000 DPI optik sensor.",
     specs: {
       Sensor: "Focus Pro 30K Optical Sensor",
