@@ -65,11 +65,6 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-300">
-            <Sparkles className="w-4 h-4 text-yellow-400 animate-spin-slow" />
-            <span>{t.hero_badge}</span>
-          </div>
-
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
             {t.hero_title}
           </h1>
