@@ -1,9 +1,19 @@
 import React, { useState } from 'react';
-import { Heart, ShoppingBag, Star, Eye, Check } from 'lucide-react';
+import { Heart, ShoppingBag, Star, Eye, Check, Edit3, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
 export default function ProductCard({ product, onQuickView }) {
-  const { t, addToCart, cart, wishlist, toggleWishlist, isInWishlist } = useApp();
+  const {
+    t,
+    addToCart,
+    cart,
+    wishlist,
+    toggleWishlist,
+    isInWishlist,
+    user,
+    deleteProduct,
+    setAdminEditingProduct
+  } = useApp();
   const [added, setAdded] = useState(false);
 
   const isLiked = isInWishlist(product.id);
@@ -57,6 +67,34 @@ export default function ProductCard({ product, onQuickView }) {
 
         {/* Action Overlay Buttons */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
+          {/* Admin Direct Actions on the same page */}
+          {(user?.role === 'admin' || user?.role === 'owner') && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setAdminEditingProduct(product);
+                }}
+                className="p-2 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 backdrop-blur-md transition-all shadow-lg active:scale-90"
+                title="Mahsulotni shu yerda tahrirlash"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (window.confirm(`"${product.title}" mahsulotini o'chirishni xohlaysizmi?`)) {
+                    deleteProduct(product.id);
+                  }
+                }}
+                className="p-2 rounded-2xl bg-rose-600 text-white hover:bg-rose-700 backdrop-blur-md transition-all shadow-lg active:scale-90"
+                title="Mahsulotni shu yerda o'chirish"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
+
           <button
             onClick={handleWishlistToggle}
             className={`p-2 rounded-2xl backdrop-blur-md transition-all shadow-md active:scale-90 ${

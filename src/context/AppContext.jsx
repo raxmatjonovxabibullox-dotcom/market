@@ -38,6 +38,12 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : null;
   });
 
+  // Integrated In-Page Admin Panel State (default: false - shundoq chiqib qolmasligi uchun)
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
+  const [adminActiveTab, setAdminActiveTab] = useState('overview'); // 'overview' | 'products' | 'orders' | 'telegram'
+  const [adminEditingProduct, setAdminEditingProduct] = useState(null);
+  const [isAdminAddModalOpen, setIsAdminAddModalOpen] = useState(false);
+
   // Admins state (managed by Owner)
   const INITIAL_ADMINS = [
     {
@@ -126,6 +132,7 @@ export const AppProvider = ({ children }) => {
         email: 'raxmatjonovxabibullox@gmail.com'
       };
       setUser(ownerUser);
+      setIsAdminPanelOpen(false);
       localStorage.setItem('app_user', JSON.stringify(ownerUser));
       return { success: true, user: ownerUser };
     }
@@ -143,6 +150,7 @@ export const AppProvider = ({ children }) => {
       }
       const adminUser = { ...adminData, role: 'admin' };
       setUser(adminUser);
+      setIsAdminPanelOpen(false);
       localStorage.setItem('app_user', JSON.stringify(adminUser));
       return { success: true, user: adminUser };
     }
@@ -150,12 +158,14 @@ export const AppProvider = ({ children }) => {
     // 3. Normal user
     const normalUser = { username: usernameOrPhone, name: usernameOrPhone, role: 'user' };
     setUser(normalUser);
+    setIsAdminPanelOpen(false);
     localStorage.setItem('app_user', JSON.stringify(normalUser));
     return { success: true, user: normalUser };
   };
 
   const logout = () => {
     setUser(null);
+    setIsAdminPanelOpen(false);
     localStorage.removeItem('app_user');
   };
 
@@ -594,7 +604,16 @@ export const AppProvider = ({ children }) => {
         updateAdmin,
         deleteAdmin,
         toggleAdminStatus,
-        storeLocation: STORE_LOCATION
+        storeLocation: STORE_LOCATION,
+        isAdminPanelOpen,
+        setIsAdminPanelOpen,
+        toggleAdminPanel: () => setIsAdminPanelOpen(prev => !prev),
+        adminActiveTab,
+        setAdminActiveTab,
+        adminEditingProduct,
+        setAdminEditingProduct,
+        isAdminAddModalOpen,
+        setIsAdminAddModalOpen
       }}
     >
       {children}
