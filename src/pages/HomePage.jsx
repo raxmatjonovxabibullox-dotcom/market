@@ -13,7 +13,8 @@ import {
   Truck,
   Clock,
   RefreshCw,
-  Gift
+  Gift,
+  Tv
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
@@ -42,6 +43,7 @@ export default function HomePage() {
   const categories = [
     { key: 'cat_smartphones', label: t.cat_smartphones, icon: Smartphone, color: 'from-blue-500 to-indigo-600' },
     { key: 'cat_laptops', label: t.cat_laptops, icon: Laptop, color: 'from-purple-500 to-pink-600' },
+    { key: 'cat_tv', label: t.cat_tv || 'Televizorlar', icon: Tv, color: 'from-cyan-500 to-blue-600' },
     { key: 'cat_audio', label: t.cat_audio, icon: Headphones, color: 'from-amber-500 to-rose-600' },
     { key: 'cat_watches', label: t.cat_watches, icon: Watch, color: 'from-emerald-500 to-teal-600' },
     { key: 'cat_gaming', label: t.cat_gaming, icon: Gamepad2, color: 'from-rose-500 to-red-600' },

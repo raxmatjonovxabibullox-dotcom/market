@@ -179,10 +179,12 @@ export const AppProvider = ({ children }) => {
     let loaded = saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
 
     // Automatically append any new assortment products from INITIAL_PRODUCTS
-    if (loaded && loaded.length < INITIAL_PRODUCTS.length) {
+    if (loaded) {
       const existingIds = new Set(loaded.map(p => p.id));
       const missing = INITIAL_PRODUCTS.filter(p => !existingIds.has(p.id));
-      loaded = [...loaded, ...missing];
+      if (missing.length > 0) {
+        loaded = [...loaded, ...missing];
+      }
     }
 
     return loaded.map(p => {

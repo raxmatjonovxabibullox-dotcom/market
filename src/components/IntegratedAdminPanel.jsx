@@ -605,6 +605,7 @@ export default function IntegratedAdminPanel() {
                   >
                     <option value="cat_smartphones">{t.cat_smartphones}</option>
                     <option value="cat_laptops">{t.cat_laptops}</option>
+                    <option value="cat_tv">{t.cat_tv || 'Televizorlar & Smart TV'}</option>
                     <option value="cat_audio">{t.cat_audio}</option>
                     <option value="cat_watches">{t.cat_watches}</option>
                     <option value="cat_accessories">{t.cat_accessories}</option>

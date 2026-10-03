@@ -26,6 +26,7 @@ export default function ShopPage() {
     { key: 'all', label: t.all_categories },
     { key: 'cat_smartphones', label: t.cat_smartphones },
     { key: 'cat_laptops', label: t.cat_laptops },
+    { key: 'cat_tv', label: t.cat_tv || 'Televizorlar' },
     { key: 'cat_audio', label: t.cat_audio },
     { key: 'cat_watches', label: t.cat_watches },
     { key: 'cat_accessories', label: t.cat_accessories },

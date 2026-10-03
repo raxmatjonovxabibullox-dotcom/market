@@ -26,6 +26,7 @@ export const translations = {
     // Categories
     cat_smartphones: "Smartfonlar",
     cat_laptops: "Noutbuklar",
+    cat_tv: "Televizorlar & Smart TV",
     cat_audio: "Quloqchinlar & Audio",
     cat_watches: "Aqlli soatlar",
     cat_accessories: "Aksessuarlar",
@@ -190,6 +191,7 @@ export const translations = {
     // Categories
     cat_smartphones: "Смартфоны",
     cat_laptops: "Ноутбуки",
+    cat_tv: "Телевизоры & Smart TV",
     cat_audio: "Наушники и Аудио",
     cat_watches: "Смарт-часы",
     cat_accessories: "Аксессуары",
@@ -354,6 +356,7 @@ export const translations = {
     // Categories
     cat_smartphones: "Smartphones",
     cat_laptops: "Laptops",
+    cat_tv: "Televisions & Smart TV",
     cat_audio: "Headphones & Audio",
     cat_watches: "Smart Watches",
     cat_accessories: "Accessories",

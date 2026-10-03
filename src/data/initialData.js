@@ -483,6 +483,132 @@ export const INITIAL_PRODUCTS = [
       Switches: "Optical Mouse Switches Gen-3 (90 mln marta bosish)",
       Battery: "90 soatgacha uzluksiz o'yin vaqti"
     }
+  },
+  {
+    id: "p25",
+    title: "Samsung Neo QLED 65\" 4K Smart TV (QN90D 2026)",
+    category: "cat_tv",
+    price: 1799,
+    oldPrice: 2099,
+    stock: 7,
+    rating: 4.9,
+    reviewsCount: 38,
+    isFlashSale: true,
+    isNew: true,
+    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=800&auto=format&fit=crop",
+    description: "NQ4 AI Gen2 Processor, Quantum Matrix Technology, Dolby Atmos, Real Depth Enhancer va 144Hz o'yin rejimi.",
+    specs: {
+      Screen: "65 dyuym 4K Ultra HD (3840x2160)",
+      Matrix: "Neo QLED 144Hz VRR",
+      Audio: "60W 4.2.2Ch Dolby Atmos",
+      Smart: "Tizen OS 2026, SmartThings Hub",
+      HDR: "Neo Quantum HDR+"
+    }
+  },
+  {
+    id: "p26",
+    title: "LG OLED evo 55\" 4K Cinema Smart TV (C4 Series)",
+    category: "cat_tv",
+    price: 1499,
+    oldPrice: 1699,
+    stock: 10,
+    rating: 5.0,
+    reviewsCount: 45,
+    isFlashSale: true,
+    isNew: true,
+    image: "https://images.unsplash.com/photo-1552975084-6e027cd345c2?q=80&w=800&auto=format&fit=crop",
+    description: "Self-lit OLED piksellari, cheksiz kontrast, a9 AI Processor Gen7 va 0.1ms o'yin tezligi.",
+    specs: {
+      Screen: "55 dyuym 4K OLED evo",
+      Matrix: "OLED 144Hz G-Sync / FreeSync",
+      Audio: "40W Dolby Atmos / DTS:X",
+      Smart: "webOS 24 AI ThinQ",
+      HDR: "Dolby Vision, HDR10 Pro"
+    }
+  },
+  {
+    id: "p27",
+    title: "Sony BRAVIA XR 75\" Mini LED 4K Google TV (X95L)",
+    category: "cat_tv",
+    price: 2499,
+    oldPrice: 2899,
+    stock: 4,
+    rating: 4.9,
+    reviewsCount: 23,
+    isFlashSale: false,
+    isNew: true,
+    image: "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=800&auto=format&fit=crop",
+    description: "Cognitive Processor XR sun'iy intellekti, Acoustic Multi-Audio ovozi va PlayStation 5 uchun mukammal moslik.",
+    specs: {
+      Screen: "75 dyuym 4K XR Mini LED",
+      Matrix: "XR Triluminos Pro 120Hz",
+      Audio: "Acoustic Multi-Audio+ 60W",
+      Smart: "Google TV (Android 14)",
+      HDR: "XR HDR Remaster, Dolby Vision"
+    }
+  },
+  {
+    id: "p28",
+    title: "Xiaomi TV Max 86\" Ultra Large 4K Smart TV",
+    category: "cat_tv",
+    price: 1399,
+    oldPrice: 1599,
+    stock: 6,
+    rating: 4.8,
+    reviewsCount: 29,
+    isFlashSale: true,
+    isNew: false,
+    image: "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=800&auto=format&fit=crop",
+    description: "Gigant 86 dyuymli ekran, 120Hz MEMC, metall korpus va Dolby Vision IQ / Dolby Atmos qo'llab-quvvatlashi.",
+    specs: {
+      Screen: "86 dyuym 4K UHD",
+      Matrix: "DLED 120Hz MEMC",
+      Audio: "30W Stereo Dolby Atmos",
+      Smart: "Android TV, Google Assistant",
+      HDR: "Dolby Vision IQ, HDR10+"
+    }
+  },
+  {
+    id: "p29",
+    title: "TCL 65\" QD-Mini LED 4K 144Hz Gaming TV (C755)",
+    category: "cat_tv",
+    price: 899,
+    oldPrice: 1049,
+    stock: 14,
+    rating: 4.7,
+    reviewsCount: 41,
+    isFlashSale: true,
+    isNew: true,
+    image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=800&auto=format&fit=crop",
+    description: "QLED ranglar, 500+ Local Dimming zonalari, ONKYO audio tizimi va o'yinlar uchun 144Hz VRR.",
+    specs: {
+      Screen: "65 dyuym 4K QD-Mini LED",
+      Matrix: "Quantum Dot 144Hz",
+      Audio: "ONKYO 2.1 Hi-Fi 50W",
+      Smart: "Google TV",
+      HDR: "HDR Premium 1300 nits"
+    }
+  },
+  {
+    id: "p30",
+    title: "Samsung The Frame 55\" QLED 4K Art Mode TV",
+    category: "cat_tv",
+    price: 1199,
+    oldPrice: 1350,
+    stock: 8,
+    rating: 4.9,
+    reviewsCount: 26,
+    isFlashSale: false,
+    isNew: true,
+    image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=800&auto=format&fit=crop",
+    description: "Mat ekran (Anti-Reflection), san'at asari kabi devorga o'rnatish, San'at rejimi (Art Mode) va magnit ramkalar.",
+    specs: {
+      Screen: "55 dyuym Matte QLED 4K",
+      Matrix: "100% Color Volume with Quantum Dot",
+      Audio: "40W Dolby Atmos",
+      Smart: "Tizen OS with Art Store",
+      HDR: "Quantum HDR"
+    }
   }
 ];
 
