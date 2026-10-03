@@ -31,13 +31,13 @@ export default function ProductCard({ product, onQuickView }) {
     toggleWishlist(product.id);
   };
 
-  const discountPercent = product.oldPrice 
-    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100) 
+  const discountPercent = product.oldPrice
+    ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : null;
 
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700/60 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
-      
+
       {/* Image Container */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-900 cursor-pointer" onClick={() => onQuickView(product)}>
         <img
@@ -97,16 +97,15 @@ export default function ProductCard({ product, onQuickView }) {
 
           <button
             onClick={handleWishlistToggle}
-            className={`p-2 rounded-2xl backdrop-blur-md transition-all shadow-md active:scale-90 ${
-              isLiked
+            className={`p-2 rounded-2xl backdrop-blur-md transition-all shadow-md active:scale-90 ${isLiked
                 ? 'bg-rose-500 text-white'
                 : 'bg-white/80 dark:bg-gray-900/80 text-gray-700 dark:text-gray-200 hover:text-rose-500'
-            }`}
+              }`}
             title={t.wishlist}
           >
             <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
           </button>
-          
+
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -127,14 +126,14 @@ export default function ProductCard({ product, onQuickView }) {
             <span className="text-[10px] uppercase tracking-wider font-extrabold text-indigo-600 dark:text-indigo-400 truncate">
               {t[product.category] || product.category}
             </span>
-            <span 
+            <span
               className="shrink-0 font-mono text-[10.5px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-sm"
               title={`Tovar ID: #${product.id}`}
             >
               Tovar ID: #{product.id}
             </span>
           </div>
-          <h4 
+          <h4
             onClick={() => onQuickView(product)}
             className="mt-1 font-bold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition"
           >
@@ -167,11 +166,10 @@ export default function ProductCard({ product, onQuickView }) {
 
           <button
             onClick={handleAddToCart}
-            className={`p-3 rounded-2xl transition-all duration-200 shadow-md active:scale-95 flex items-center gap-1.5 text-xs font-bold ${
-              added || inCartItem
+            className={`p-3 rounded-2xl transition-all duration-200 shadow-md active:scale-95 flex items-center gap-1.5 text-xs font-bold ${added || inCartItem
                 ? 'bg-emerald-500 text-white shadow-emerald-500/20'
                 : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-90 shadow-indigo-500/20'
-            }`}
+              }`}
           >
             {added ? (
               <>
