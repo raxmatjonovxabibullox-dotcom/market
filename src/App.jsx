@@ -11,6 +11,7 @@ import ShopPage from './pages/ShopPage';
 import WishlistPage from './pages/WishlistPage';
 import CartCheckoutPage from './pages/CartCheckoutPage';
 import AboutMapPage from './pages/AboutMapPage';
+import AdminDashboard from './pages/AdminDashboard';
 import OwnerDashboard from './pages/OwnerDashboard';
 
 function MainShopLayout({ children }) {
@@ -26,20 +27,6 @@ function MainShopLayout({ children }) {
   );
 }
 
-// When accessing /admin, stay on the same page with Admin Panel opened
-function AdminRouteHandler() {
-  const { setIsAdminPanelOpen } = useApp();
-  useEffect(() => {
-    setIsAdminPanelOpen(true);
-  }, [setIsAdminPanelOpen]);
-
-  return (
-    <MainShopLayout>
-      <HomePage />
-    </MainShopLayout>
-  );
-}
-
 export default function App() {
   return (
     <AppProvider>
@@ -52,8 +39,8 @@ export default function App() {
           <Route path="/cart" element={<MainShopLayout><CartCheckoutPage /></MainShopLayout>} />
           <Route path="/about" element={<MainShopLayout><AboutMapPage /></MainShopLayout>} />
           
-          {/* Admin Panel is integrated on the same page */}
-          <Route path="/admin" element={<AdminRouteHandler />} />
+          {/* Dedicated Rocker-style Admin Dashboard */}
+          <Route path="/admin" element={<AdminDashboard />} />
 
           {/* Standalone Owner / Superadmin Dashboard */}
           <Route path="/owner" element={<OwnerDashboard />} />
