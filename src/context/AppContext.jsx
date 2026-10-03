@@ -194,6 +194,12 @@ export const AppProvider = ({ children }) => {
       if (p.id === 'p24' || (p.image && p.image.includes('1626806787461'))) {
         return { ...p, image: REAL_GAMING_MOUSE_IMAGE };
       }
+      if (p.id === 'p25') return { ...p, image: '/images/tv_samsung_neo_qled.jpg' };
+      if (p.id === 'p26') return { ...p, image: '/images/tv_lg_oled_evo.jpg' };
+      if (p.id === 'p27') return { ...p, image: '/images/tv_sony_bravia_xr.jpg' };
+      if (p.id === 'p28') return { ...p, image: '/images/tv_xiaomi_max_86.jpg' };
+      if (p.id === 'p29') return { ...p, image: '/images/tv_tcl_qled_gaming.jpg' };
+      if (p.id === 'p30') return { ...p, image: '/images/tv_samsung_frame.jpg' };
       return p;
     });
   });

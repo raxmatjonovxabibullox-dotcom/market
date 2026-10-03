@@ -495,7 +495,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 38,
     isFlashSale: true,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_samsung_neo_qled.jpg",
     description: "NQ4 AI Gen2 Processor, Quantum Matrix Technology, Dolby Atmos, Real Depth Enhancer va 144Hz o'yin rejimi.",
     specs: {
       Screen: "65 dyuym 4K Ultra HD (3840x2160)",
@@ -516,7 +516,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 45,
     isFlashSale: true,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1552975084-6e027cd345c2?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_lg_oled_evo.jpg",
     description: "Self-lit OLED piksellari, cheksiz kontrast, a9 AI Processor Gen7 va 0.1ms o'yin tezligi.",
     specs: {
       Screen: "55 dyuym 4K OLED evo",
@@ -537,7 +537,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 23,
     isFlashSale: false,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_sony_bravia_xr.jpg",
     description: "Cognitive Processor XR sun'iy intellekti, Acoustic Multi-Audio ovozi va PlayStation 5 uchun mukammal moslik.",
     specs: {
       Screen: "75 dyuym 4K XR Mini LED",
@@ -558,7 +558,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 29,
     isFlashSale: true,
     isNew: false,
-    image: "https://images.unsplash.com/photo-1509281373149-e957c6296406?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_xiaomi_max_86.jpg",
     description: "Gigant 86 dyuymli ekran, 120Hz MEMC, metall korpus va Dolby Vision IQ / Dolby Atmos qo'llab-quvvatlashi.",
     specs: {
       Screen: "86 dyuym 4K UHD",
@@ -579,7 +579,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 41,
     isFlashSale: true,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_tcl_qled_gaming.jpg",
     description: "QLED ranglar, 500+ Local Dimming zonalari, ONKYO audio tizimi va o'yinlar uchun 144Hz VRR.",
     specs: {
       Screen: "65 dyuym 4K QD-Mini LED",
@@ -600,7 +600,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 26,
     isFlashSale: false,
     isNew: true,
-    image: "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?q=80&w=800&auto=format&fit=crop",
+    image: "/images/tv_samsung_frame.jpg",
     description: "Mat ekran (Anti-Reflection), san'at asari kabi devorga o'rnatish, San'at rejimi (Art Mode) va magnit ramkalar.",
     specs: {
       Screen: "55 dyuym Matte QLED 4K",
