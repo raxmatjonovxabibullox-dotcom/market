@@ -625,5 +625,5 @@ export const STORE_LOCATION = {
   lat: 41.3323,
   lng: 69.2842,
   phone: "+998 (90) 123-45-67",
-  telegram: "@vov_tech_bot"
+  telegram: "@Kitobchalar_bot"
 };

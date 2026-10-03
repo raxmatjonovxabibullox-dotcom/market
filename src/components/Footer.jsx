@@ -47,10 +47,16 @@ export default function Footer() {
               {t.hero_subtitle}
             </p>
             <div className="flex items-center gap-3 pt-2">
-              <span className="px-3 py-1 rounded-full bg-indigo-900/60 border border-indigo-700/50 text-indigo-300 text-xs font-bold flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
-                Telegram Bot Store
-              </span>
+              <a
+                href="https://t.me/Kitobchalar_bot"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-sky-500/20 active:scale-95 transition-all"
+                title="Telegram botimizga o'tish"
+              >
+                <Send className="w-3.5 h-3.5 text-white" />
+                <span>Telegram Bot Store</span>
+              </a>
             </div>
           </div>
 
@@ -65,6 +71,14 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/shop" className="hover:text-indigo-400 transition">{t.shop}</Link>
+              </li>
+              <li>
+                <Link to="/shop?filter=flash" className="hover:text-amber-400 transition flex items-center gap-1">
+                  <span>🔥 Aksiyalar</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/shop" className="hover:text-indigo-400 transition">Televizorlar & Smart TV</Link>
               </li>
               <li>
                 <Link to="/about" className="hover:text-indigo-400 transition">{t.about}</Link>
@@ -90,11 +104,20 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{storeLocation.phone}</span>
+                <a href={`tel:${storeLocation.phone}`} className="hover:text-emerald-400 transition">
+                  {storeLocation.phone}
+                </a>
               </li>
               <li className="flex items-center gap-2">
                 <Send className="w-4 h-4 text-sky-400 shrink-0" />
-                <span>Telegram Bot: {storeLocation.telegram}</span>
+                <a
+                  href="https://t.me/Kitobchalar_bot"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-sky-400 transition underline underline-offset-2 flex items-center gap-1"
+                >
+                  <span>Telegram Bot: @Kitobchalar_bot</span>
+                </a>
               </li>
             </ul>
           </div>
