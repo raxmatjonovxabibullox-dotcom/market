@@ -40,10 +40,12 @@ export default function ShopPage() {
       
       // Search query filter
       if (searchQuery.trim() !== '') {
-        const query = searchQuery.toLowerCase();
+        const query = searchQuery.toLowerCase().trim();
+        const cleanQuery = query.replace(/^#/, '');
         const matchTitle = p.title.toLowerCase().includes(query);
         const matchDesc = p.description ? p.description.toLowerCase().includes(query) : false;
-        if (!matchTitle && !matchDesc) return false;
+        const matchId = p.id.toLowerCase() === query || p.id.toLowerCase() === cleanQuery || ('#' + p.id.toLowerCase()) === query;
+        if (!matchTitle && !matchDesc && !matchId) return false;
       }
 
       // Price range filter

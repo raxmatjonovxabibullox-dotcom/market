@@ -22,10 +22,12 @@ import {
   Shield,
   Truck,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Eye
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AuthModal from './AuthModal';
+import QuickViewModal from './QuickViewModal';
 
 export default function Header() {
   const {
@@ -39,6 +41,8 @@ export default function Header() {
     wishlist,
     cart,
     orders,
+    products,
+    addToCart,
     searchQuery,
     setSearchQuery,
     isAdminPanelOpen,
@@ -55,7 +59,9 @@ export default function Header() {
   const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
   const [trackingIdInput, setTrackingIdInput] = useState('');
   const [searchedOrder, setSearchedOrder] = useState(null);
+  const [searchedProduct, setSearchedProduct] = useState(null);
   const [trackingSearched, setTrackingSearched] = useState(false);
+  const [modalQuickProduct, setModalQuickProduct] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -88,13 +94,33 @@ export default function Header() {
     }
   };
 
-  // Track Order Search Logic
+  // Track Order & Product ID Search Logic
   const handleTrackSearch = (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setTrackingSearched(true);
-    const cleanId = trackingIdInput.trim().replace('#', '');
-    const found = orders.find(o => String(o.id).toLowerCase() === cleanId.toLowerCase());
-    setSearchedOrder(found || null);
+    const raw = trackingIdInput.trim();
+    if (!raw) {
+      setSearchedOrder(null);
+      setSearchedProduct(null);
+      return;
+    }
+    const cleanId = raw.toLowerCase().replace(/^#/, '');
+
+    // 1. Check in orders (by order id)
+    const foundOrder = orders.find(o => 
+      String(o.id).toLowerCase() === cleanId || 
+      String(o.id).toLowerCase() === raw.toLowerCase()
+    );
+
+    // 2. Check in products / tovarlar (by product id or title)
+    const foundProduct = products.find(p => 
+      String(p.id).toLowerCase() === cleanId || 
+      String(p.id).toLowerCase() === raw.toLowerCase() ||
+      String(p.id).toLowerCase().includes(cleanId)
+    );
+
+    setSearchedOrder(foundOrder || null);
+    setSearchedProduct(foundProduct || null);
   };
 
   // Expanded Rich Navigation Links
@@ -464,14 +490,14 @@ export default function Header() {
         )}
       </div>
 
-      {/* MODAL 1: BUYURTMA HOLATINI KUZATISH (TRACK ORDER) */}
+      {/* MODAL 1: BUYURTMA VA TOVARNI TEKSHIRISH (TRACK ORDER & PRODUCT ID) */}
       {isTrackingOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
           <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-slate-900 dark:text-white">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="font-black text-base flex items-center gap-2">
                 <Package className="w-5 h-5 text-indigo-500" />
-                <span>Buyurtma Holatini Kuzatish</span>
+                <span>Buyurtma & Tovar Tekshirish</span>
               </h3>
               <button
                 onClick={() => setIsTrackingOpen(false)}
@@ -484,13 +510,13 @@ export default function Header() {
             <form onSubmit={handleTrackSearch} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
-                  Buyurtma Raqamingizni Kiriting (ID):
+                  Tovar yoki Buyurtma Raqamini Kiriting (ID):
                 </label>
                 <div className="relative">
                   <input
                     type="text"
                     required
-                    placeholder="Masalan: 123 yoki #123"
+                    placeholder="Masalan: #p2 (tovar) yoki 1 (buyurtma)"
                     value={trackingIdInput}
                     onChange={(e) => setTrackingIdInput(e.target.value)}
                     className="w-full pl-9 pr-3 py-2.5 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
@@ -503,14 +529,86 @@ export default function Header() {
                 type="submit"
                 className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition active:scale-95"
               >
-                Buyurtmani Tekshirish
+                Tekshirish
               </button>
             </form>
 
             {/* Tracking Result Display */}
             {trackingSearched && (
-              <div className="pt-2">
-                {searchedOrder ? (
+              <div className="pt-2 space-y-3">
+                {/* 1. Tovar topilsa */}
+                {searchedProduct && (
+                  <div className="p-4 rounded-2xl bg-indigo-50/90 dark:bg-slate-800/90 border border-indigo-200 dark:border-indigo-800 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="font-extrabold text-xs text-indigo-600 dark:text-indigo-400 uppercase tracking-wide">
+                        Tovar topildi ✅
+                      </span>
+                      <span className="font-mono text-xs font-black px-2.5 py-0.5 rounded-lg bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-700">
+                        Tovar ID: #{searchedProduct.id}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={searchedProduct.image}
+                        alt={searchedProduct.title}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+                        }}
+                        className="w-16 h-16 object-cover rounded-2xl bg-slate-100 dark:bg-slate-900 shrink-0 border border-slate-200 dark:border-slate-700"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                          {searchedProduct.title}
+                        </h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {t[searchedProduct.category] || searchedProduct.category}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-base font-black text-indigo-600 dark:text-indigo-400">
+                            ${searchedProduct.price}
+                          </span>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            searchedProduct.stock > 0 
+                              ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400' 
+                              : 'bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400'
+                          }`}>
+                            {searchedProduct.stock > 0 ? `Omborda: ${searchedProduct.stock} dona` : 'Tugagan'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModalQuickProduct(searchedProduct);
+                        }}
+                        className="flex-1 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition flex items-center justify-center gap-1.5 shadow"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Batafsil Ko'rish</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          addToCart(searchedProduct, 1);
+                          setIsTrackingOpen(false);
+                          navigate('/cart');
+                        }}
+                        className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow"
+                      >
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                        <span>Savatga</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* 2. Buyurtma topilsa */}
+                {searchedOrder && (
                   <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-indigo-600 dark:text-indigo-400">Buyurtma #{searchedOrder.id}</span>
@@ -528,9 +626,12 @@ export default function Header() {
                       Jami summa: <b className="text-emerald-500">${searchedOrder.totalAmount?.toFixed(2)}</b>
                     </p>
                   </div>
-                ) : (
+                )}
+
+                {/* 3. Hech biri topilmasa */}
+                {!searchedProduct && !searchedOrder && (
                   <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 text-xs font-semibold text-center">
-                    Bunday raqamli buyurtma topilmadi. Raqamni tekshirib qayta kiriting.
+                    Bunday raqamli tovar yoki buyurtma topilmadi. Raqamni tekshirib qayta kiriting (Masalan: #p2 yoki 1).
                   </div>
                 )}
               </div>
@@ -602,6 +703,14 @@ export default function Header() {
 
       {/* Auth Modal */}
       {isAuthOpen && <AuthModal onClose={() => setIsAuthOpen(false)} />}
+
+      {/* Quick View Modal for Tovar Search */}
+      {modalQuickProduct && (
+        <QuickViewModal
+          product={modalQuickProduct}
+          onClose={() => setModalQuickProduct(null)}
+        />
+      )}
     </header>
   );
 }
