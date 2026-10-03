@@ -599,6 +599,14 @@ export const AppProvider = ({ children }) => {
     return finalizedOrder;
   };
 
+  const updateOrderStatus = (orderId, newStatus) => {
+    setOrders(prev => prev.map(o => (o.id === orderId ? { ...o, status: newStatus } : o)));
+  };
+
+  const deleteOrder = (orderId) => {
+    setOrders(prev => prev.filter(o => o.id !== orderId));
+  };
+
   // 8. Search & Filters state
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -638,6 +646,8 @@ export const AppProvider = ({ children }) => {
         totalAmount,
         orders,
         placeOrder,
+        updateOrderStatus,
+        deleteOrder,
         resendOrderToTelegram,
         formatOrderTelegramMessage,
         telegramConfig,
