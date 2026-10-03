@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldCheck, X, Package, Check } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
@@ -8,6 +9,7 @@ export default function ShopPage() {
   const { 
     t, 
     products, 
+    addProduct,
     searchQuery, 
     setSearchQuery, 
     selectedCategory, 
@@ -21,6 +23,41 @@ export default function ShopPage() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
+  // Quick Add Product Modal state
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newCategory, setNewCategory] = useState('cat_smartphones');
+  const [newPrice, setNewPrice] = useState('');
+  const [newOldPrice, setNewOldPrice] = useState('');
+  const [newStock, setNewStock] = useState('10');
+  const [newImage, setNewImage] = useState('');
+  const [newDesc, setNewDesc] = useState('');
+  const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const handleAddNewProduct = (e) => {
+    e.preventDefault();
+    if (!newTitle || !newPrice) return;
+    addProduct({
+      title: newTitle,
+      category: newCategory,
+      price: Number(newPrice),
+      oldPrice: newOldPrice ? Number(newOldPrice) : null,
+      stock: Number(newStock) || 10,
+      image: newImage || 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop',
+      description: newDesc
+    });
+    setSavedSuccess(true);
+    setTimeout(() => {
+      setSavedSuccess(false);
+      setIsAddModalOpen(false);
+      setNewTitle('');
+      setNewPrice('');
+      setNewOldPrice('');
+      setNewDesc('');
+      setNewImage('');
+    }, 1200);
+  };
 
   const categories = [
     { key: 'all', label: t.all_categories },
@@ -86,8 +123,39 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-8">
+    <div className="container mx-auto px-4 py-8 space-y-6">
       
+      {/* Admin Quick Action Banner */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+            <Package className="w-5 h-5" />
+          </div>
+          <div>
+            <span className="font-black text-xs sm:text-sm block">Mahsulotlar Boshqaruvi (Admin Tools)</span>
+            <span className="text-[10px] text-slate-400">Yangi tovar qo'shish, tahrirlash yoki o'chirish</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-cyan-500/25 hover:opacity-90 flex items-center gap-1.5 transition"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Yangi Tovar Qo'shish</span>
+          </button>
+
+          <Link
+            to="/admin"
+            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition"
+          >
+            <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <span>Rocker Admin Panel ➔</span>
+          </Link>
+        </div>
+      </div>
+
       {/* Header Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
         <div>
@@ -244,6 +312,136 @@ export default function ShopPage() {
           product={quickViewProduct}
           onClose={() => setQuickViewProduct(null)}
         />
+      )}
+
+      {/* Quick Add Product Modal */}
+      {isAddModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
+              <h3 className="font-black text-base flex items-center gap-2">
+                <Plus className="w-4 h-4 text-cyan-500" />
+                <span>Yangi Mahsulot Qo'shish</span>
+              </h3>
+              <button onClick={() => setIsAddModalOpen(false)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {savedSuccess ? (
+              <div className="p-6 text-center space-y-2">
+                <Check className="w-12 h-12 text-emerald-500 mx-auto animate-bounce" />
+                <h4 className="font-black text-lg">Muvaffaqiyatli qo'shildi!</h4>
+                <p className="text-xs text-slate-500">Mahsulot katalogga joylashtirildi.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleAddNewProduct} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-bold mb-1">Mahsulot Nomi *</label>
+                  <input
+                    type="text"
+                    required
+                    value={newTitle}
+                    onChange={(e) => setNewTitle(e.target.value)}
+                    placeholder="Masalan: iPhone 16 Pro Max 256GB"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold mb-1">Kategoriya</label>
+                    <select
+                      value={newCategory}
+                      onChange={(e) => setNewCategory(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                    >
+                      <option value="cat_smartphones">Smartfonlar</option>
+                      <option value="cat_laptops">Noutbuklar</option>
+                      <option value="cat_tv">Smart Televizorlar</option>
+                      <option value="cat_audio">Audio</option>
+                      <option value="cat_watches">Soatlar</option>
+                      <option value="cat_gaming">Gaming</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">Narxi ($) *</label>
+                    <input
+                      type="number"
+                      required
+                      value={newPrice}
+                      onChange={(e) => setNewPrice(e.target.value)}
+                      placeholder="999"
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold mb-1">Eski Narxi ($)</label>
+                    <input
+                      type="number"
+                      value={newOldPrice}
+                      onChange={(e) => setNewOldPrice(e.target.value)}
+                      placeholder="1199"
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">Omborda (dona)</label>
+                    <input
+                      type="number"
+                      value={newStock}
+                      onChange={(e) => setNewStock(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold mb-1">Rasm URL</label>
+                  <input
+                    type="text"
+                    value={newImage}
+                    onChange={(e) => setNewImage(e.target.value)}
+                    placeholder="https://... yoki /images/..."
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold mb-1">Tavsif</label>
+                  <textarea
+                    rows="2"
+                    value={newDesc}
+                    onChange={(e) => setNewDesc(e.target.value)}
+                    placeholder="Tovar haqida qisqacha ma'lumot..."
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-cyan-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setIsAddModalOpen(false)}
+                    className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow hover:opacity-95 transition"
+                  >
+                    Saqlash
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

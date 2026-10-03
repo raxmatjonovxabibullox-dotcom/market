@@ -14,14 +14,18 @@ import {
   Clock,
   RefreshCw,
   Gift,
-  Tv
+  Tv,
+  Search,
+  Heart,
+  ShoppingBag,
+  MapPin
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
 
 export default function HomePage() {
-  const { t, products, setSelectedCategory } = useApp();
+  const { t, products, setSelectedCategory, searchQuery, setSearchQuery } = useApp();
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const navigate = useNavigate();
 
@@ -58,10 +62,10 @@ export default function HomePage() {
   };
 
   return (
-    <div className="space-y-16 pb-16">
+    <div className="space-y-12 pb-16">
 
-      {/* 1. HERO SECTION */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-950 via-gray-900 to-gray-950 text-white rounded-3xl mt-4 p-8 md:p-16 border border-indigo-900/50 shadow-2xl">
+      {/* 1. HERO SECTION WITH PROMINENT SEARCH */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-950 via-gray-900 to-gray-950 text-white rounded-3xl mt-4 p-8 md:p-14 border border-indigo-900/50 shadow-2xl">
         {/* Decorative background lights */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
@@ -80,22 +84,117 @@ export default function HomePage() {
             {t.hero_subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center gap-4 pt-4">
+          {/* Prominent Hero Search Input */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              navigate('/shop');
+            }}
+            className="pt-2 max-w-xl"
+          >
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="Gadjetlar, brendlar yoki tovar nomini qidiring (masalan: iPhone 15, Neo QLED)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-2xl"
+              />
+              <Search className="w-5 h-5 text-indigo-400 absolute left-4 pointer-events-none" />
+              <button
+                type="submit"
+                className="absolute right-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-extrabold text-xs shadow-md hover:opacity-90 transition"
+              >
+                Qidirish
+              </button>
+            </div>
+            {/* Quick Keyword Chips */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-gray-300">
+              <span className="text-gray-400">Ommabop:</span>
+              {['iPhone 15', 'Smart TV', 'MacBook Pro', 'AirPods', 'Gaming'].map(tag => (
+                <button
+                  type="button"
+                  key={tag}
+                  onClick={() => {
+                    setSearchQuery(tag);
+                    navigate('/shop');
+                  }}
+                  className="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-white transition text-[10px]"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </form>
+
+          <div className="flex flex-wrap items-center gap-4 pt-2">
             <Link
               to="/shop"
-              className="px-8 py-4 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-black text-sm md:text-base shadow-xl shadow-indigo-500/30 hover:scale-105 transition-transform duration-300 flex items-center gap-2 group"
+              className="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white font-black text-sm md:text-base shadow-xl shadow-indigo-500/30 hover:scale-105 transition-transform duration-300 flex items-center gap-2 group"
             >
               <span>{t.hero_cta}</span>
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
             <Link
-              to="/shop"
-              className="px-6 py-4 rounded-2xl bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-bold text-sm md:text-base border border-white/20 transition flex items-center gap-2"
+              to="/admin"
+              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm md:text-base shadow-lg shadow-cyan-500/25 hover:scale-105 transition flex items-center gap-2"
             >
-              <Zap className="w-4 h-4 text-amber-400" />
-              <span>{t.hero_secondary_cta}</span>
+              <ShieldCheck className="w-5 h-5" />
+              <span>👑 Rocker Admin Panel</span>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 5 TA ASOSIY SAHIFA SHOWCASE BANNER (Mentor uchun ko'rgazma) */}
+      <section className="container mx-auto px-4">
+        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <span className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                Loyiha Tarkibi
+              </span>
+              <h2 className="text-xl font-black text-gray-900 dark:text-white">
+                5 ta Asosiy Sahifa & Admin Dashboard
+              </h2>
+            </div>
+            <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-black border border-emerald-500/30">
+              ✓ 5/5 Sahifa Tayyor
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            {[
+              { num: '1', title: 'Asosiy Sahifa', path: '/', desc: 'Landing & Aksiya', icon: Sparkles, color: 'text-indigo-500' },
+              { num: '2', title: 'Magazin / Katalog', path: '/shop', desc: 'Filtr & Qidiruv', icon: Smartphone, color: 'text-purple-500' },
+              { num: '3', title: 'Sevimlilar', path: '/wishlist', desc: 'Izbranniy ro\'yxat', icon: Heart, color: 'text-rose-500' },
+              { num: '4', title: 'Savat & Checkout', path: '/cart', desc: 'Promokod & To\'lov', icon: ShoppingBag, color: 'text-pink-500' },
+              { num: '5', title: 'Biz Haqimizda & Xarita', path: '/about', desc: 'Leaflet Xaritasi', icon: MapPin, color: 'text-emerald-500' },
+              { num: '👑', title: 'Rocker Admin Panel', path: '/admin', desc: 'Dashboard & CRUD', icon: ShieldCheck, color: 'text-cyan-500' },
+            ].map(item => {
+              const ItemIcon = item.icon;
+              return (
+                <Link
+                  key={item.num}
+                  to={item.path}
+                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-500 hover:shadow-md transition group text-left"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black flex items-center justify-center">
+                      {item.num}
+                    </span>
+                    <ItemIcon className={`w-4 h-4 ${item.color} group-hover:scale-110 transition`} />
+                  </div>
+                  <h4 className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
+                    {item.title}
+                  </h4>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {item.desc}
+                  </p>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>

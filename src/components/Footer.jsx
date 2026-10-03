@@ -60,34 +60,50 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Col 2: Quick Links */}
+          {/* Col 2: 5 Main Pages & Admin */}
           <div className="space-y-3">
-            <h4 className="text-sm font-extrabold text-gray-200 uppercase tracking-wider">
-              Bo'limlar
+            <h4 className="text-sm font-extrabold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+              <span>5 ta Asosiy Sahifa</span>
             </h4>
-            <ul className="space-y-2 text-xs font-medium text-gray-400">
+            <ul className="space-y-2 text-xs font-semibold text-gray-300">
               <li>
-                <Link to="/" className="hover:text-indigo-400 transition">{t.home}</Link>
-              </li>
-              <li>
-                <Link to="/shop" className="hover:text-indigo-400 transition">{t.shop}</Link>
-              </li>
-              <li>
-                <Link to="/shop?filter=flash" className="hover:text-amber-400 transition flex items-center gap-1">
-                  <span>🔥 Aksiyalar</span>
+                <Link to="/" className="hover:text-cyan-400 transition flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center">1</span>
+                  <span>{t.home} (Landing Page)</span>
                 </Link>
               </li>
               <li>
-                <Link to="/shop" className="hover:text-indigo-400 transition">Televizorlar & Smart TV</Link>
+                <Link to="/shop" className="hover:text-cyan-400 transition flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center">2</span>
+                  <span>{t.shop} (Magazin / Katalog)</span>
+                </Link>
               </li>
               <li>
-                <Link to="/about" className="hover:text-indigo-400 transition">{t.about}</Link>
+                <Link to="/wishlist" className="hover:text-cyan-400 transition flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center">3</span>
+                  <span>{t.wishlist} (Sevimlilar)</span>
+                </Link>
               </li>
               <li>
-                <Link to="/wishlist" className="hover:text-indigo-400 transition">{t.wishlist}</Link>
+                <Link to="/cart" className="hover:text-cyan-400 transition flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center">4</span>
+                  <span>{t.cart} (Savat & Checkout)</span>
+                </Link>
               </li>
               <li>
-                <Link to="/cart" className="hover:text-indigo-400 transition">{t.cart}</Link>
+                <Link to="/about" className="hover:text-cyan-400 transition flex items-center gap-1.5">
+                  <span className="w-4 h-4 rounded-full bg-cyan-500/20 text-cyan-400 text-[10px] font-black flex items-center justify-center">5</span>
+                  <span>{t.about} (Biz haqimizda & Xarita)</span>
+                </Link>
+              </li>
+              <li className="pt-2 border-t border-gray-800">
+                <Link
+                  to="/admin"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow-lg shadow-cyan-500/20 hover:opacity-95 transition"
+                >
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>👑 Rocker Admin Panel</span>
+                </Link>
               </li>
             </ul>
           </div>
