@@ -14,7 +14,11 @@ import {
   User,
   Phone,
   MapPin,
-  Sparkles
+  Sparkles,
+  AlertCircle,
+  ExternalLink,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -33,6 +37,7 @@ export default function CartCheckoutPage() {
     applyPromoCode,
     removePromo,
     placeOrder,
+    resendOrderToTelegram,
     telegramConfig
   } = useApp();
 
@@ -92,6 +97,28 @@ export default function CartCheckoutPage() {
     const newOrder = await placeOrder(orderDetails);
     setIsSubmitting(false);
     setCompletedOrder(newOrder);
+  };
+
+  const [isResending, setIsResending] = useState(false);
+  const [resendStatus, setResendStatus] = useState(null);
+
+  const handleResendTelegram = async () => {
+    if (!completedOrder) return;
+    setIsResending(true);
+    setResendStatus('Yuborilmoqda...');
+    try {
+      const res = await resendOrderToTelegram(completedOrder);
+      if (res && res.success) {
+        setResendStatus('✅ Muvaffaqiyatli yuborildi!');
+        setCompletedOrder(prev => ({ ...prev, telegramSent: true }));
+      } else {
+        setResendStatus('❌ ' + (res?.error || 'Yetkazib bo\'lmadi'));
+      }
+    } catch (e) {
+      setResendStatus('❌ ' + e.message);
+    } finally {
+      setIsResending(false);
+    }
   };
 
   return (

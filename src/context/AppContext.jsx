@@ -354,15 +354,30 @@ export const AppProvider = ({ children }) => {
   const DEFAULT_TELEGRAM_BOT_TOKEN = '8823235791:AAEOLjLhNRfFw9xp7quwlfucSXEpL8fCtc8';
   const DEFAULT_TELEGRAM_CHAT_ID = '8170197389';
 
+  const isValidTelegramToken = (token) => {
+    return typeof token === 'string' && /^[0-9]{8,12}:[a-zA-Z0-9_-]{30,}$/.test(token.trim());
+  };
+
+  const isValidTelegramChatId = (id) => {
+    return typeof id === 'string' && /^-?[0-9]{6,16}$/.test(id.trim());
+  };
+
+  const escapeTelegramHtml = (text) => {
+    if (!text) return '';
+    return String(text)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  };
+
   const [telegramConfig, setTelegramConfig] = useState(() => {
     const saved = localStorage.getItem('app_telegram_config');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        return {
-          botToken: (parsed.botToken && typeof parsed.botToken === 'string' && parsed.botToken.trim()) ? parsed.botToken.trim() : DEFAULT_TELEGRAM_BOT_TOKEN,
-          chatId: parsed.chatId && parsed.chatId !== '123456789' && parsed.chatId !== '@Kitobchalar_bot' ? parsed.chatId : DEFAULT_TELEGRAM_CHAT_ID
-        };
+        const token = isValidTelegramToken(parsed.botToken) ? parsed.botToken.trim() : DEFAULT_TELEGRAM_BOT_TOKEN;
+        const chat = isValidTelegramChatId(parsed.chatId) ? parsed.chatId.trim() : DEFAULT_TELEGRAM_CHAT_ID;
+        return { botToken: token, chatId: chat };
       } catch (e) {
         // fallback below
       }
@@ -377,17 +392,19 @@ export const AppProvider = ({ children }) => {
   });
 
   const saveTelegramConfig = (config) => {
+    const rawToken = config?.botToken && config.botToken.trim();
+    const rawChat = config?.chatId && config.chatId.trim();
     const updated = {
-      botToken: (config?.botToken && config.botToken.trim()) || DEFAULT_TELEGRAM_BOT_TOKEN,
-      chatId: (config?.chatId && config.chatId.trim()) || DEFAULT_TELEGRAM_CHAT_ID
+      botToken: isValidTelegramToken(rawToken) ? rawToken : DEFAULT_TELEGRAM_BOT_TOKEN,
+      chatId: isValidTelegramChatId(rawChat) ? rawChat : DEFAULT_TELEGRAM_CHAT_ID
     };
     setTelegramConfig(updated);
     localStorage.setItem('app_telegram_config', JSON.stringify(updated));
   };
 
   const testTelegramConnection = async (customToken = null, customChatId = null) => {
-    const token = (customToken && typeof customToken === 'string' && customToken.trim()) ? customToken.trim() : (telegramConfig.botToken || DEFAULT_TELEGRAM_BOT_TOKEN);
-    const chatId = (customChatId && typeof customChatId === 'string' && customChatId.trim()) ? customChatId.trim() : (telegramConfig.chatId || DEFAULT_TELEGRAM_CHAT_ID);
+    const token = isValidTelegramToken(customToken) ? customToken.trim() : (isValidTelegramToken(telegramConfig?.botToken) ? telegramConfig.botToken.trim() : DEFAULT_TELEGRAM_BOT_TOKEN);
+    const chatId = isValidTelegramChatId(customChatId) ? customChatId.trim() : (isValidTelegramChatId(telegramConfig?.chatId) ? telegramConfig.chatId.trim() : DEFAULT_TELEGRAM_CHAT_ID);
 
     try {
       const res = await fetch('/api/telegram', {
@@ -412,22 +429,18 @@ export const AppProvider = ({ children }) => {
   };
 
   const sendTelegramMessage = async (text, inlineKeyboard = null, photoUrl = null) => {
-    if (!telegramConfig.chatId) {
-      return { success: false, error: "Chat ID belgilanmagan" };
-    }
+    const targetToken = isValidTelegramToken(telegramConfig?.botToken) ? telegramConfig.botToken.trim() : DEFAULT_TELEGRAM_BOT_TOKEN;
+    const targetChatId = isValidTelegramChatId(telegramConfig?.chatId) ? telegramConfig.chatId.trim() : DEFAULT_TELEGRAM_CHAT_ID;
 
     // Filter inline keyboard buttons: Telegram Bot API ONLY accepts valid public http/https/tg URLs.
-    // It rejects 'tel:', 'http://localhost', etc.
     const cleanKeyboard = inlineKeyboard ? inlineKeyboard.map(row =>
       row.filter(btn => btn?.url && (btn.url.startsWith('https://') || (btn.url.startsWith('http://') && !btn.url.includes('localhost') && !btn.url.includes('127.0.0.1'))))
     ).filter(row => row.length > 0) : null;
 
     const payloadKeyboard = cleanKeyboard && cleanKeyboard.length > 0 ? { inline_keyboard: cleanKeyboard } : null;
 
-    // Secure proxy execution: Hides Bot Token from DevTools Network & Sources!
+    // Secure proxy execution: Dispatches request to local /api/telegram proxy
     const executeApi = async (method, body) => {
-      // 1. First priority: Server-side proxy (/api/telegram)
-      // DevTools will only see /api/telegram without any Bot Token in URL or headers
       try {
         const proxyRes = await fetch('/api/telegram', {
           method: 'POST',
@@ -435,7 +448,7 @@ export const AppProvider = ({ children }) => {
           body: JSON.stringify({
             method,
             body,
-            ...(telegramConfig.botToken ? { botToken: telegramConfig.botToken } : {})
+            botToken: targetToken
           })
         });
 
@@ -449,53 +462,29 @@ export const AppProvider = ({ children }) => {
         console.warn('Backend proxy /api/telegram request error:', proxyErr);
       }
 
-      // 2. Direct fallback (only if admin manually specified a custom botToken in dashboard)
-      if (telegramConfig.botToken) {
-        try {
-          const res = await fetch(`https://api.telegram.org/bot${telegramConfig.botToken}/${method}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-          });
-          return await res.json();
-        } catch (e) {
-          return { ok: false, description: e.message };
-        }
-      }
-
-      return { ok: false, description: "Telegram xizmatiga ulanib bo'lmadi (.env yoki botToken tekshiring)" };
+      return { ok: false, description: "Telegram xizmatiga ulanib bo'lmadi (.env yoki server tekshiring)" };
     };
 
     try {
       let result = null;
 
-      // Stage 1: Try sendPhoto with formatted caption and buttons if photoUrl is valid
-      if (photoUrl && typeof photoUrl === 'string' && photoUrl.startsWith('http')) {
+      // Stage 1: If valid public HTTP/HTTPS image provided and caption is safe length, try sendPhoto
+      if (photoUrl && typeof photoUrl === 'string' && photoUrl.startsWith('http') && !photoUrl.includes('localhost') && text.length <= 1000) {
         const photoPayload = {
-          chat_id: telegramConfig.chatId,
+          chat_id: targetChatId,
           photo: photoUrl,
-          caption: text.length > 1024 ? text.substring(0, 1020) + '...' : text,
+          caption: text,
           parse_mode: 'HTML'
         };
         if (payloadKeyboard) photoPayload.reply_markup = payloadKeyboard;
 
         result = await executeApi('sendPhoto', photoPayload);
-        if (!result.ok) {
-          console.warn("Telegram sendPhoto with buttons failed, retrying without buttons:", result.description);
-          // Retry sendPhoto without buttons in case buttons caused issue
-          result = await executeApi('sendPhoto', {
-            chat_id: telegramConfig.chatId,
-            photo: photoUrl,
-            caption: text.length > 1024 ? text.substring(0, 1020) + '...' : text,
-            parse_mode: 'HTML'
-          });
-        }
       }
 
-      // Stage 2: If photo was not provided or failed, send via sendMessage
+      // Stage 2: Send full detailed message via sendMessage (supports up to 4096 characters)
       if (!result || !result.ok) {
         const msgPayload = {
-          chat_id: telegramConfig.chatId,
+          chat_id: targetChatId,
           text: text,
           parse_mode: 'HTML'
         };
@@ -504,11 +493,11 @@ export const AppProvider = ({ children }) => {
         result = await executeApi('sendMessage', msgPayload);
       }
 
-      // Stage 3: If still failed (e.g. malformed HTML or rejected button), fallback to simple plain text
-      if (!result.ok) {
+      // Stage 3: If HTML parse error occurred, fallback to clean plain text
+      if (!result.ok && text) {
         const plainText = text.replace(/<[^>]+>/g, '');
         result = await executeApi('sendMessage', {
-          chat_id: telegramConfig.chatId,
+          chat_id: targetChatId,
           text: plainText
         });
       }
@@ -523,11 +512,60 @@ export const AppProvider = ({ children }) => {
       setTelegramLogs(prev => [logEntry, ...prev.slice(0, 49)]);
       localStorage.setItem('app_telegram_logs', JSON.stringify([logEntry, ...telegramLogs.slice(0, 49)]));
 
-      return { success: result.ok, data: result, error: result.description };
+      return { success: !!result?.ok, data: result, error: result?.description };
     } catch (err) {
       console.error("Telegram unexpected error:", err);
       return { success: false, error: err.message };
     }
+  };
+
+  const formatOrderTelegramMessage = (order) => {
+    const safeName = escapeTelegramHtml(order.customer?.fullName || 'Noma\'lum mijoz');
+    const safePhone = escapeTelegramHtml(order.customer?.phone || 'Telefon kiritilmagan');
+    const safeAddress = escapeTelegramHtml(order.customer?.address || 'Toshkent');
+    const safePayment = escapeTelegramHtml((order.customer?.paymentMethod || 'CASH').toUpperCase());
+
+    let orderText = `🛒 <b>YANGI BUYURTMA #${order.id}</b>\n`;
+    orderText += `📅 <i>Sana: ${order.formattedDate || new Date().toLocaleString('uz-UZ')}</i>\n\n`;
+    orderText += `👤 <b>Mijoz:</b> ${safeName}\n`;
+    orderText += `📞 <b>Telefon:</b> <code>${safePhone}</code>\n`;
+    orderText += `📍 <b>Manzil:</b> ${safeAddress}\n`;
+    orderText += `💳 <b>To'lov turi:</b> <code>${safePayment}</code>\n\n`;
+    orderText += `📦 <b>Mahsulotlar ro'yxati:</b>\n`;
+
+    (order.items || []).forEach((item, i) => {
+      const safeTitle = escapeTelegramHtml(item.product?.title || 'Mahsulot');
+      const itemPrice = item.product?.price || 0;
+      const itemQty = item.quantity || 1;
+      orderText += `${i + 1}. <b>${safeTitle}</b>\n   └ ${itemQty} dona × $${itemPrice} = <b>$${(itemPrice * itemQty).toFixed(2)}</b>\n`;
+    });
+
+    if (order.promo) {
+      orderText += `\n🎟 <b>Promokod:</b> <code>${escapeTelegramHtml(order.promo)}</code> (-$${(order.discountAmount || 0).toFixed(2)})\n`;
+    }
+
+    const fee = order.deliveryFee || 0;
+    orderText += `🚚 <b>Yetkazish:</b> ${fee === 0 ? 'BEPUL' : '$' + fee}\n`;
+    orderText += `💰 <b>JAMI TO'LOV:</b> <code>$${(order.totalAmount || 0).toFixed(2)}</code>`;
+
+    const addressQuery = encodeURIComponent(order.customer?.address || 'Toshkent');
+    const inlineButtons = [
+      [
+        { text: "📍 Google Xarita", url: `https://maps.google.com/?q=${addressQuery}` },
+        { text: "🗺 Yandex Xarita", url: `https://yandex.uz/maps/?text=${addressQuery}` }
+      ],
+      [
+        { text: "🛍️ VOV Shop Do'koni", url: "https://t.me/Kitobchalar_bot" }
+      ]
+    ];
+
+    const firstProductImage = order.items && order.items.length > 0 ? order.items[0].product?.image : null;
+    return { orderText, inlineButtons, firstProductImage };
+  };
+
+  const resendOrderToTelegram = async (order) => {
+    const { orderText, inlineButtons, firstProductImage } = formatOrderTelegramMessage(order);
+    return await sendTelegramMessage(orderText, inlineButtons, firstProductImage);
   };
 
   const placeOrder = async (customerDetails) => {
@@ -548,45 +586,17 @@ export const AppProvider = ({ children }) => {
       status: 'status_pending'
     };
 
-    setOrders(prev => [newOrder, ...prev]);
-
-    // Format rich HTML message for Telegram Bot notification
-    let orderText = `🛒 <b>YANGI BUYURTMA #${orderId}</b>\n`;
-    orderText += `📅 <i>Sana: ${orderDate}</i>\n\n`;
-    orderText += `👤 <b>Mijoz:</b> ${customerDetails.fullName}\n`;
-    orderText += `📞 <b>Telefon:</b> <code>${customerDetails.phone}</code>\n`;
-    orderText += `📍 <b>Manzil:</b> ${customerDetails.address}\n`;
-    orderText += `💳 <b>To'lov turi:</b> <code>${customerDetails.paymentMethod.toUpperCase()}</code>\n\n`;
-    orderText += `📦 <b>Mahsulotlar ro'yxati:</b>\n`;
-
-    cart.forEach((item, i) => {
-      orderText += `${i + 1}. <b>${item.product.title}</b>\n   └ ${item.quantity} dona × $${item.product.price} = <b>$${(item.product.price * item.quantity).toFixed(2)}</b>\n`;
-    });
-
-    if (appliedPromo) {
-      orderText += `\n🎟 <b>Promokod:</b> <code>${appliedPromo.code}</code> (-$${discountAmount.toFixed(2)})\n`;
-    }
-
-    orderText += `🚚 <b>Yetkazish:</b> ${deliveryFee === 0 ? 'BEPUL' : '$' + deliveryFee}\n`;
-    orderText += `💰 <b>JAMI TO'LOV:</b> <code>$${totalAmount.toFixed(2)}</code>`;
-
-    // Safe valid HTTPS inline buttons
-    const addressQuery = encodeURIComponent(customerDetails.address || 'Toshkent');
-    const inlineButtons = [
-      [
-        { text: "📍 Google Xarita", url: `https://maps.google.com/?q=${addressQuery}` },
-        { text: "🗺 Yandex Xarita", url: `https://yandex.uz/maps/?text=${addressQuery}` }
-      ],
-      [
-        { text: "🛍️ VOV Shop Do'koni", url: "https://github.com/raxmatjonovxabibullox-dotcom/magazin" }
-      ]
-    ];
-
-    const firstProductImage = cart.length > 0 ? cart[0].product.image : null;
+    const { orderText, inlineButtons, firstProductImage } = formatOrderTelegramMessage(newOrder);
     const telegramRes = await sendTelegramMessage(orderText, inlineButtons, firstProductImage);
 
+    const finalizedOrder = {
+      ...newOrder,
+      telegramSent: !!telegramRes?.success
+    };
+
+    setOrders(prev => [finalizedOrder, ...prev]);
     clearCart();
-    return { ...newOrder, telegramSent: telegramRes.success };
+    return finalizedOrder;
   };
 
   // 8. Search & Filters state
@@ -628,6 +638,8 @@ export const AppProvider = ({ children }) => {
         totalAmount,
         orders,
         placeOrder,
+        resendOrderToTelegram,
+        formatOrderTelegramMessage,
         telegramConfig,
         saveTelegramConfig,
         testTelegramConnection,
