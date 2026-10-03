@@ -169,9 +169,14 @@ export default function CartCheckoutPage() {
                   />
 
                   <div className="flex-1 min-w-0 space-y-1">
-                    <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate">
-                      {product.title}
-                    </h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate">
+                        {product.title}
+                      </h4>
+                      <span className="shrink-0 font-mono text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-slate-700">
+                        Tovar ID: #{product.id}
+                      </span>
+                    </div>
                     <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">
                       ${product.price} / dona
                     </p>

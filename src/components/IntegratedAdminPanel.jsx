@@ -386,8 +386,11 @@ export default function IntegratedAdminPanel() {
                                 className="w-10 h-10 object-cover rounded-xl bg-slate-900"
                               />
                             </td>
-                            <td className="p-3 font-bold text-white max-w-xs truncate">
-                              {p.title}
+                            <td className="p-3 font-bold text-white max-w-xs">
+                              <div className="truncate">{p.title}</div>
+                              <span className="inline-block mt-0.5 font-mono text-[10px] text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded">
+                                Tovar ID: #{p.id}
+                              </span>
                             </td>
                             <td className="p-3 text-slate-400 font-semibold">
                               {t[p.category] || p.category}

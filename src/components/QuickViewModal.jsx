@@ -6,6 +6,7 @@ export default function QuickViewModal({ product, onClose }) {
   const { t, addToCart, isInWishlist, toggleWishlist } = useApp();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
 
   if (!product) return null;
 
@@ -53,9 +54,24 @@ export default function QuickViewModal({ product, onClose }) {
         {/* Right Info Section */}
         <div className="w-full md:w-1/2 p-6 overflow-y-auto flex flex-col justify-between">
           <div>
-            <span className="text-xs uppercase font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wider">
-              {t[product.category] || product.category}
-            </span>
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-xs uppercase font-extrabold text-indigo-600 dark:text-indigo-400 tracking-wider">
+                {t[product.category] || product.category}
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  navigator.clipboard.writeText(product.id);
+                  setCopiedId(true);
+                  setTimeout(() => setCopiedId(false), 2000);
+                }}
+                className="font-mono text-[11px] font-black px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-slate-700 flex items-center gap-1.5 hover:bg-indigo-100 dark:hover:bg-slate-700 transition"
+                title="Tovar ID raqamini nusxalash"
+              >
+                <span>Tovar ID: #{product.id}</span>
+                {copiedId && <span className="text-[10px] text-emerald-500 font-bold">✓ Nusxalandi</span>}
+              </button>
+            </div>
             <h2 className="mt-1 text-xl font-extrabold text-gray-900 dark:text-white">
               {product.title}
             </h2>

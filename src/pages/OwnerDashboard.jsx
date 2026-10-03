@@ -814,8 +814,11 @@ export default function OwnerDashboard() {
                           className="w-12 h-12 object-cover rounded-xl bg-slate-900"
                         />
                       </td>
-                      <td className="p-4 font-bold text-white max-w-xs truncate">
-                        {p.title}
+                      <td className="p-4 font-bold text-white max-w-xs">
+                        <div className="truncate">{p.title}</div>
+                        <span className="inline-block mt-0.5 font-mono text-[10px] text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20">
+                          Tovar ID: #{p.id}
+                        </span>
                       </td>
                       <td className="p-4 text-slate-400 font-semibold">
                         {t[p.category] || p.category}

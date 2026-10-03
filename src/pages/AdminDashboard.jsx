@@ -536,8 +536,11 @@ export default function AdminDashboard() {
                           className="w-12 h-12 object-cover rounded-xl bg-slate-100 dark:bg-slate-800"
                         />
                       </td>
-                      <td className="p-4 font-bold text-slate-900 dark:text-white max-w-xs truncate">
-                        {p.title}
+                      <td className="p-4 font-bold text-slate-900 dark:text-white max-w-xs">
+                        <div className="truncate">{p.title}</div>
+                        <span className="inline-block mt-0.5 font-mono text-[10px] text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-slate-800 px-1.5 py-0.5 rounded border border-indigo-200 dark:border-slate-700">
+                          Tovar ID: #{p.id}
+                        </span>
                       </td>
                       <td className="p-4 text-slate-500 dark:text-slate-400 font-semibold">
                         {t[p.category] || p.category}

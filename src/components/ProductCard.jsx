@@ -123,9 +123,17 @@ export default function ProductCard({ product, onQuickView }) {
       {/* Card Details */}
       <div className="p-5 flex-1 flex flex-col justify-between">
         <div>
-          <span className="text-[10px] uppercase tracking-wider font-extrabold text-indigo-600 dark:text-indigo-400">
-            {t[product.category] || product.category}
-          </span>
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-indigo-600 dark:text-indigo-400 truncate">
+              {t[product.category] || product.category}
+            </span>
+            <span 
+              className="shrink-0 font-mono text-[10.5px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 shadow-sm"
+              title={`Tovar ID: #${product.id}`}
+            >
+              Tovar ID: #{product.id}
+            </span>
+          </div>
           <h4 
             onClick={() => onQuickView(product)}
             className="mt-1 font-bold text-sm sm:text-base text-gray-900 dark:text-white line-clamp-2 cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition"
