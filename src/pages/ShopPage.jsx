@@ -57,10 +57,23 @@ export default function ShopPage() {
 
       return true;
     }).sort((a, b) => {
-      if (sortBy === 'price_low') return a.price - b.price;
-      if (sortBy === 'price_high') return b.price - a.price;
-      if (sortBy === 'rating') return b.rating - a.rating;
-      return b.id.localeCompare(a.id); // newest first
+      const priceA = Number(a.price) || 0;
+      const priceB = Number(b.price) || 0;
+      const ratingA = Number(a.rating) || 0;
+      const ratingB = Number(b.rating) || 0;
+
+      if (sortBy === 'price_low') {
+        return priceA - priceB;
+      }
+      if (sortBy === 'price_high') {
+        return priceB - priceA;
+      }
+      if (sortBy === 'rating') {
+        return ratingB - ratingA;
+      }
+      if (a.isNew && !b.isNew) return -1;
+      if (!a.isNew && b.isNew) return 1;
+      return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
     });
   }, [products, selectedCategory, searchQuery, priceRange, inStockOnly, sortBy]);
 

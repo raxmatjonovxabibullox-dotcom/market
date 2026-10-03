@@ -601,6 +601,8 @@ export const AppProvider = ({ children }) => {
         setSelectedCategory,
         priceRange,
         setPriceRange,
+        sortBy,
+        setSortBy,
         admins,
         addAdmin,
         updateAdmin,
