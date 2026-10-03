@@ -14,6 +14,15 @@ export default defineConfig(({ mode }) => {
         name: 'telegram-api-proxy',
         configureServer(server) {
           server.middlewares.use('/api/telegram', (req, res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            if (req.method === 'OPTIONS') {
+              res.statusCode = 200;
+              return res.end();
+            }
+
             if (req.method !== 'POST') {
               res.statusCode = 405;
               res.setHeader('Content-Type', 'application/json');
@@ -25,8 +34,9 @@ export default defineConfig(({ mode }) => {
             req.on('end', async () => {
               try {
                 const data = JSON.parse(raw || '{}');
-                const token = data.botToken || env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
-                const defaultChatId = env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+                const rawToken = (data.botToken && typeof data.botToken === 'string') ? data.botToken.trim() : '';
+                const token = rawToken || env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN || '8823235791:AAEOLjLhNRfFw9xp7quwlfucSXEpL8fCtc8';
+                const defaultChatId = env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_ID || '8170197389';
                 const method = data.method || 'sendMessage';
                 const body = { ...(data.body || {}) };
 
@@ -60,6 +70,15 @@ export default defineConfig(({ mode }) => {
         },
         configurePreviewServer(server) {
           server.middlewares.use('/api/telegram', (req, res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            if (req.method === 'OPTIONS') {
+              res.statusCode = 200;
+              return res.end();
+            }
+
             if (req.method !== 'POST') {
               res.statusCode = 405;
               res.setHeader('Content-Type', 'application/json');
@@ -71,8 +90,9 @@ export default defineConfig(({ mode }) => {
             req.on('end', async () => {
               try {
                 const data = JSON.parse(raw || '{}');
-                const token = data.botToken || env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
-                const defaultChatId = env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_ID;
+                const rawToken = (data.botToken && typeof data.botToken === 'string') ? data.botToken.trim() : '';
+                const token = rawToken || env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN || '8823235791:AAEOLjLhNRfFw9xp7quwlfucSXEpL8fCtc8';
+                const defaultChatId = env.TELEGRAM_CHAT_ID || process.env.TELEGRAM_CHAT_ID || '8170197389';
                 const method = data.method || 'sendMessage';
                 const body = { ...(data.body || {}) };
 

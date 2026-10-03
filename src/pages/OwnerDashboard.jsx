@@ -30,7 +30,10 @@ import {
   ShieldAlert,
   ExternalLink,
   Phone,
-  Key
+  Key,
+  Eye,
+  EyeOff,
+  Loader2
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
@@ -44,6 +47,9 @@ export default function OwnerDashboard() {
     orders,
     telegramConfig,
     saveTelegramConfig,
+    testTelegramConnection,
+    DEFAULT_TELEGRAM_BOT_TOKEN,
+    DEFAULT_TELEGRAM_CHAT_ID,
     user,
     login,
     logout,
@@ -87,8 +93,10 @@ export default function OwnerDashboard() {
   const [prodDesc, setProdDesc] = useState('');
 
   // Telegram test state
-  const [botToken, setBotToken] = useState(telegramConfig.botToken || '');
-  const [chatId, setChatId] = useState(telegramConfig.chatId || '');
+  const [botToken, setBotToken] = useState(telegramConfig?.botToken || DEFAULT_TELEGRAM_BOT_TOKEN || '');
+  const [chatId, setChatId] = useState(telegramConfig?.chatId || DEFAULT_TELEGRAM_CHAT_ID || '8170197389');
+  const [showToken, setShowToken] = useState(false);
+  const [isTestingBot, setIsTestingBot] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
   // If user is not logged in as owner, display clean Owner Portal Login
@@ -297,30 +305,30 @@ export default function OwnerDashboard() {
 
   const handleSaveTelegram = (e) => {
     e.preventDefault();
-    saveTelegramConfig({ botToken, chatId });
-    alert("Telegram bot sozlamalari saqlandi!");
+    const tokenToSave = (botToken || '').trim() || DEFAULT_TELEGRAM_BOT_TOKEN;
+    const chatIdToSave = (chatId || '').trim() || DEFAULT_TELEGRAM_CHAT_ID;
+    saveTelegramConfig({ botToken: tokenToSave, chatId: chatIdToSave });
+    setBotToken(tokenToSave);
+    setChatId(chatIdToSave);
+    setTestResult("✅ Telegram sozlamalari muvaffaqiyatli saqlandi!");
   };
 
   const handleTestTelegramBot = async () => {
+    setIsTestingBot(true);
     setTestResult('Yuborilmoqda...');
     try {
-      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: "👑 <b>VOV SHOP OWNER TEST XABARI</b>\n\nLoyiha Egasi (Owner) tomonidan yuborilgan sinov xabari!",
-          parse_mode: 'HTML'
-        })
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setTestResult("Muvaffaqiyatli! Botga xabar bordi.");
+      const activeToken = (botToken || '').trim() || telegramConfig?.botToken || DEFAULT_TELEGRAM_BOT_TOKEN;
+      const activeChatId = (chatId || '').trim() || telegramConfig?.chatId || DEFAULT_TELEGRAM_CHAT_ID;
+      const res = await testTelegramConnection(activeToken, activeChatId);
+      if (res && res.ok) {
+        setTestResult("✅ Xabar Telegramga muvaffaqiyatli yuborildi!");
       } else {
-        setTestResult(`Xatolik: ${data.description}`);
+        setTestResult(`❌ Xatolik: ${res?.description || "Xabar yuborilmadi"}`);
       }
     } catch (err) {
-      setTestResult("Tarmoq xatosi yoki token yaroqsiz.");
+      setTestResult(`❌ Xatolik: ${err.message}`);
+    } finally {
+      setIsTestingBot(false);
     }
   };
 
@@ -928,26 +936,49 @@ export default function OwnerDashboard() {
                     <label className="block text-xs font-bold text-slate-300">
                       Telegram Bot Token
                     </label>
-                    <span className="text-[10px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                      🔒 DevTools dan yashirilgan (.env)
-                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setBotToken(DEFAULT_TELEGRAM_BOT_TOKEN)}
+                      className="text-[11px] text-amber-400 hover:underline font-semibold"
+                    >
+                      Standart tokenni tiklash
+                    </button>
                   </div>
-                  <input
-                    type="password"
-                    value={botToken}
-                    onChange={(e) => setBotToken(e.target.value)}
-                    placeholder="Server orqali himoyalangan (.env orqali ishlaydi)"
-                    className="w-full p-3 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-mono"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showToken ? "text" : "password"}
+                      value={botToken}
+                      onChange={(e) => setBotToken(e.target.value)}
+                      placeholder="7123456789:AA..."
+                      className="w-full p-3 pr-10 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowToken(!showToken)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+                      title={showToken ? "Yashirish" : "Ko'rsatish"}
+                    >
+                      {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Token .env faylida saqlanadi. DevTools tarmoq so'rovlarida mutlaqo ko'rinmaydi.
+                    Token server orqali himoyalangan. Tarmoq so'rovlarida mutlaqo ko'rinmaydi.
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Admin Chat ID
-                  </label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-slate-300">
+                      Admin Chat ID
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setChatId(DEFAULT_TELEGRAM_CHAT_ID)}
+                      className="text-[11px] text-amber-400 hover:underline font-semibold"
+                    >
+                      Mening Chat ID
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={chatId}
@@ -967,16 +998,27 @@ export default function OwnerDashboard() {
 
                   <button
                     type="button"
+                    disabled={isTestingBot}
                     onClick={handleTestTelegramBot}
-                    className="px-4 py-2.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold text-xs hover:bg-sky-500/30 transition flex items-center gap-1.5"
+                    className="px-4 py-2.5 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-500/40 font-bold text-xs hover:bg-sky-500/30 disabled:opacity-50 transition flex items-center gap-1.5"
                   >
-                    <Sparkles className="w-4 h-4 text-amber-400" />
-                    <span>Telegram Botni Sinash</span>
+                    {isTestingBot ? (
+                      <Loader2 className="w-4 h-4 animate-spin text-sky-400" />
+                    ) : (
+                      <Sparkles className="w-4 h-4 text-amber-400" />
+                    )}
+                    <span>{isTestingBot ? "Yuborilmoqda..." : "Telegram Botni Sinash"}</span>
                   </button>
                 </div>
 
                 {testResult && (
-                  <div className={`p-3 rounded-xl text-xs font-bold border ${testResult.includes('Xatolik') || testResult.includes('yaroqsiz') ? 'bg-rose-500/20 border-rose-500/40 text-rose-300' : 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'}`}>
+                  <div className={`p-3 rounded-xl text-xs font-bold border transition-all ${
+                    testResult.includes('✅')
+                      ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-300'
+                      : testResult.includes('Yuborilmoqda')
+                      ? 'bg-sky-500/20 border-sky-500/40 text-sky-300'
+                      : 'bg-rose-500/20 border-rose-500/40 text-rose-300'
+                  }`}>
                     {testResult}
                   </div>
                 )}

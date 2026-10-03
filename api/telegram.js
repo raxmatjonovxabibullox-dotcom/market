@@ -14,8 +14,9 @@ export default async function handler(req, res) {
 
   try {
     const { method = 'sendMessage', body = {}, botToken } = req.body || {};
-    const token = botToken || process.env.TELEGRAM_BOT_TOKEN;
-    const defaultChatId = process.env.TELEGRAM_CHAT_ID;
+    const rawToken = (botToken && typeof botToken === 'string') ? botToken.trim() : '';
+    const token = rawToken || process.env.TELEGRAM_BOT_TOKEN || '8823235791:AAEOLjLhNRfFw9xp7quwlfucSXEpL8fCtc8';
+    const defaultChatId = process.env.TELEGRAM_CHAT_ID || '8170197389';
 
     if (!body.chat_id && defaultChatId) {
       body.chat_id = defaultChatId;

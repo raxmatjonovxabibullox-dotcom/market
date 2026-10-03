@@ -15,6 +15,8 @@ import {
   TrendingUp,
   Sparkles,
   Eye,
+  EyeOff,
+  Loader2,
   CheckCircle,
   ExternalLink,
   ChevronRight,
@@ -33,6 +35,9 @@ export default function IntegratedAdminPanel() {
     orders,
     telegramConfig,
     saveTelegramConfig,
+    testTelegramConnection,
+    DEFAULT_TELEGRAM_BOT_TOKEN,
+    DEFAULT_TELEGRAM_CHAT_ID,
     isAdminPanelOpen,
     setIsAdminPanelOpen,
     toggleAdminPanel,
@@ -57,8 +62,10 @@ export default function IntegratedAdminPanel() {
   const [prodDesc, setProdDesc] = useState('');
 
   // Telegram states
-  const [botToken, setBotToken] = useState(telegramConfig?.botToken || '');
-  const [chatId, setChatId] = useState(telegramConfig?.chatId || '');
+  const [botToken, setBotToken] = useState(telegramConfig?.botToken || DEFAULT_TELEGRAM_BOT_TOKEN || '');
+  const [chatId, setChatId] = useState(telegramConfig?.chatId || DEFAULT_TELEGRAM_CHAT_ID || '8170197389');
+  const [showToken, setShowToken] = useState(false);
+  const [isTestingBot, setIsTestingBot] = useState(false);
   const [testResult, setTestResult] = useState(null);
 
   // If user is not admin or owner, don't render anything
@@ -113,30 +120,30 @@ export default function IntegratedAdminPanel() {
 
   const handleSaveTelegram = (e) => {
     e.preventDefault();
-    saveTelegramConfig({ botToken, chatId });
-    alert("Telegram bot sozlamalari muvaffaqiyatli saqlandi!");
+    const tokenToSave = (botToken || '').trim() || DEFAULT_TELEGRAM_BOT_TOKEN;
+    const chatIdToSave = (chatId || '').trim() || DEFAULT_TELEGRAM_CHAT_ID;
+    saveTelegramConfig({ botToken: tokenToSave, chatId: chatIdToSave });
+    setBotToken(tokenToSave);
+    setChatId(chatIdToSave);
+    setTestResult("✅ Telegram sozlamalari muvaffaqiyatli saqlandi!");
   };
 
   const handleTestTelegramBot = async () => {
+    setIsTestingBot(true);
     setTestResult('Yuborilmoqda...');
     try {
-      const res = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: "🚀 <b>VOV SHOP Bitta Sahifali Admin Panel Test Xabari</b>\n\nAdmin panel va sayt bitta pageda muvaffaqiyatli ishlamoqda!",
-          parse_mode: 'HTML'
-        })
-      });
-      const data = await res.json();
-      if (data.ok) {
-        setTestResult(t.bot_test_success || "Xabar Telegramga muvaffaqiyatli yuborildi!");
+      const activeToken = (botToken || '').trim() || telegramConfig?.botToken || DEFAULT_TELEGRAM_BOT_TOKEN;
+      const activeChatId = (chatId || '').trim() || telegramConfig?.chatId || DEFAULT_TELEGRAM_CHAT_ID;
+      const res = await testTelegramConnection(activeToken, activeChatId);
+      if (res && res.ok) {
+        setTestResult("✅ Xabar Telegramga muvaffaqiyatli yuborildi!");
       } else {
-        setTestResult(`Xatolik: ${data.description}`);
+        setTestResult(`❌ Xatolik: ${res?.description || "Xabar yuborilmadi"}`);
       }
     } catch (err) {
-      setTestResult("Tarmoq xatosi yoki token yaroqsiz.");
+      setTestResult(`❌ Xatolik: ${err.message}`);
+    } finally {
+      setIsTestingBot(false);
     }
   };
 
@@ -494,21 +501,49 @@ export default function IntegratedAdminPanel() {
                     </h3>
                     <form onSubmit={handleSaveTelegram} className="space-y-3">
                       <div>
-                        <label className="block text-xs font-bold text-slate-300 mb-1">
-                          Bot Token
-                        </label>
-                        <input
-                          type="password"
-                          value={botToken}
-                          onChange={(e) => setBotToken(e.target.value)}
-                          placeholder="7123456789:AA..."
-                          className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-mono"
-                        />
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-xs font-bold text-slate-300">
+                            Bot Token
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setBotToken(DEFAULT_TELEGRAM_BOT_TOKEN)}
+                            className="text-[10px] text-sky-400 hover:underline"
+                          >
+                            Standart tokenni tiklash
+                          </button>
+                        </div>
+                        <div className="relative">
+                          <input
+                            type={showToken ? "text" : "password"}
+                            value={botToken}
+                            onChange={(e) => setBotToken(e.target.value)}
+                            placeholder="7123456789:AA..."
+                            className="w-full p-2.5 pr-10 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-mono"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowToken(!showToken)}
+                            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition"
+                            title={showToken ? "Yashirish" : "Ko'rsatish"}
+                          >
+                            {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                          </button>
+                        </div>
                       </div>
                       <div>
-                        <label className="block text-xs font-bold text-slate-300 mb-1">
-                          Admin Chat ID
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-xs font-bold text-slate-300">
+                            Admin Chat ID
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setChatId(DEFAULT_TELEGRAM_CHAT_ID)}
+                            className="text-[10px] text-sky-400 hover:underline"
+                          >
+                            Mening Chat ID
+                          </button>
+                        </div>
                         <input
                           type="text"
                           value={chatId}
@@ -526,15 +561,28 @@ export default function IntegratedAdminPanel() {
                         </button>
                         <button
                           type="button"
+                          disabled={isTestingBot}
                           onClick={handleTestTelegramBot}
-                          className="px-4 py-2 rounded-xl bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 font-bold text-xs flex items-center gap-1.5 transition"
+                          className="px-4 py-2 rounded-xl bg-sky-500/20 text-sky-300 hover:bg-sky-500/30 disabled:opacity-50 font-bold text-xs flex items-center gap-1.5 transition"
                         >
-                          <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                          <span>Botni Sinash</span>
+                          {isTestingBot ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-300" />
+                          ) : (
+                            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                          )}
+                          <span>{isTestingBot ? "Yuborilmoqda..." : "Botni Sinash"}</span>
                         </button>
                       </div>
                       {testResult && (
-                        <div className="p-2.5 rounded-xl text-xs font-bold bg-slate-900 border border-slate-700 text-emerald-400">
+                        <div
+                          className={`p-3 rounded-xl text-xs font-bold border transition-all ${
+                            testResult.includes('✅')
+                              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300'
+                              : testResult.includes('Yuborilmoqda')
+                              ? 'bg-sky-950/60 border-sky-500/50 text-sky-300'
+                              : 'bg-rose-950/60 border-rose-500/50 text-rose-300'
+                          }`}
+                        >
                           {testResult}
                         </div>
                       )}

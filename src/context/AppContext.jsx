@@ -351,23 +351,24 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('app_orders', JSON.stringify(orders));
   }, [orders]);
 
+  const DEFAULT_TELEGRAM_BOT_TOKEN = '8823235791:AAEOLjLhNRfFw9xp7quwlfucSXEpL8fCtc8';
+  const DEFAULT_TELEGRAM_CHAT_ID = '8170197389';
+
   const [telegramConfig, setTelegramConfig] = useState(() => {
     const saved = localStorage.getItem('app_telegram_config');
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
         return {
-          botToken: parsed.botToken || '',
-          chatId: parsed.chatId && parsed.chatId !== '123456789' && parsed.chatId !== '@Kitobchalar_bot' ? parsed.chatId : '8170197389'
+          botToken: (parsed.botToken && typeof parsed.botToken === 'string' && parsed.botToken.trim()) ? parsed.botToken.trim() : DEFAULT_TELEGRAM_BOT_TOKEN,
+          chatId: parsed.chatId && parsed.chatId !== '123456789' && parsed.chatId !== '@Kitobchalar_bot' ? parsed.chatId : DEFAULT_TELEGRAM_CHAT_ID
         };
       } catch (e) {
         // fallback below
       }
     }
-    return { botToken: '', chatId: '8170197389' };
+    return { botToken: DEFAULT_TELEGRAM_BOT_TOKEN, chatId: DEFAULT_TELEGRAM_CHAT_ID };
   });
-
-
 
   // Telegram delivery log state
   const [telegramLogs, setTelegramLogs] = useState(() => {
@@ -376,8 +377,38 @@ export const AppProvider = ({ children }) => {
   });
 
   const saveTelegramConfig = (config) => {
-    setTelegramConfig(config);
-    localStorage.setItem('app_telegram_config', JSON.stringify(config));
+    const updated = {
+      botToken: (config?.botToken && config.botToken.trim()) || DEFAULT_TELEGRAM_BOT_TOKEN,
+      chatId: (config?.chatId && config.chatId.trim()) || DEFAULT_TELEGRAM_CHAT_ID
+    };
+    setTelegramConfig(updated);
+    localStorage.setItem('app_telegram_config', JSON.stringify(updated));
+  };
+
+  const testTelegramConnection = async (customToken = null, customChatId = null) => {
+    const token = (customToken && typeof customToken === 'string' && customToken.trim()) ? customToken.trim() : (telegramConfig.botToken || DEFAULT_TELEGRAM_BOT_TOKEN);
+    const chatId = (customChatId && typeof customChatId === 'string' && customChatId.trim()) ? customChatId.trim() : (telegramConfig.chatId || DEFAULT_TELEGRAM_CHAT_ID);
+
+    try {
+      const res = await fetch('/api/telegram', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          method: 'sendMessage',
+          botToken: token,
+          body: {
+            chat_id: chatId,
+            text: `🚀 <b>VOV SHOP Telegram Bot Sinov Xabari</b>\n\n✅ Bot bilan aloqa muvaffaqiyatli o'rnatildi!\n🆔 Chat ID: <code>${chatId}</code>\n⏰ Vaqt: ${new Date().toLocaleTimeString('uz-UZ')}`,
+            parse_mode: 'HTML'
+          }
+        })
+      });
+
+      const data = await res.json();
+      return data;
+    } catch (err) {
+      return { ok: false, description: "Tarmoq xatosi: " + err.message };
+    }
   };
 
   const sendTelegramMessage = async (text, inlineKeyboard = null, photoUrl = null) => {
@@ -599,7 +630,10 @@ export const AppProvider = ({ children }) => {
         placeOrder,
         telegramConfig,
         saveTelegramConfig,
+        testTelegramConnection,
         sendTelegramMessage,
+        DEFAULT_TELEGRAM_BOT_TOKEN,
+        DEFAULT_TELEGRAM_CHAT_ID,
         telegramLogs,
         searchQuery,
         setSearchQuery,
