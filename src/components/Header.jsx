@@ -97,12 +97,11 @@ export default function Header() {
     setSearchedOrder(found || null);
   };
 
-  // Expanded Rich Navigation Links (Ko'paytirilgan tugmalar)
+  // Expanded Rich Navigation Links
   const navLinks = [
     { path: '/', label: t.home, icon: null },
     { path: '/shop', label: t.shop, icon: null },
     { path: '/shop?filter=flash', label: 'Aksiyalar', icon: Flame, isAksiya: true },
-    { path: '/canva', label: 'Canva Studio', isSpecial: true },
     { path: '#track', label: 'Buyurtma holati', icon: Package, isAction: 'track' },
     { path: '#warranty', label: 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
     { path: '/about', label: t.about, icon: null },
@@ -144,7 +143,7 @@ export default function Header() {
             <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
           </form>
 
-          {/* 3. EXPANDED DESKTOP NAV LINKS (Ko'paytirilgan tugmalar) */}
+          {/* 3. EXPANDED DESKTOP NAV LINKS */}
           <nav className="hidden lg:flex items-center gap-2 xl:gap-3 font-bold text-xs">
             {navLinks.map((link) => {
               const Icon = link.icon;
@@ -180,26 +179,6 @@ export default function Header() {
                     <Shield className="w-3.5 h-3.5 text-emerald-500" />
                     <span>{link.label}</span>
                   </button>
-                );
-              }
-
-              // Special Canva Studio button
-              if (link.isSpecial) {
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`transition-all duration-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 ${
-                      isActive
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25'
-                        : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20'
-                    }`}
-                  >
-                    <span>💻 Canva Studio</span>
-                    <span className="text-[9px] font-black uppercase px-1 py-0.2 rounded bg-indigo-600 text-white">
-                      PRO
-                    </span>
-                  </Link>
                 );
               }
 
