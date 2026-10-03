@@ -180,14 +180,14 @@ export default function CartCheckoutPage() {
                 Mahsulotlar Ro'yxati
               </h3>
 
-              {cart.map(({ product, quantity }) => (
+              {cart.filter(i => i && i.product).map(({ product, quantity }) => (
                 <div 
-                  key={product.id}
+                  key={product?.id || Math.random()}
                   className="flex items-center gap-4 py-4 border-b border-gray-100 dark:border-gray-700/60 last:border-none"
                 >
                   <img
-                    src={product.image}
-                    alt={product.title}
+                    src={product?.image || 'https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop'}
+                    alt={product?.title || 'Mahsulot'}
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
@@ -198,21 +198,21 @@ export default function CartCheckoutPage() {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
                       <h4 className="font-extrabold text-sm text-gray-900 dark:text-white truncate">
-                        {product.title}
+                        {product?.title || 'Mahsulot'}
                       </h4>
                       <span className="shrink-0 font-mono text-[10px] font-black px-1.5 py-0.5 rounded bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-slate-700">
-                        Tovar ID: #{product.id}
+                        Tovar ID: #{product?.id}
                       </span>
                     </div>
                     <p className="text-xs text-indigo-600 dark:text-indigo-400 font-bold">
-                      ${product.price} / dona
+                      ${product?.price || 0} / dona
                     </p>
                   </div>
 
                   {/* Quantity controls */}
                   <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-xl overflow-hidden bg-gray-50 dark:bg-gray-900">
                     <button
-                      onClick={() => updateQuantity(product.id, -1)}
+                      onClick={() => updateQuantity(product?.id, -1)}
                       className="px-2.5 py-1 text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
                     >
                       -
@@ -221,7 +221,7 @@ export default function CartCheckoutPage() {
                       {quantity}
                     </span>
                     <button
-                      onClick={() => updateQuantity(product.id, 1)}
+                      onClick={() => updateQuantity(product?.id, 1)}
                       className="px-2.5 py-1 text-xs font-bold hover:bg-gray-200 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
                     >
                       +
@@ -230,12 +230,12 @@ export default function CartCheckoutPage() {
 
                   {/* Item total price */}
                   <span className="font-black text-sm text-gray-900 dark:text-white w-20 text-right">
-                    ${product.price * quantity}
+                    ${((product?.price || 0) * quantity).toFixed(2)}
                   </span>
 
                   {/* Delete button */}
                   <button
-                    onClick={() => removeFromCart(product.id)}
+                    onClick={() => removeFromCart(product?.id)}
                     className="p-2 text-gray-400 hover:text-rose-500 transition"
                   >
                     <Trash2 className="w-4 h-4" />

@@ -16,8 +16,8 @@ export default function ProductCard({ product, onQuickView }) {
   } = useApp();
   const [added, setAdded] = useState(false);
 
-  const isLiked = isInWishlist(product.id);
-  const inCartItem = cart.find(item => item.product.id === product.id);
+  const isLiked = isInWishlist(product?.id);
+  const inCartItem = cart.find(item => item?.product?.id === product?.id);
 
   const handleAddToCart = (e) => {
     e.stopPropagation();

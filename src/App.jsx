@@ -4,6 +4,7 @@ import { AppProvider, useApp } from './context/AppContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import IntegratedAdminPanel from './components/IntegratedAdminPanel';
+import ErrorBoundary from './components/ErrorBoundary';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -29,25 +30,27 @@ function MainShopLayout({ children }) {
 
 export default function App() {
   return (
-    <AppProvider>
-      <Router>
-        <Routes>
-          {/* Main Shop Routes with Storefront Header, Integrated In-Page Admin Panel & Footer */}
-          <Route path="/" element={<MainShopLayout><HomePage /></MainShopLayout>} />
-          <Route path="/shop" element={<MainShopLayout><ShopPage /></MainShopLayout>} />
-          <Route path="/wishlist" element={<MainShopLayout><WishlistPage /></MainShopLayout>} />
-          <Route path="/cart" element={<MainShopLayout><CartCheckoutPage /></MainShopLayout>} />
-          <Route path="/about" element={<MainShopLayout><AboutMapPage /></MainShopLayout>} />
-          
-          {/* Dedicated Rocker-style Admin Dashboard */}
-          <Route path="/admin" element={<AdminDashboard />} />
+    <ErrorBoundary>
+      <AppProvider>
+        <Router>
+          <Routes>
+            {/* Main Shop Routes with Storefront Header, Integrated In-Page Admin Panel & Footer */}
+            <Route path="/" element={<MainShopLayout><HomePage /></MainShopLayout>} />
+            <Route path="/shop" element={<MainShopLayout><ShopPage /></MainShopLayout>} />
+            <Route path="/wishlist" element={<MainShopLayout><WishlistPage /></MainShopLayout>} />
+            <Route path="/cart" element={<MainShopLayout><CartCheckoutPage /></MainShopLayout>} />
+            <Route path="/about" element={<MainShopLayout><AboutMapPage /></MainShopLayout>} />
+            
+            {/* Dedicated Rocker-style Admin Dashboard */}
+            <Route path="/admin" element={<AdminDashboard />} />
 
-          {/* Standalone Owner / Superadmin Dashboard */}
-          <Route path="/owner" element={<OwnerDashboard />} />
+            {/* Standalone Owner / Superadmin Dashboard */}
+            <Route path="/owner" element={<OwnerDashboard />} />
 
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
-    </AppProvider>
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Router>
+      </AppProvider>
+    </ErrorBoundary>
   );
 }

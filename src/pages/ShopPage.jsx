@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
-import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldCheck, X, Package, Check } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldCheck, X, Package, Check, Flame } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
@@ -19,6 +19,9 @@ export default function ShopPage() {
     sortBy,
     setSortBy
   } = useApp();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isFlashOnly = searchParams.get('filter') === 'flash';
 
   const [inStockOnly, setInStockOnly] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -86,6 +89,11 @@ export default function ShopPage() {
         if (!matchTitle && !matchDesc && !matchId) return false;
       }
 
+      // Flash sale filter if URL has ?filter=flash
+      if (isFlashOnly && !p.isFlashSale && !(p.oldPrice && p.oldPrice > p.price)) {
+        return false;
+      }
+
       // Price range filter
       if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
 
@@ -112,7 +120,7 @@ export default function ShopPage() {
       if (!a.isNew && b.isNew) return 1;
       return String(b.id).localeCompare(String(a.id), undefined, { numeric: true });
     });
-  }, [products, selectedCategory, searchQuery, priceRange, inStockOnly, sortBy]);
+  }, [products, selectedCategory, searchQuery, priceRange, inStockOnly, sortBy, isFlashOnly]);
 
   const handleResetFilters = () => {
     setSelectedCategory('all');
@@ -120,6 +128,7 @@ export default function ShopPage() {
     setPriceRange([0, 5000]);
     setInStockOnly(false);
     setSortBy('newest');
+    setSearchParams({});
   };
 
   return (
@@ -259,6 +268,35 @@ export default function ShopPage() {
         {/* RIGHT MAIN CATALOG GRID */}
         <main className="md:col-span-3 space-y-6">
           
+          {/* Flash Sale Filter Active Banner */}
+          {isFlashOnly && (
+            <div className="bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-orange-500/15 border border-amber-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-sm">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 animate-pulse">
+                  <Flame className="w-5 h-5 fill-current" />
+                </div>
+                <div>
+                  <h4 className="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2">
+                    Flash Sale - Qaynoq Chegirmalar
+                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-bold uppercase tracking-wider">
+                      Aksiya
+                    </span>
+                  </h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Faqatgina super chegirmali va maxsus narxdagi mahsulotlar ko'rsatilmoqda
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleResetFilters}
+                className="px-3.5 py-1.5 rounded-xl bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 text-xs font-bold transition flex items-center gap-1.5 shadow"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
+                <span>Barcha mahsulotlarni ko'rish</span>
+              </button>
+            </div>
+          )}
+
           {/* Sorting Bar */}
           <div className="bg-white dark:bg-gray-800/80 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-2 text-xs font-bold text-gray-600 dark:text-gray-300">

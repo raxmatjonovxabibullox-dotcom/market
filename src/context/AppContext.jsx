@@ -254,20 +254,28 @@ export const AppProvider = ({ children }) => {
 
   // 6. Cart state & Promo Code
   const [cart, setCart] = useState(() => {
-    const saved = localStorage.getItem('app_cart');
-    const loadedCart = saved ? JSON.parse(saved) : [];
-    return loadedCart.map(item => {
-      if (item.product?.id === 'p8' || !item.product?.image || item.product.image.includes('1544816155-12df9643f363') || item.product.image.includes('1583863788434') || item.product.image.includes('1609592424074')) {
-        return {
-          ...item,
-          product: {
-            ...item.product,
-            image: REAL_POWERBANK_IMAGE
-          }
-        };
-      }
-      return item;
-    });
+    let saved = localStorage.getItem('app_cart');
+    let loadedCart = [];
+    try {
+      loadedCart = saved ? JSON.parse(saved) : [];
+      if (!Array.isArray(loadedCart)) loadedCart = [];
+    } catch (e) {
+      loadedCart = [];
+    }
+    return loadedCart
+      .filter(item => item && item.product && typeof item.product === 'object' && item.product.id)
+      .map(item => {
+        if (item.product?.id === 'p8' || !item.product?.image || item.product.image.includes('1544816155-12df9643f363') || item.product.image.includes('1583863788434') || item.product.image.includes('1609592424074')) {
+          return {
+            ...item,
+            product: {
+              ...item.product,
+              image: REAL_POWERBANK_IMAGE
+            }
+          };
+        }
+        return item;
+      });
   });
 
   useEffect(() => {
@@ -275,11 +283,12 @@ export const AppProvider = ({ children }) => {
   }, [cart]);
 
   const addToCart = (product, quantity = 1) => {
+    if (!product || !product.id) return;
     setCart(prev => {
-      const existing = prev.find(item => item.product.id === product.id);
+      const existing = prev.find(item => item.product?.id === product.id);
       if (existing) {
         return prev.map(item =>
-          item.product.id === product.id
+          item.product?.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
@@ -289,14 +298,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const removeFromCart = (productId) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
+    setCart(prev => prev.filter(item => item.product?.id !== productId));
   };
 
   const updateQuantity = (productId, delta) => {
     setCart(prev =>
       prev
         .map(item => {
-          if (item.product.id === productId) {
+          if (item.product?.id === productId) {
             const newQty = item.quantity + delta;
             return newQty > 0 ? { ...item, quantity: newQty } : null;
           }
@@ -315,7 +324,7 @@ export const AppProvider = ({ children }) => {
   const [appliedPromo, setAppliedPromo] = useState(null);
 
   const applyPromoCode = (codeStr) => {
-    const codeUpper = codeStr.trim().toUpperCase();
+    const codeUpper = (codeStr || '').trim().toUpperCase();
     const found = INITIAL_PROMO_CODES.find(p => p.code === codeUpper);
     if (found) {
       setAppliedPromo(found);
@@ -326,8 +335,8 @@ export const AppProvider = ({ children }) => {
 
   const removePromo = () => setAppliedPromo(null);
 
-  // Cart calculations
-  const subtotal = cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  // Cart calculations with safe optional chaining
+  const subtotal = cart.reduce((sum, item) => sum + (Number(item.product?.price) || 0) * (item.quantity || 1), 0);
 
   let discountAmount = 0;
   if (appliedPromo) {
