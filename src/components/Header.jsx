@@ -154,118 +154,29 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* 2. SEARCH BAR (Clean & Responsive) */}
+          {/* 2. SEARCH BAR (Clean, Prominent & Responsive) */}
           <form
             onSubmit={handleSearchSubmit}
-            className="hidden xl:flex items-center flex-1 max-w-xs relative group"
+            className="hidden md:flex items-center flex-1 max-w-sm lg:max-w-md relative group mx-2"
           >
             <input
               type="text"
-              placeholder={t.search_placeholder || "Mahsulotlarni izlash..."}
+              placeholder={t.search_placeholder || "Mahsulotlar yoki ID (#p2)..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-1.5 rounded-2xl text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition shadow-inner"
+              className="w-full pl-9 pr-8 py-2 rounded-2xl text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition shadow-inner font-medium"
             />
-            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
-          </form>
-
-          {/* 3. EXPANDED DESKTOP NAV LINKS */}
-          <nav className="hidden lg:flex items-center gap-2 xl:gap-3 font-bold text-xs">
-            {navLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = location.pathname === link.path;
-
-              // Action buttons (Track order / Warranty)
-              if (link.isAction === 'track') {
-                return (
-                  <button
-                    key={link.label}
-                    onClick={() => {
-                      setIsTrackingOpen(true);
-                      setTrackingSearched(false);
-                      setSearchedOrder(null);
-                    }}
-                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 active:scale-95"
-                    title="Buyurtma holatini kuzatish"
-                  >
-                    <Package className="w-3.5 h-3.5 text-indigo-500" />
-                    <span>{link.label}</span>
-                  </button>
-                );
-              }
-
-              if (link.isAction === 'warranty') {
-                return (
-                  <button
-                    key={link.label}
-                    onClick={() => setIsWarrantyOpen(true)}
-                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 active:scale-95"
-                    title="Kafolat va servis xizmati"
-                  >
-                    <Shield className="w-3.5 h-3.5 text-emerald-500" />
-                    <span>{link.label}</span>
-                  </button>
-                );
-              }
-
-              // Flash Sale / Aksiyalar with Flame Icon
-              if (link.isAksiya) {
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 active:scale-95"
-                  >
-                    <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
-                    <span>{link.label}</span>
-                  </Link>
-                );
-              }
-
-              // Default links
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`transition-all duration-200 px-2.5 py-1.5 rounded-xl ${
-                    isActive
-                      ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold'
-                      : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-
-            {/* In-Page Admin Panel Button */}
-            {(user?.role === 'admin' || user?.role === 'owner') && (
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
+            {searchQuery && (
               <button
-                onClick={toggleAdminPanel}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-black text-xs shadow-md shadow-indigo-500/20 active:scale-95 transition-all"
-                title="Admin panelni ochish (bitta sahifada)"
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white p-0.5"
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                <span>Admin</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <X className="w-3.5 h-3.5" />
               </button>
             )}
-
-            {/* Owner Panel Button */}
-            {user?.role === 'owner' && (
-              <a
-                href="/owner"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black text-xs transition"
-                title="Loyiha Egasi Paneli"
-              >
-                <Crown className="w-3.5 h-3.5 text-amber-500" />
-                <span>Owner</span>
-                <ExternalLink className="w-3 h-3 opacity-60" />
-              </a>
-            )}
-          </nav>
+          </form>
 
           {/* 4. UTILITIES & ACTIONS */}
           <div className="flex items-center gap-1.5 sm:gap-2">
@@ -396,6 +307,86 @@ export default function Header() {
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
+          </div>
+        </div>
+
+        {/* 2. SUB-ROW: DEDICATED SPACIOUS NAVIGATION BAR (No overlapping, plenty of room) */}
+        <div className="hidden lg:block border-t border-gray-200/80 dark:border-gray-800/80 bg-slate-50/70 dark:bg-slate-900/50 backdrop-blur-md">
+          <div className="container mx-auto px-4 py-2 flex items-center justify-between gap-4">
+
+            {/* Navigation Links with Icons and plenty of room */}
+            <nav className="flex items-center gap-1.5 xl:gap-2.5 font-bold text-xs flex-wrap">
+              {navLinks.map((link) => {
+                const Icon = link.icon;
+                const isActive = location.pathname === link.path;
+
+                if (link.isAction === 'track') {
+                  return (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setIsTrackingOpen(true);
+                        setTrackingSearched(false);
+                        setSearchedOrder(null);
+                        setSearchedProduct(null);
+                      }}
+                      className="transition-all duration-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-700 active:scale-95"
+                      title="Buyurtma yoki Tovar ID tekshirish"
+                    >
+                      <Package className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                }
+
+                if (link.isAction === 'warranty') {
+                  return (
+                    <button
+                      key={link.label}
+                      onClick={() => setIsWarrantyOpen(true)}
+                      className="transition-all duration-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800 shadow-sm border border-transparent hover:border-slate-200 dark:hover:border-slate-700 active:scale-95"
+                      title="Kafolat va servis xizmati"
+                    >
+                      <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                }
+
+                if (link.isAksiya) {
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className="transition-all duration-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 active:scale-95 font-black border border-transparent hover:border-amber-500/20"
+                    >
+                      <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`transition-all duration-200 px-3 py-1.5 rounded-xl border ${
+                      isActive
+                        ? 'bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-black shadow-sm border-slate-200 dark:border-slate-700'
+                        : 'border-transparent text-slate-700 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-white dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Quick Notice on right side of sub-row */}
+            <div className="hidden xl:flex items-center gap-2 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              <Truck className="w-3.5 h-3.5 text-indigo-500" />
+              <span>O'zbekiston bo'ylab tezkor yetkazib berish</span>
+            </div>
           </div>
         </div>
 
