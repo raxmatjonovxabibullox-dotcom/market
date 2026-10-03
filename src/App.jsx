@@ -11,6 +11,7 @@ import ShopPage from './pages/ShopPage';
 import WishlistPage from './pages/WishlistPage';
 import CartCheckoutPage from './pages/CartCheckoutPage';
 import AboutMapPage from './pages/AboutMapPage';
+import LaptopCanvaStudio from './pages/LaptopCanvaStudio';
 import OwnerDashboard from './pages/OwnerDashboard';
 
 function MainShopLayout({ children }) {
@@ -51,6 +52,9 @@ export default function App() {
           <Route path="/wishlist" element={<MainShopLayout><WishlistPage /></MainShopLayout>} />
           <Route path="/cart" element={<MainShopLayout><CartCheckoutPage /></MainShopLayout>} />
           <Route path="/about" element={<MainShopLayout><AboutMapPage /></MainShopLayout>} />
+          
+          {/* Professional Laptop Canva Studio */}
+          <Route path="/canva" element={<MainShopLayout><LaptopCanvaStudio /></MainShopLayout>} />
           
           {/* Admin Panel is integrated on the same page */}
           <Route path="/admin" element={<AdminRouteHandler />} />

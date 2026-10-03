@@ -15,7 +15,14 @@ import {
   Crown,
   LogOut,
   Maximize,
-  Minimize
+  Minimize,
+  Flame,
+  Star,
+  Package,
+  Shield,
+  Truck,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AuthModal from './AuthModal';
@@ -31,6 +38,7 @@ export default function Header() {
     logout,
     wishlist,
     cart,
+    orders,
     searchQuery,
     setSearchQuery,
     isAdminPanelOpen,
@@ -41,6 +49,13 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langDropdown, setLangDropdown] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // New Interactive Modals for the new buttons
+  const [isTrackingOpen, setIsTrackingOpen] = useState(false);
+  const [isWarrantyOpen, setIsWarrantyOpen] = useState(false);
+  const [trackingIdInput, setTrackingIdInput] = useState('');
+  const [searchedOrder, setSearchedOrder] = useState(null);
+  const [trackingSearched, setTrackingSearched] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -73,17 +88,30 @@ export default function Header() {
     }
   };
 
-  // Clean Navigation Links
+  // Track Order Search Logic
+  const handleTrackSearch = (e) => {
+    e.preventDefault();
+    setTrackingSearched(true);
+    const cleanId = trackingIdInput.trim().replace('#', '');
+    const found = orders.find(o => String(o.id).toLowerCase() === cleanId.toLowerCase());
+    setSearchedOrder(found || null);
+  };
+
+  // Expanded Rich Navigation Links (Ko'paytirilgan tugmalar)
   const navLinks = [
-    { path: '/', label: t.home },
-    { path: '/shop', label: t.shop },
-    { path: '/about', label: t.about },
+    { path: '/', label: t.home, icon: null },
+    { path: '/shop', label: t.shop, icon: null },
+    { path: '/shop?filter=flash', label: 'Aksiyalar', icon: Flame, isAksiya: true },
+    { path: '/canva', label: 'Canva Studio', isSpecial: true },
+    { path: '#track', label: 'Buyurtma holati', icon: Package, isAction: 'track' },
+    { path: '#warranty', label: 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
+    { path: '/about', label: t.about, icon: null },
   ];
 
   return (
     <header className="sticky top-0 z-40 w-full transition-colors duration-300">
-      {/* Main Glass Navbar with original color but thicker (border-b-2) */}
-      <div className="glass-nav border-b-2 border-gray-200 dark:border-gray-800 shadow-md backdrop-blur-xl bg-white/80 dark:bg-slate-950/80">
+      {/* Main Glass Navbar with original color border-b-2 */}
+      <div className="glass-nav border-b-2 border-gray-200 dark:border-gray-800 shadow-md backdrop-blur-xl bg-white/85 dark:bg-slate-950/85">
         <div className="container mx-auto px-4 py-2.5 flex items-center justify-between gap-3 sm:gap-6">
 
           {/* 1. BRAND LOGO */}
@@ -101,30 +129,100 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* 2. SEARCH BAR (Clean, Centered, Responsive) */}
+          {/* 2. SEARCH BAR (Clean & Responsive) */}
           <form
             onSubmit={handleSearchSubmit}
-            className="hidden md:flex items-center flex-1 max-w-md relative group"
+            className="hidden xl:flex items-center flex-1 max-w-xs relative group"
           >
             <input
               type="text"
-              placeholder={t.search_placeholder || "Mahsulotlarni qidirish..."}
+              placeholder={t.search_placeholder || "Mahsulotlarni izlash..."}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-2xl text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition shadow-inner group-hover:border-indigo-400/50"
+              className="w-full pl-9 pr-3 py-1.5 rounded-2xl text-xs bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:text-white transition shadow-inner"
             />
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
+            <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-500 transition-colors" />
           </form>
 
-          {/* 3. DESKTOP NAV LINKS + ADMIN BUTTON */}
-          <nav className="hidden lg:flex items-center gap-5 font-bold text-xs">
+          {/* 3. EXPANDED DESKTOP NAV LINKS (Ko'paytirilgan tugmalar) */}
+          <nav className="hidden lg:flex items-center gap-2 xl:gap-3 font-bold text-xs">
             {navLinks.map((link) => {
+              const Icon = link.icon;
               const isActive = location.pathname === link.path;
+
+              // Action buttons (Track order / Warranty)
+              if (link.isAction === 'track') {
+                return (
+                  <button
+                    key={link.label}
+                    onClick={() => {
+                      setIsTrackingOpen(true);
+                      setTrackingSearched(false);
+                      setSearchedOrder(null);
+                    }}
+                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 active:scale-95"
+                    title="Buyurtma holatini kuzatish"
+                  >
+                    <Package className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>{link.label}</span>
+                  </button>
+                );
+              }
+
+              if (link.isAction === 'warranty') {
+                return (
+                  <button
+                    key={link.label}
+                    onClick={() => setIsWarrantyOpen(true)}
+                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60 active:scale-95"
+                    title="Kafolat va servis xizmati"
+                  >
+                    <Shield className="w-3.5 h-3.5 text-emerald-500" />
+                    <span>{link.label}</span>
+                  </button>
+                );
+              }
+
+              // Special Canva Studio button
+              if (link.isSpecial) {
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`transition-all duration-200 px-3 py-1.5 rounded-xl flex items-center gap-1.5 ${
+                      isActive
+                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md shadow-indigo-500/25'
+                        : 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20'
+                    }`}
+                  >
+                    <span>💻 Canva Studio</span>
+                    <span className="text-[9px] font-black uppercase px-1 py-0.2 rounded bg-indigo-600 text-white">
+                      PRO
+                    </span>
+                  </Link>
+                );
+              }
+
+              // Flash Sale / Aksiyalar with Flame Icon
+              if (link.isAksiya) {
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className="transition-all duration-200 px-2.5 py-1.5 rounded-xl flex items-center gap-1 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 active:scale-95"
+                  >
+                    <Flame className="w-3.5 h-3.5 text-rose-500 animate-pulse" />
+                    <span>{link.label}</span>
+                  </Link>
+                );
+              }
+
+              // Default links
               return (
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`transition-all duration-200 px-3 py-1.5 rounded-xl ${
+                  className={`transition-all duration-200 px-2.5 py-1.5 rounded-xl ${
                     isActive
                       ? 'bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-extrabold'
                       : 'text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
@@ -135,15 +233,15 @@ export default function Header() {
               );
             })}
 
-            {/* In-Page Admin Panel Button (Elegant & Clean) */}
+            {/* In-Page Admin Panel Button */}
             {(user?.role === 'admin' || user?.role === 'owner') && (
               <button
                 onClick={toggleAdminPanel}
-                className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-black text-xs shadow-md shadow-indigo-500/20 active:scale-95 transition-all"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:opacity-95 text-white font-black text-xs shadow-md shadow-indigo-500/20 active:scale-95 transition-all"
                 title="Admin panelni ochish (bitta sahifada)"
               >
-                <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                <span>Admin Boshqaruv</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
+                <span>Admin</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
               </button>
             )}
@@ -154,7 +252,7 @@ export default function Header() {
                 href="/owner"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black text-xs transition"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-full bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-black text-xs transition"
                 title="Loyiha Egasi Paneli"
               >
                 <Crown className="w-3.5 h-3.5 text-amber-500" />
@@ -296,7 +394,7 @@ export default function Header() {
           </div>
         </div>
 
-        {/* 5. MOBILE DRAWER MENU */}
+        {/* 5. MOBILE DRAWER MENU WITH ALL BUTTONS */}
         {mobileMenuOpen && (
           <div className="lg:hidden px-4 pb-4 pt-2 border-t border-slate-200 dark:border-slate-800 space-y-3 bg-white dark:bg-slate-900 animate-in slide-in-from-top-2">
             <form onSubmit={handleSearchSubmit} className="relative">
@@ -310,21 +408,60 @@ export default function Header() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
             </form>
 
-            <div className="flex flex-col space-y-1.5">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`px-3 py-2 rounded-xl text-xs font-bold transition ${
-                    location.pathname === link.path
-                      ? 'bg-indigo-600 text-white'
-                      : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ))}
+            <div className="flex flex-col space-y-1.5 text-xs font-bold">
+              {navLinks.map((link) => {
+                if (link.isAction === 'track') {
+                  return (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setIsTrackingOpen(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                    >
+                      <Package className="w-4 h-4 text-indigo-500" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                }
+
+                if (link.isAction === 'warranty') {
+                  return (
+                    <button
+                      key={link.label}
+                      onClick={() => {
+                        setIsWarrantyOpen(true);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 text-left"
+                    >
+                      <Shield className="w-4 h-4 text-emerald-500" />
+                      <span>{link.label}</span>
+                    </button>
+                  );
+                }
+
+                return (
+                  <Link
+                    key={link.label}
+                    to={link.path}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`px-3 py-2 rounded-xl transition flex items-center justify-between ${
+                      location.pathname === link.path
+                        ? 'bg-indigo-600 text-white'
+                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                    }`}
+                  >
+                    <span>{link.label}</span>
+                    {link.isSpecial && (
+                      <span className="text-[9px] uppercase px-1.5 py-0.5 bg-indigo-500 text-white rounded">
+                        PRO
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
 
               {(user?.role === 'admin' || user?.role === 'owner') && (
                 <button
@@ -343,23 +480,146 @@ export default function Header() {
                   </span>
                 </button>
               )}
-
-              {!user && (
-                <button
-                  onClick={() => {
-                    setIsAuthOpen(true);
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full mt-2 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-black flex items-center justify-center gap-2 shadow"
-                >
-                  <User className="w-4 h-4" />
-                  <span>{t.login}</span>
-                </button>
-              )}
             </div>
           </div>
         )}
       </div>
+
+      {/* MODAL 1: BUYURTMA HOLATINI KUZATISH (TRACK ORDER) */}
+      {isTrackingOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-md w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="font-black text-base flex items-center gap-2">
+                <Package className="w-5 h-5 text-indigo-500" />
+                <span>Buyurtma Holatini Kuzatish</span>
+              </h3>
+              <button
+                onClick={() => setIsTrackingOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleTrackSearch} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-600 dark:text-slate-400 mb-1">
+                  Buyurtma Raqamingizni Kiriting (ID):
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    placeholder="Masalan: 123 yoki #123"
+                    value={trackingIdInput}
+                    onChange={(e) => setTrackingIdInput(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2.5 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500 font-mono"
+                  />
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition active:scale-95"
+              >
+                Buyurtmani Tekshirish
+              </button>
+            </form>
+
+            {/* Tracking Result Display */}
+            {trackingSearched && (
+              <div className="pt-2">
+                {searchedOrder ? (
+                  <div className="p-4 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-indigo-600 dark:text-indigo-400">Buyurtma #{searchedOrder.id}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-black text-[10px] uppercase">
+                        {searchedOrder.status || 'Yetkazilmoqda 🚚'}
+                      </span>
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300">
+                      Mijoz: <b>{searchedOrder.customer?.fullName}</b>
+                    </p>
+                    <p className="text-slate-600 dark:text-slate-300">
+                      Manzil: <b>{searchedOrder.customer?.address}</b>
+                    </p>
+                    <p className="text-slate-600 dark:text-slate-300">
+                      Jami summa: <b className="text-emerald-500">${searchedOrder.totalAmount?.toFixed(2)}</b>
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-600 dark:text-rose-400 text-xs font-semibold text-center">
+                    Bunday raqamli buyurtma topilmadi. Raqamni tekshirib qayta kiriting.
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 2: KAFOLAT VA SERVIS SHARTLARI (WARRANTY) */}
+      {isWarrantyOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+              <h3 className="font-black text-base flex items-center gap-2">
+                <Shield className="w-5 h-5 text-emerald-500" />
+                <span>Rasmiy Kafolat & Xizmat Ko'rsatish</span>
+              </h3>
+              <button
+                onClick={() => setIsWarrantyOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 flex items-start gap-3">
+                <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-black text-slate-900 dark:text-white">12 Oylik To'liq Kafolat</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    VOV Shop do'konidagi barcha gadjetlar, noutbuklar va smartfonlar 1 yillik rasmiy servis kafolatiga ega.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/60 flex items-start gap-3">
+                <Truck className="w-5 h-5 text-indigo-500 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-black text-slate-900 dark:text-white">14 Kunlik Qaytarish Huquqi</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    Mahsulotda nuqson aniqlansa, 14 kun ichida yangisiga almashtirish yoki pulni to'liq qaytarib olish kafolatlanadi.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-3">
+                <ShieldCheck className="w-5 h-5 text-purple-500 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="font-black text-slate-900 dark:text-white">100% Original Texnika</h4>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    Faqat original Apple, Samsung, ASUS, Lenovo va Dell distribyutorlik mahsulotlari yetkazib beriladi.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-2 text-right">
+              <button
+                onClick={() => setIsWarrantyOpen(false)}
+                className="px-5 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold text-xs"
+              >
+                Tushunarli
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Auth Modal */}
       {isAuthOpen && <AuthModal onClose={() => setIsAuthOpen(false)} />}
