@@ -155,58 +155,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5 TA ASOSIY SAHIFA SHOWCASE BANNER (Mentor uchun ko'rgazma) */}
-      <section className="container mx-auto px-4">
-        <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <span className="text-xs font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
-                Loyiha Tarkibi
-              </span>
-              <h2 className="text-xl font-black text-gray-900 dark:text-white">
-                5 ta Asosiy Sahifa & Admin Dashboard
-              </h2>
-            </div>
-            <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-black border border-emerald-500/30">
-              ✓ 5/5 Sahifa Tayyor
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
-            {[
-              { num: '1', title: 'Asosiy Sahifa', path: '/', desc: 'Landing & Aksiya', icon: Sparkles, color: 'text-indigo-500' },
-              { num: '2', title: 'Magazin / Katalog', path: '/shop', desc: 'Filtr & Qidiruv', icon: Smartphone, color: 'text-purple-500' },
-              { num: '3', title: 'Sevimlilar', path: '/wishlist', desc: 'Izbranniy ro\'yxat', icon: Heart, color: 'text-rose-500' },
-              { num: '4', title: 'Savat & Checkout', path: '/cart', desc: 'Promokod & To\'lov', icon: ShoppingBag, color: 'text-pink-500' },
-              { num: '5', title: 'Biz Haqimizda & Xarita', path: '/about', desc: 'Leaflet Xaritasi', icon: MapPin, color: 'text-emerald-500' },
-              { num: '👑', title: 'Rocker Admin Panel', path: '/admin', desc: 'Dashboard & CRUD', icon: ShieldCheck, color: 'text-cyan-500' },
-            ].map(item => {
-              const ItemIcon = item.icon;
-              return (
-                <Link
-                  key={item.num}
-                  to={item.path}
-                  className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 hover:border-indigo-500 hover:shadow-md transition group text-left"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="w-6 h-6 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-black flex items-center justify-center">
-                      {item.num}
-                    </span>
-                    <ItemIcon className={`w-4 h-4 ${item.color} group-hover:scale-110 transition`} />
-                  </div>
-                  <h4 className="text-xs font-extrabold text-slate-900 dark:text-white truncate">
-                    {item.title}
-                  </h4>
-                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    {item.desc}
-                  </p>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* 2. CATEGORIES SECTION */}
       <section className="container mx-auto px-4">
         <div className="flex items-center justify-between mb-8">
