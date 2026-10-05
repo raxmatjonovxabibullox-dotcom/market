@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Heart, ShoppingBag, Star, Eye, Check, Edit3, Trash2 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 
-export default function ProductCard({ product, onQuickView }) {
+export default function ProductCard({ product, onQuickView, onEdit, onDelete }) {
   const {
     t,
     addToCart,
@@ -29,6 +29,26 @@ export default function ProductCard({ product, onQuickView }) {
   const handleWishlistToggle = (e) => {
     e.stopPropagation();
     toggleWishlist(product.id);
+  };
+
+  const handleEditClick = (e) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit(product);
+    } else {
+      setAdminEditingProduct(product);
+    }
+  };
+
+  const handleDeleteClick = (e) => {
+    e.stopPropagation();
+    if (onDelete) {
+      onDelete(product);
+    } else {
+      if (window.confirm(`"${product.title}" mahsulotini o'chirishni xohlaysizmi?`)) {
+        deleteProduct(product.id);
+      }
+    }
   };
 
   const discountPercent = product.oldPrice
@@ -65,36 +85,27 @@ export default function ProductCard({ product, onQuickView }) {
           )}
         </div>
 
-        {/* Action Overlay Buttons */}
+        {/* Action Overlay Buttons - Tahrirlash, O'chirish, Sevimlilar, Tezkor ko'rish */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
-          {/* Admin Direct Actions on the same page */}
-          {(user?.role === 'admin' || user?.role === 'owner') && (
-            <>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setAdminEditingProduct(product);
-                }}
-                className="p-2 rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700 backdrop-blur-md transition-all shadow-lg active:scale-90"
-                title="Mahsulotni shu yerda tahrirlash"
-              >
-                <Edit3 className="w-4 h-4" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm(`"${product.title}" mahsulotini o'chirishni xohlaysizmi?`)) {
-                    deleteProduct(product.id);
-                  }
-                }}
-                className="p-2 rounded-2xl bg-rose-600 text-white hover:bg-rose-700 backdrop-blur-md transition-all shadow-lg active:scale-90"
-                title="Mahsulotni shu yerda o'chirish"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </>
-          )}
+          {/* CRUD: Tahrirlash (Edit) */}
+          <button
+            onClick={handleEditClick}
+            className="p-2 rounded-2xl bg-indigo-600/90 hover:bg-indigo-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
+            title="Mahsulotni tahrirlash (Edit)"
+          >
+            <Edit3 className="w-4 h-4" />
+          </button>
 
+          {/* CRUD: O'chirish (Delete) */}
+          <button
+            onClick={handleDeleteClick}
+            className="p-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
+            title="Mahsulotni o'chirish (Delete)"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+
+          {/* Sevimlilar (Wishlist) */}
           <button
             onClick={handleWishlistToggle}
             className={`p-2 rounded-2xl backdrop-blur-md transition-all shadow-md active:scale-90 ${isLiked
@@ -106,6 +117,7 @@ export default function ProductCard({ product, onQuickView }) {
             <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
           </button>
 
+          {/* Tezkor ko'rish (Quick view) */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -183,6 +195,31 @@ export default function ProductCard({ product, onQuickView }) {
               </>
             )}
           </button>
+        </div>
+
+        {/* Quick CRUD Bar */}
+        <div className="mt-2.5 pt-2 border-t border-dashed border-gray-200 dark:border-gray-700/60 flex items-center justify-between text-[11px] text-slate-500">
+          <span className="text-[10px] font-semibold text-slate-400">Boshqaruv (CRUD):</span>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={handleEditClick}
+              className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-bold transition flex items-center gap-1 text-[10px]"
+              title="Tahrirlash"
+            >
+              <Edit3 className="w-3 h-3" />
+              <span>Tahrirlash</span>
+            </button>
+            <button
+              type="button"
+              onClick={handleDeleteClick}
+              className="px-2 py-0.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 hover:bg-rose-100 font-bold transition flex items-center gap-1 text-[10px]"
+              title="O'chirish"
+            >
+              <Trash2 className="w-3 h-3" />
+              <span>O'chirish</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

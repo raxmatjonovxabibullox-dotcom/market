@@ -25,7 +25,7 @@ import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
 
 export default function HomePage() {
-  const { t, products, setSelectedCategory, searchQuery, setSearchQuery } = useApp();
+  const { t, products, setSelectedCategory, searchQuery, setSearchQuery, user } = useApp();
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const navigate = useNavigate();
 
@@ -71,9 +71,15 @@ export default function HomePage() {
         <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-6">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-300">
-            <Sparkles className="w-4 h-4 text-yellow-400 animate-spin-slow" />
-            <span>{t.hero_badge}</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-300">
+              <Sparkles className="w-4 h-4 text-yellow-400 animate-spin-slow" />
+              <span>{t.hero_badge}</span>
+            </div>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-xs font-black shadow-lg shadow-cyan-500/10">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+              <span>Dasturchi: <b>Xabibullo Raxmatjonov</b></span>
+            </div>
           </div>
 
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
@@ -136,13 +142,15 @@ export default function HomePage() {
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
 
-            <Link
-              to="/admin"
-              className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm md:text-base shadow-lg shadow-cyan-500/25 hover:scale-105 transition flex items-center gap-2"
-            >
-              <ShieldCheck className="w-5 h-5" />
-              <span>👑 Rocker Admin Panel</span>
-            </Link>
+            {user && (user.role === 'admin' || user.role === 'owner') && (
+              <Link
+                to="/admin"
+                className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-sm md:text-base shadow-lg shadow-cyan-500/25 hover:scale-105 transition flex items-center gap-2"
+              >
+                <ShieldCheck className="w-5 h-5" />
+                <span>👑 Rocker Admin Panel</span>
+              </Link>
+            )}
           </div>
         </div>
       </section>

@@ -174,10 +174,12 @@ export default function Footer() {
 
         {/* Bottom Bar & Payments */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
-          <div className="flex items-center gap-1">
-            <span>© 2026 VOV SHOP. Barcha huquqlar himoyalangan. Created with</span>
-            <Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
-            <span>for Master WOW Project!</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <span>© 2026 VOV SHOP.</span>
+            <span className="text-gray-400 font-bold">Loyiha muallifi:</span>
+            <span className="px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 font-black border border-cyan-500/20">
+              Xabibullo Raxmatjonov
+            </span>
           </div>
 
           <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
   ShoppingBag,
@@ -23,7 +23,8 @@ import {
   Truck,
   CheckCircle2,
   AlertCircle,
-  Eye
+  Eye,
+  ChevronRight
 } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import AuthModal from './AuthModal';
@@ -144,7 +145,6 @@ export default function Header() {
     { path: '/wishlist', label: '3. ' + t.wishlist, icon: Heart, count: wishlistCount },
     { path: '/cart', label: '4. ' + t.cart, icon: ShoppingBag, count: totalCartCount },
     { path: '/about', label: '5. ' + t.about, icon: null },
-    { path: '/admin', label: '👑 Admin Panel', icon: ShieldCheck, isAdmin: true },
     { path: '/shop?filter=flash', label: 'Aksiyalar', icon: Flame, isAksiya: true },
     { path: '#track', label: 'Buyurtma holati', icon: Package, isAction: 'track' },
     { path: '#warranty', label: 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
@@ -157,19 +157,25 @@ export default function Header() {
         <div className="container mx-auto px-4 py-2.5 flex items-center justify-between gap-3 sm:gap-6">
 
           {/* 1. BRAND LOGO */}
-          <Link to="/" className="flex items-center gap-2.5 group shrink-0">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
-              V
+          <div className="flex items-center gap-3 shrink-0">
+            <Link to="/" className="flex items-center gap-2.5 group shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-pink-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
+                V
+              </div>
+              <div className="flex flex-col">
+                <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
+                  VOV SHOP
+                </span>
+                <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500 dark:text-gray-400">
+                  Premium Store
+                </span>
+              </div>
+            </Link>
+            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-indigo-50 dark:bg-slate-800/80 border border-indigo-100 dark:border-slate-700 text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>Dasturchi: <b>Xabibullo Raxmatjonov</b></span>
             </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 bg-clip-text text-transparent">
-                VOV SHOP
-              </span>
-              <span className="text-[10px] uppercase font-bold tracking-widest text-gray-500 dark:text-gray-400">
-                Premium Store
-              </span>
-            </div>
-          </Link>
+          </div>
 
           {/* 2. SEARCH BAR (Clean, Prominent & Responsive with Live Instant Results Dropdown) */}
           <div className="hidden md:block flex-1 max-w-sm lg:max-w-md relative mx-2">
@@ -354,15 +360,17 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Rocker Admin Panel Direct Link */}
-            <Link
-              to="/admin"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-black shadow-md shadow-cyan-500/25 active:scale-95 transition"
-              title="Rocker Admin Panel"
-            >
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Admin Panel</span>
-            </Link>
+            {/* Rocker Admin Panel Direct Link - Faqat admin/owner tizimga kirganda ko'rinadi */}
+            {user && (user.role === 'admin' || user.role === 'owner') && (
+              <Link
+                to="/admin"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-black shadow-md shadow-cyan-500/25 active:scale-95 transition animate-in fade-in"
+                title="Rocker Admin Panel"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Admin Panel</span>
+              </Link>
+            )}
 
             {/* User Profile / Admin Badge / Login */}
             {user ? (
@@ -378,7 +386,10 @@ export default function Header() {
                   <span className="max-w-[85px] truncate font-extrabold">{user.name}</span>
                 </div>
                 <button
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    navigate('/');
+                  }}
                   className="p-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-600 transition"
                   title="Tizimdan chiqish"
                 >
@@ -518,18 +529,20 @@ export default function Header() {
             </form>
 
             <div className="flex flex-col space-y-1.5 text-xs font-bold">
-              {/* Direct Rocker Admin Link for Mobile */}
-              <Link
-                to="/admin"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20"
-              >
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>👑 Rocker Admin Panel (Dashboard)</span>
-                </div>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
+              {/* Direct Rocker Admin Link for Mobile - faqat admin yoki owner tizimga kirganda */}
+              {(user?.role === 'admin' || user?.role === 'owner') && (
+                <Link
+                  to="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20"
+                >
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>👑 Rocker Admin Panel (Dashboard)</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              )}
               {navLinks.map((link) => {
                 if (link.isAction === 'track') {
                   return (
@@ -584,23 +597,6 @@ export default function Header() {
                 );
               })}
 
-              {(user?.role === 'admin' || user?.role === 'owner') && (
-                <button
-                  onClick={() => {
-                    toggleAdminPanel();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow"
-                >
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-300" />
-                    <span>Admin Boshqaruv Markazi</span>
-                  </div>
-                  <span className="text-[10px] uppercase font-black px-2 py-0.5 bg-white/20 rounded">
-                    1-Page
-                  </span>
-                </button>
-              )}
             </div>
           </div>
         )}

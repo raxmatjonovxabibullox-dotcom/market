@@ -46,6 +46,13 @@ export class ErrorBoundary extends React.Component {
               <p className="text-xs text-slate-400">
                 Sahifani yuklashda xatolik yuz berdi. Iltimos, qayta urinib ko'ring yoki keshni tozalab bosh sahifaga o'ting.
               </p>
+              {this.state.error && (
+                <pre id="error-stack-trace" className="text-[11px] text-rose-300 text-left bg-black/50 p-3 rounded-lg overflow-auto max-h-48 whitespace-pre-wrap">
+                  {this.state.error.toString()}
+                  {'\n'}
+                  {this.state.error.stack}
+                </pre>
+              )}
             </div>
             <div className="flex flex-col gap-3">
               <button

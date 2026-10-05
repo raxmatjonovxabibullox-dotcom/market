@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Search,
   ShoppingCart,
@@ -18,6 +18,9 @@ import {
   ChevronRight,
   ArrowLeft,
   ShieldCheck,
+  Lock,
+  Crown,
+  LogIn,
   Plus,
   Edit3,
   Trash2,
@@ -125,6 +128,8 @@ export default function AdminDashboard() {
     toggleTheme
   } = useApp();
 
+  const navigate = useNavigate();
+
   // Navigation & UI Layout State
   const [activeTab, setActiveTab] = useState('alternate'); // 'alternate' | 'ecommerce' | 'tables' | 'telegram' | 'system'
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -132,6 +137,12 @@ export default function AdminDashboard() {
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('rocker_sound') !== 'false');
   const [accentColor, setAccentColor] = useState(() => localStorage.getItem('rocker_accent') || 'cyan'); // cyan, violet, emerald, amber, rose
   const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  // Admin Auth Gate State
+  const [adminUsernameInput, setAdminUsernameInput] = useState('');
+  const [adminPasswordInput, setAdminPasswordInput] = useState('');
+  const [adminAuthError, setAdminAuthError] = useState('');
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
 
   // Time & Realtime Ticker State
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -287,113 +298,7 @@ export default function AdminDashboard() {
     setActivityLogs(prev => [newEntry, ...prev.slice(0, 15)]);
   };
 
-  // Check login authorization
-  if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
-    const handleAdminLogin = (e) => {
-      e.preventDefault();
-      const res = login(adminUsername, adminPassword);
-      if (res.user?.role === 'admin' || res.user?.role === 'owner') {
-        setLoginError('');
-        playSound('success', true);
-      } else {
-        setLoginError('Parol noto\'g\'ri! Demo: admin / admin123');
-        playSound('warn', true);
-      }
-    };
 
-    const handleQuickDemoLogin = () => {
-      login('admin', 'admin123');
-      playSound('success', true);
-    };
-
-    return (
-      <div className="min-h-screen bg-[#0b0f19] text-white flex flex-col justify-center items-center p-4 relative overflow-hidden font-sans">
-        {/* Ambient Glows */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div className="w-full max-w-md bg-[#131929] p-8 rounded-3xl border border-[#1e2740] shadow-2xl space-y-6 relative z-10 backdrop-blur-xl">
-          <div className="text-center space-y-2">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white flex items-center justify-center mx-auto shadow-lg shadow-cyan-500/30 animate-pulse">
-              <svg className="w-9 h-9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                <circle cx="12" cy="12" r="10" strokeOpacity="0.3" />
-                <path d="M12 2a10 10 0 0 1 10 10" strokeLinecap="round" />
-                <circle cx="12" cy="12" r="4" fill="currentColor" />
-              </svg>
-            </div>
-            <h1 className="text-2xl font-black tracking-tight text-white flex items-center justify-center gap-2">
-              <span>Rocker Admin Portal</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-400 font-bold border border-cyan-500/30">PRO</span>
-            </h1>
-            <p className="text-xs text-slate-400 font-medium">
-              Boshqaruv paneliga kirish uchun ma'lumotlarni kiriting
-            </p>
-          </div>
-
-          {loginError && (
-            <div className="p-3 bg-rose-500/10 border border-rose-500/30 rounded-2xl text-xs font-semibold text-rose-400 text-center animate-shake">
-              {loginError}
-            </div>
-          )}
-
-          <form onSubmit={handleAdminLogin} className="space-y-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Admin Login
-              </label>
-              <input
-                type="text"
-                required
-                value={adminUsername}
-                onChange={(e) => setAdminUsername(e.target.value)}
-                placeholder="admin"
-                className="w-full px-4 py-3 rounded-2xl bg-[#0b0f19] border border-[#1e2740] text-white text-xs font-semibold focus:ring-2 focus:ring-cyan-500 outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">
-                Parol
-              </label>
-              <input
-                type="password"
-                required
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="admin123"
-                className="w-full px-4 py-3 rounded-2xl bg-[#0b0f19] border border-[#1e2740] text-white text-xs font-semibold focus:ring-2 focus:ring-cyan-500 outline-none"
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/20 hover:opacity-95 transition active:scale-98"
-            >
-              Rocker Admin Panelga Kirish 🚀
-            </button>
-          </form>
-
-          <button
-            type="button"
-            onClick={handleQuickDemoLogin}
-            className="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 text-xs font-bold transition border border-slate-700 active:scale-98"
-          >
-            ⚡ 1-Bosishda Tezkor Kirish (Demo Admin)
-          </button>
-
-          <div className="pt-2 text-center">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-cyan-400 transition"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Do'kon Bosh Sahifasiga Qaytish</span>
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   // --- Real Analytics Calculations ---
   const totalOrdersCount = 8052 + orders.length;
@@ -690,6 +595,171 @@ export default function AdminDashboard() {
     }
   }, [products, orders]);
 
+  // Agar tizimga admin yoki owner sifatida kirmagan bo'lsa, xavfsiz Kirish oynasini ko'rsatish
+  if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+    return (
+      <div className="min-h-screen bg-[#0b101d] text-[#e2e8f0] flex items-center justify-center p-4 relative overflow-hidden font-sans">
+        {/* Ambient background glow */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-500/20 via-indigo-500/20 to-pink-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="relative z-10 max-w-md w-full bg-[#111927]/90 backdrop-blur-2xl rounded-3xl border border-cyan-500/30 shadow-2xl p-7 space-y-6">
+          
+          {/* Header */}
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-xl shadow-cyan-500/30 mb-2">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-black uppercase tracking-wider">
+              <Lock className="w-3.5 h-3.5" />
+              <span>Xavfsiz Admin Gateway</span>
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight">
+              Rocker Admin Panel
+            </h1>
+            <p className="text-xs text-slate-400">
+              Loyiha Muallifi: <b className="text-cyan-300">Xabibullo Raxmatjonov</b>
+            </p>
+            <div className="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-semibold leading-relaxed">
+              ⚠️ Ushbu sahifaga kirish faqat tizimga Admin yoki Loyiha Egasi sifatida kirgandan keyin mumkin!
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {adminAuthError && (
+            <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-300 text-xs font-bold text-center">
+              {adminAuthError}
+            </div>
+          )}
+
+          {/* Tezkor 1-bosishda kirish (Demo / Baholash uchun) */}
+          <div className="space-y-2 pt-1">
+            <span className="block text-[11px] font-black uppercase tracking-wider text-slate-400">
+              Tezkor Kirish (1-bosish):
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const res = login('owner', 'owner123');
+                if (!res.success) setAdminAuthError("Kirishda xatolik yuz berdi");
+              }}
+              className="w-full p-3 rounded-2xl bg-gradient-to-r from-amber-500/20 to-yellow-500/10 hover:from-amber-500/30 hover:to-yellow-500/20 border border-amber-500/40 text-amber-200 text-xs font-black flex items-center justify-between transition group shadow-md"
+            >
+              <div className="flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-400" />
+                <div className="text-left">
+                  <div className="font-bold">Loyiha Egasi (Xabibullo Raxmatjonov)</div>
+                  <div className="text-[10px] text-amber-400/80 font-normal">Login: owner / Parol: owner123</div>
+                </div>
+              </div>
+              <span className="px-2.5 py-1 rounded-xl bg-amber-500/30 group-hover:bg-amber-500 text-white text-[10px] font-black transition">
+                Kirish ➔
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                const res = login('admin', 'admin123');
+                if (!res.success) setAdminAuthError("Kirishda xatolik yuz berdi");
+              }}
+              className="w-full p-3 rounded-2xl bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-cyan-200 text-xs font-black flex items-center justify-between transition group"
+            >
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                <div className="text-left">
+                  <div className="font-bold">Bosh Administrator</div>
+                  <div className="text-[10px] text-cyan-400/80 font-normal">Login: admin / Parol: admin123</div>
+                </div>
+              </div>
+              <span className="px-2.5 py-1 rounded-xl bg-cyan-500/30 group-hover:bg-cyan-500 text-white text-[10px] font-black transition">
+                Kirish ➔
+              </span>
+            </button>
+          </div>
+
+          <div className="relative flex items-center justify-center my-3">
+            <div className="border-t border-slate-700/60 w-full" />
+            <span className="bg-[#111927] px-3 text-[11px] font-bold text-slate-500 uppercase tracking-widest absolute">
+              yoki qo'lda
+            </span>
+          </div>
+
+          {/* Form */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!adminUsernameInput || !adminPasswordInput) {
+                setAdminAuthError("Iltimos, login va parolni kiriting");
+                return;
+              }
+              const res = login(adminUsernameInput, adminPasswordInput);
+              if (!res.success) {
+                setAdminAuthError(res.message || "Login yoki parol noto'g'ri!");
+              }
+            }}
+            className="space-y-3"
+          >
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Login
+              </label>
+              <input
+                type="text"
+                placeholder="masalan: owner yoki admin"
+                value={adminUsernameInput}
+                onChange={(e) => setAdminUsernameInput(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-xl bg-[#0b101d] border border-slate-700 focus:border-cyan-500 text-xs text-white outline-none transition"
+              />
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                Parol
+              </label>
+              <div className="relative">
+                <input
+                  type={showAdminPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={adminPasswordInput}
+                  onChange={(e) => setAdminPasswordInput(e.target.value)}
+                  className="w-full pl-3.5 pr-10 py-2.5 rounded-xl bg-[#0b101d] border border-slate-700 focus:border-cyan-500 text-xs text-white outline-none transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAdminPassword(!showAdminPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {showAdminPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs shadow-lg shadow-cyan-500/25 active:scale-95 transition flex items-center justify-center gap-2 mt-2"
+            >
+              <LogIn className="w-4 h-4" />
+              <span>Admin Panelga Kirish</span>
+            </button>
+          </form>
+
+          {/* Do'konga qaytish */}
+          <div className="pt-2 text-center">
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className="text-xs text-slate-400 hover:text-white transition flex items-center justify-center gap-1.5 mx-auto font-bold"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Bosh sahifaga (Do'konga) qaytish</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#0e1422] text-[#e2e8f0] flex font-sans selection:bg-cyan-500 selection:text-black antialiased relative">
       
@@ -918,8 +988,10 @@ export default function AdminDashboard() {
             onClick={() => {
               playSound('warn', soundEnabled);
               logout();
+              navigate('/');
             }}
-            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition"
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition active:scale-95"
+            title="Tizimdan chiqish va do'konga qaytish"
           >
             <LogOut className="w-4 h-4 shrink-0" />
             {!isSidebarCollapsed && <span>Chiqish</span>}
@@ -1013,14 +1085,12 @@ export default function AdminDashboard() {
 
             {/* User Profile Avatar & Name */}
             <div className="flex items-center gap-3 pl-2 border-l border-[#1a2236]">
-              <img
-                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=120&auto=format&fit=crop"
-                alt="Profile Avatar"
-                className="w-9 h-9 rounded-full object-cover ring-2 ring-cyan-500/40"
-              />
+              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-cyan-500 via-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-xs ring-2 ring-cyan-500/40 shadow-lg">
+                XR
+              </div>
               <div className="hidden sm:block text-left">
-                <span className="block text-xs font-bold text-white leading-tight">Pauline Seitz</span>
-                <span className="block text-[10px] text-cyan-400 font-semibold">Bosh Administrator</span>
+                <span className="block text-xs font-bold text-white leading-tight">Xabibullo Raxmatjonov</span>
+                <span className="block text-[10px] text-cyan-400 font-semibold">Loyiha Muallifi & Bosh Admin</span>
               </div>
             </div>
 
@@ -1036,7 +1106,7 @@ export default function AdminDashboard() {
             <div className="space-y-1 z-10">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm">
-                  ⚡ Tezkor Boshqaruv
+                  ⚡ Boshqaruv Markazi
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
@@ -1044,7 +1114,7 @@ export default function AdminDashboard() {
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                Xush kelibsiz, Pauline! Bugungi magazin savdo oqimi
+                Xush kelibsiz, Xabibullo Raxmatjonov! Do'kon boshqaruv paneli
               </h2>
             </div>
 
@@ -1085,9 +1155,42 @@ export default function AdminDashboard() {
                 <Download className="w-4 h-4" />
                 <span>CSV Eksport</span>
               </button>
-            </div>
           </div>
-        </section>
+
+          {/* Quick Dashboard Navigation Tabs (Barcha tekshiruv mezonlarini ochiq ko'rsatish) */}
+          <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-[#1e2a47] mt-4">
+            {[
+              { id: 'ecommerce', label: '📦 Mahsulotlar (CRUD: Qo\'shish, Tahrirlash, O\'chirish)', count: products.length, color: 'cyan' },
+              { id: 'tables', label: '🛍️ Buyurtmalar Boshqaruvi (Orders)', count: orders.length, color: 'emerald' },
+              { id: 'alternate', label: '📊 Savdo & Analitika (Dashboard)', count: null, color: 'indigo' },
+              { id: 'telegram', label: '🤖 Telegram Bot Integratsiyasi', count: 'Online', color: 'sky' },
+              { id: 'system', label: '⚙️ Tizim & Server Monitor', count: null, color: 'purple' },
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  playSound('click', soundEnabled);
+                }}
+                className={`px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 shadow-sm ${
+                  activeTab === tab.id
+                    ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/25 scale-105'
+                    : 'bg-[#101728] hover:bg-[#1a253e] text-slate-300 border border-[#1e2a47]'
+                }`}
+              >
+                <span>{tab.label}</span>
+                {tab.count !== null && (
+                  <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-black ${
+                    activeTab === tab.id ? 'bg-white/20 text-white' : 'bg-slate-800 text-cyan-400'
+                  }`}>
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
 
         {/* 4. ROCKER CONTENT CONTAINER */}
         <main className="flex-1 p-6 space-y-6">
@@ -1528,7 +1631,7 @@ export default function AdminDashboard() {
                       <div>
                         <span className="text-xs font-semibold text-slate-400">Total Visits</span>
                         <h4 className="text-2xl font-black text-white mt-0.5 group-hover:text-cyan-400 transition">
-                          12.4M
+                          12,450
                         </h4>
                       </div>
                       <div className="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center group-hover:scale-110 transition">

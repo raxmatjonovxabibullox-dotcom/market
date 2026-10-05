@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldCheck, X, Package, Check, Flame } from 'lucide-react';
+import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldCheck, X, Package, Check, Flame, Edit3, Trash2, Table, Eye } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
@@ -10,6 +10,8 @@ export default function ShopPage() {
     t, 
     products, 
     addProduct,
+    updateProduct,
+    deleteProduct,
     searchQuery, 
     setSearchQuery, 
     selectedCategory, 
@@ -17,7 +19,8 @@ export default function ShopPage() {
     priceRange,
     setPriceRange,
     sortBy,
-    setSortBy
+    setSortBy,
+    user
   } = useApp();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,6 +29,7 @@ export default function ShopPage() {
   const [inStockOnly, setInStockOnly] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [isTableViewOpen, setIsTableViewOpen] = useState(false);
 
   // Quick Add Product Modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -37,6 +41,53 @@ export default function ShopPage() {
   const [newImage, setNewImage] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Edit Product Modal state
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editCategory, setEditCategory] = useState('');
+  const [editPrice, setEditPrice] = useState('');
+  const [editOldPrice, setEditOldPrice] = useState('');
+  const [editStock, setEditStock] = useState('');
+  const [editImage, setEditImage] = useState('');
+  const [editDesc, setEditDesc] = useState('');
+  const [editSuccess, setEditSuccess] = useState(false);
+
+  const handleOpenEdit = (p) => {
+    setEditingProduct(p);
+    setEditTitle(p.title || '');
+    setEditCategory(p.category || 'cat_smartphones');
+    setEditPrice(p.price || '');
+    setEditOldPrice(p.oldPrice || '');
+    setEditStock(p.stock || '10');
+    setEditImage(p.image || '');
+    setEditDesc(p.description || '');
+  };
+
+  const handleSaveEditProduct = (e) => {
+    e.preventDefault();
+    if (!editingProduct || !editTitle || !editPrice) return;
+    updateProduct(editingProduct.id, {
+      title: editTitle,
+      category: editCategory,
+      price: Number(editPrice),
+      oldPrice: editOldPrice ? Number(editOldPrice) : null,
+      stock: Number(editStock) || 10,
+      image: editImage || editingProduct.image,
+      description: editDesc
+    });
+    setEditSuccess(true);
+    setTimeout(() => {
+      setEditSuccess(false);
+      setEditingProduct(null);
+    }, 1200);
+  };
+
+  const handleDeleteProduct = (productId, title) => {
+    if (window.confirm(`"${title}" mahsulotini o'chirmoqchimisiz?`)) {
+      deleteProduct(productId);
+    }
+  };
 
   const handleAddNewProduct = (e) => {
     e.preventDefault();
@@ -141,29 +192,133 @@ export default function ShopPage() {
             <Package className="w-5 h-5" />
           </div>
           <div>
-            <span className="font-black text-xs sm:text-sm block">Mahsulotlar Boshqaruvi (Admin Tools)</span>
-            <span className="text-[10px] text-slate-400">Yangi tovar qo'shish, tahrirlash yoki o'chirish</span>
+            <span className="font-black text-xs sm:text-sm block">Mahsulotlar Boshqaruvi (Admin & CRUD Tools)</span>
+            <span className="text-[10px] text-slate-400">Yangi tovar qo'shish, tahrirlash yoki o'chirish (Xabibullo Raxmatjonov)</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-cyan-500/25 hover:opacity-90 flex items-center gap-1.5 transition"
           >
             <Plus className="w-4 h-4" />
-            <span>Yangi Tovar Qo'shish</span>
+            <span>➕ Yangi Tovar Qo'shish</span>
           </button>
 
-          <Link
-            to="/admin"
-            className="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-bold text-xs flex items-center gap-1.5 transition"
+          <button
+            onClick={() => setIsTableViewOpen(!isTableViewOpen)}
+            className={`px-3.5 py-2 rounded-xl border font-bold text-xs flex items-center gap-1.5 transition ${
+              isTableViewOpen
+                ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-lg shadow-cyan-500/30'
+                : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border-slate-700'
+            }`}
           >
-            <ShieldCheck className="w-4 h-4 text-cyan-400" />
-            <span>Rocker Admin Panel ➔</span>
-          </Link>
+            <Table className="w-4 h-4 text-cyan-400" />
+            <span>{isTableViewOpen ? 'Jadvalni Yopish' : '📋 Tovarlar Jadvali (CRUD)'}</span>
+          </button>
+
+          {user && (user.role === 'admin' || user.role === 'owner') && (
+            <Link
+              to="/admin"
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-black text-xs flex items-center gap-1.5 shadow transition"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>👑 Rocker Admin Panel ➔</span>
+            </Link>
+          )}
         </div>
       </div>
+
+      {/* CRUD TABLE VIEW (Agar bosilsa ochiladi) */}
+      {isTableViewOpen && (
+        <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-cyan-500/40 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+            <div>
+              <h3 className="font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
+                <Table className="w-5 h-5 text-cyan-500" />
+                <span>Barcha Mahsulotlar Jadvali (Tezkor Boshqaruv - CRUD)</span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Har bir tovarni to'g'ridan-to'g'ri shu yerda tahrirlashingiz yoki o'chirishingiz mumkin.
+              </p>
+            </div>
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold flex items-center gap-1 shadow"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Yangi Mahsulot</span>
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+              <thead className="bg-slate-100 dark:bg-slate-800/80 uppercase font-black text-[10px] text-slate-500 dark:text-slate-400">
+                <tr>
+                  <th className="p-3">Rasm</th>
+                  <th className="p-3">ID</th>
+                  <th className="p-3">Nomi</th>
+                  <th className="p-3">Kategoriya</th>
+                  <th className="p-3">Narxi</th>
+                  <th className="p-3">Omborda</th>
+                  <th className="p-3 text-right">Amallar (CRUD)</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                {filteredProducts.map(p => (
+                  <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                    <td className="p-3">
+                      <img
+                        src={p.image}
+                        alt={p.title}
+                        className="w-10 h-10 object-cover rounded-xl bg-slate-100 dark:bg-slate-800 shrink-0"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+                        }}
+                      />
+                    </td>
+                    <td className="p-3 font-mono font-bold text-slate-500">#{p.id}</td>
+                    <td className="p-3 font-bold text-slate-900 dark:text-white max-w-xs truncate">{p.title}</td>
+                    <td className="p-3">
+                      <span className="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px]">
+                        {t[p.category] || p.category}
+                      </span>
+                    </td>
+                    <td className="p-3 font-black text-slate-900 dark:text-white">${p.price}</td>
+                    <td className="p-3">
+                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${p.stock > 0 ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50' : 'bg-rose-50 text-rose-600'}`}>
+                        {p.stock} dona
+                      </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => handleOpenEdit(p)}
+                          className="px-2.5 py-1 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 font-bold flex items-center gap-1 shadow-sm active:scale-95 transition"
+                          title="Tahrirlash"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>Tahrirlash</span>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteProduct(p.id, p.title)}
+                          className="px-2.5 py-1 rounded-lg bg-rose-600 text-white hover:bg-rose-500 font-bold flex items-center gap-1 shadow-sm active:scale-95 transition"
+                          title="O'chirish"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                          <span>O'chirish</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
       {/* Header Title */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
@@ -267,80 +422,57 @@ export default function ShopPage() {
 
         {/* RIGHT MAIN CATALOG GRID */}
         <main className="md:col-span-3 space-y-6">
-          
-          {/* Flash Sale Filter Active Banner */}
-          {isFlashOnly && (
-            <div className="bg-gradient-to-r from-amber-500/15 via-rose-500/15 to-orange-500/15 border border-amber-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 backdrop-blur-sm">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-rose-500 text-white flex items-center justify-center shadow-lg shadow-amber-500/30 animate-pulse">
-                  <Flame className="w-5 h-5 fill-current" />
-                </div>
-                <div>
-                  <h4 className="font-black text-sm text-gray-900 dark:text-white flex items-center gap-2">
-                    Flash Sale - Qaynoq Chegirmalar
-                    <span className="px-2 py-0.5 rounded-full text-[10px] bg-rose-500 text-white font-bold uppercase tracking-wider">
-                      Aksiya
-                    </span>
-                  </h4>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Faqatgina super chegirmali va maxsus narxdagi mahsulotlar ko'rsatilmoqda
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={handleResetFilters}
-                className="px-3.5 py-1.5 rounded-xl bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 text-xs font-bold transition flex items-center gap-1.5 shadow"
-              >
-                <RotateCcw className="w-3.5 h-3.5 text-amber-400" />
-                <span>Barcha mahsulotlarni ko'rish</span>
-              </button>
-            </div>
-          )}
 
-          {/* Sorting Bar */}
-          <div className="bg-white dark:bg-gray-800/80 p-4 rounded-2xl border border-gray-100 dark:border-gray-700/60 shadow-sm flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-2 text-xs font-bold text-gray-600 dark:text-gray-300">
-              <span>{t.sort_by}:</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-1.5 text-xs font-semibold text-gray-900 dark:text-white outline-none"
-              >
-                <option value="newest">{t.sort_newest}</option>
-                <option value="price_low">{t.sort_price_low}</option>
-                <option value="price_high">{t.sort_price_high}</option>
-                <option value="rating">{t.sort_rating}</option>
-              </select>
+          {/* PROMINENT SEARCH BAR (Qidiruv maydoni) */}
+          <div className="bg-white dark:bg-slate-900 p-4 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm space-y-3">
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="Mahsulot nomi, toifa yoki ID (#p1) bo'yicha qidiring..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-11 pr-24 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm font-medium"
+              />
+              <Search className="w-5 h-5 text-indigo-500 absolute left-3.5 pointer-events-none" />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 px-2 py-1 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-bold hover:bg-rose-100 hover:text-rose-600 transition flex items-center gap-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Tozalash</span>
+                </button>
+              )}
+            </div>
+
+            {/* Live Search Info & Popular Search Tags */}
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                {searchQuery ? (
+                  <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                    "{searchQuery}" bo'yicha: <b>{filteredProducts.length}</b> ta tovar topildi
+                  </span>
+                ) : (
+                  <span>Katalogda: <b>{filteredProducts.length}</b> ta mahsulot mavjud</span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-1.5 text-[11px]">
+                <span className="text-slate-400 font-semibold">Teglar:</span>
+                {['iPhone 15', 'MacBook', 'Samsung', 'Sony', 'Smart TV', 'Gaming', 'AirPods'].map(tag => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => setSearchQuery(tag)}
+                    className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-medium transition"
+                  >
+                    {tag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Catalog Grid */}
-          {filteredProducts.length === 0 ? (
-            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-3xl border border-dashed border-gray-300 dark:border-gray-700 p-8 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-indigo-50 dark:bg-gray-700 text-indigo-500 flex items-center justify-center mx-auto">
-                <Search className="w-8 h-8" />
-              </div>
-              <h3 className="text-lg font-extrabold text-gray-900 dark:text-white">
-                {t.no_products}
-              </h3>
-              <button
-                onClick={handleResetFilters}
-                className="px-6 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs shadow hover:bg-indigo-700 transition"
-              >
-                {t.reset_filters}
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onQuickView={(p) => setQuickViewProduct(p)}
-                />
-              ))}
-            </div>
-          )}
+          
         </main>
       </div>
 
@@ -474,6 +606,131 @@ export default function ShopPage() {
                     className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-black shadow hover:opacity-95 transition"
                   >
                     Saqlash
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Edit Product Modal (CRUD Tahrirlash) */}
+      {editingProduct && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
+            <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
+              <h3 className="font-black text-base flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-indigo-500" />
+                <span>Mahsulotni Tahrirlash (ID: #{editingProduct.id})</span>
+              </h3>
+              <button onClick={() => setEditingProduct(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {editSuccess ? (
+              <div className="p-6 text-center space-y-2">
+                <Check className="w-12 h-12 text-emerald-500 mx-auto animate-bounce" />
+                <h4 className="font-black text-lg">Muvaffaqiyatli saqlandi!</h4>
+                <p className="text-xs text-slate-500">O'zgarishlar darhol yangilandi.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleSaveEditProduct} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-bold mb-1">Mahsulot Nomi *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editTitle}
+                    onChange={(e) => setEditTitle(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold mb-1">Kategoriya</label>
+                    <select
+                      value={editCategory}
+                      onChange={(e) => setEditCategory(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                    >
+                      <option value="cat_smartphones">Smartfonlar</option>
+                      <option value="cat_laptops">Noutbuklar</option>
+                      <option value="cat_tv">Smart Televizorlar</option>
+                      <option value="cat_audio">Audio</option>
+                      <option value="cat_watches">Soatlar</option>
+                      <option value="cat_gaming">Gaming</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">Narxi ($) *</label>
+                    <input
+                      type="number"
+                      required
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold mb-1">Eski Narxi ($)</label>
+                    <input
+                      type="number"
+                      value={editOldPrice}
+                      onChange={(e) => setEditOldPrice(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold mb-1">Omborda (dona)</label>
+                    <input
+                      type="number"
+                      value={editStock}
+                      onChange={(e) => setEditStock(e.target.value)}
+                      className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold mb-1">Rasm URL</label>
+                  <input
+                    type="text"
+                    value={editImage}
+                    onChange={(e) => setEditImage(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold mb-1">Tavsif</label>
+                  <textarea
+                    rows="2"
+                    value={editDesc}
+                    onChange={(e) => setEditDesc(e.target.value)}
+                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 outline-none focus:border-indigo-500"
+                  />
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProduct(null)}
+                    className="px-4 py-2 rounded-xl text-slate-500 hover:text-slate-800 dark:hover:text-white"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-black shadow hover:opacity-95 transition"
+                  >
+                    O'zgarishlarni Saqlash
                   </button>
                 </div>
               </form>

@@ -156,25 +156,6 @@ export default function IntegratedAdminPanel() {
 
   return (
     <>
-      {/* 1. FLOATING QUICK ACCESS BUTTON (Bottom-Right, non-intrusive) */}
-      {!isAdminPanelOpen && (
-        <button
-          onClick={toggleAdminPanel}
-          className="fixed bottom-6 right-6 z-40 px-4 py-3 rounded-full bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white font-black text-xs shadow-2xl shadow-indigo-500/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center gap-2 group ring-2 ring-white/20"
-          title="Admin Boshqaruv Panelini Ochish (Bitta Sahifada)"
-        >
-          <div className="relative">
-            <ShieldCheck className="w-5 h-5 text-emerald-300" />
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full animate-ping"></span>
-            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-emerald-400 rounded-full"></span>
-          </div>
-          <span className="font-extrabold tracking-wide">Admin Boshqaruv</span>
-          <span className="px-2 py-0.5 rounded-full bg-white/20 text-[10px] uppercase font-black tracking-wider">
-            1-Page
-          </span>
-        </button>
-      )}
-
       {/* 2. FULL INTEGRATED ADMIN DASHBOARD MODAL/DRAWER (WORKS ON THE SAME PAGE) */}
       {isAdminPanelOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 md:p-6 bg-slate-950/80 backdrop-blur-xl animate-in fade-in duration-200">

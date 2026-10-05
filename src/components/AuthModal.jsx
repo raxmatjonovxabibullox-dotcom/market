@@ -136,7 +136,7 @@ export default function AuthModal({ onClose }) {
             >
               <div className="flex items-center gap-1.5">
                 <span>👑</span>
-                <span>Loyiha Egasi (Owner): <b>owner</b> / <b>owner123</b></span>
+                <span>Loyiha Egasi: <b>Xabibullo Raxmatjonov</b> (owner / owner123)</span>
               </div>
               <span className="underline font-bold">Tanlash</span>
             </button>
