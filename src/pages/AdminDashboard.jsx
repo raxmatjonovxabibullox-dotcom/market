@@ -17,6 +17,7 @@ import {
   ChevronDown,
   ChevronRight,
   ArrowLeft,
+  Menu,
   ShieldCheck,
   Lock,
   Crown,
@@ -143,6 +144,7 @@ export default function AdminDashboard() {
   // Navigation & UI Layout State
   const [activeTab, setActiveTab] = useState('alternate'); // 'alternate' | 'ecommerce' | 'tables' | 'telegram' | 'system'
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('rocker_sound') !== 'false');
   const [accentColor, setAccentColor] = useState(() => localStorage.getItem('rocker_accent') || 'cyan'); // cyan, violet, emerald, amber, rose
@@ -945,11 +947,19 @@ export default function AdminDashboard() {
         </div>
       )}
 
+      {/* Mobile Sidebar Backdrop */}
+      {isMobileSidebarOpen && (
+        <div
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 md:hidden animate-in fade-in"
+        />
+      )}
+
       {/* 1. ROCKER LEFT SIDEBAR */}
       <aside
-        className={`${
-          isSidebarCollapsed ? 'w-20' : 'w-64'
-        } shrink-0 min-h-screen bg-[#101726] border-r border-[#1a2236] transition-all duration-300 flex flex-col justify-between sticky top-0 h-screen overflow-y-auto custom-scrollbar z-30 select-none`}
+        className={`fixed inset-y-0 left-0 z-50 w-64 md:sticky md:top-0 md:h-screen md:translate-x-0 bg-[#101726] border-r border-[#1a2236] transition-transform duration-300 ${
+          isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        } ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'} shrink-0 min-h-screen overflow-y-auto custom-scrollbar select-none flex flex-col justify-between`}
       >
         <div className="p-4 space-y-6">
           
@@ -1175,18 +1185,29 @@ export default function AdminDashboard() {
       <div className="flex-1 flex flex-col min-w-0 overflow-y-auto">
         
         {/* TOP NAVBAR (Exact Rocker Style with Upgraded Controls) */}
-        <header className="h-16 bg-[#101726] border-b border-[#1a2236] px-6 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md">
+        <header className="h-16 bg-[#101726] border-b border-[#1a2236] px-4 sm:px-6 flex items-center justify-between sticky top-0 z-20 backdrop-blur-md">
           
-          {/* Search Input Bar */}
-          <div className="relative w-72 md:w-96">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Qidiruv (Buyurtma, tovar, xaridor)..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-xl text-xs bg-[#162033] border border-[#222e46] text-white placeholder-slate-400 outline-none focus:border-cyan-500/60 transition font-medium"
-            />
+          <div className="flex items-center gap-2 flex-1 max-w-sm sm:max-w-md">
+            {/* Mobile Hamburger to open sidebar */}
+            <button
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="md:hidden p-2 rounded-xl bg-[#162033] border border-[#222e46] text-slate-300 hover:text-white shrink-0 active:scale-95 transition"
+              title="Menyu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+
+            {/* Search Input Bar */}
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Qidiruv (Buyurtma, tovar)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#162033] border border-[#222e46] text-white placeholder-slate-400 outline-none focus:border-cyan-500/60 transition font-medium"
+              />
+            </div>
           </div>
 
           {/* Right Header Controls */}
@@ -1329,13 +1350,13 @@ export default function AdminDashboard() {
               </button>
           </div>
 
-          {/* Quick Dashboard Navigation Tabs (Barcha tekshiruv mezonlarini ochiq ko'rsatish) */}
-          <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-[#1e2a47] mt-4">
+          {/* Quick Dashboard Navigation Tabs (Mobil va desktopda qulay gorizontal skroll) */}
+          <div className="flex overflow-x-auto no-scrollbar items-center gap-2 pt-4 border-t border-[#1e2a47] mt-4 pb-1">
             {[
-              { id: 'ecommerce', label: '📦 Mahsulotlar (CRUD: Qo\'shish, Tahrirlash, O\'chirish)', count: products.length, color: 'cyan' },
-              { id: 'tables', label: '🛍️ Buyurtmalar Boshqaruvi (Orders)', count: orders.length, color: 'emerald' },
-              { id: 'alternate', label: '📊 Savdo & Analitika (Dashboard)', count: null, color: 'indigo' },
-              { id: 'telegram', label: '🤖 Telegram Bot Integratsiyasi', count: 'Online', color: 'sky' },
+              { id: 'ecommerce', label: '📦 Mahsulotlar (CRUD)', count: products.length, color: 'cyan' },
+              { id: 'tables', label: '🛍️ Buyurtmalar (Orders)', count: orders.length, color: 'emerald' },
+              { id: 'alternate', label: '📊 Savdo & Analitika', count: null, color: 'indigo' },
+              { id: 'telegram', label: '🤖 Telegram Bot', count: 'Online', color: 'sky' },
               { id: 'system', label: '⚙️ Tizim & Server Monitor', count: null, color: 'purple' },
             ].map(tab => (
               <button
@@ -1344,7 +1365,7 @@ export default function AdminDashboard() {
                   setActiveTab(tab.id);
                   playSound('click', soundEnabled);
                 }}
-                className={`px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 shadow-sm ${
+                className={`px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-2 shadow-sm whitespace-nowrap shrink-0 ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-cyan-500/25 scale-105'
                     : 'bg-[#101728] hover:bg-[#1a253e] text-slate-300 border border-[#1e2a47]'

@@ -270,12 +270,12 @@ export default function Header() {
           </div>
 
           {/* 4. UTILITIES & ACTIONS */}
-          <div className="flex items-center gap-2 sm:gap-3.5">
+          <div className="flex items-center gap-1.5 sm:gap-3">
 
-            {/* Fullscreen Button */}
+            {/* Fullscreen Button (Desktop only) */}
             <button
               onClick={toggleFullscreen}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition active:scale-95"
+              className="hidden md:flex p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition active:scale-95"
               title={isFullscreen ? "To'liq ekrandan chiqish" : "To'liq ekran rejimiga o'tish"}
             >
               {isFullscreen ? (
@@ -285,8 +285,8 @@ export default function Header() {
               )}
             </button>
 
-            {/* Language Selector */}
-            <div className="relative">
+            {/* Language Selector (Tablet & Desktop) */}
+            <div className="relative hidden sm:block">
               <button
                 onClick={() => setLangDropdown(!langDropdown)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-black uppercase bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition"
@@ -322,8 +322,8 @@ export default function Header() {
             {/* Dark / Light Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition active:scale-95"
-              title="Mavzuni almashtirish"
+              className="p-2 sm:p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition active:scale-95"
+              title={theme === 'dark' ? "Yorug' rejim" : "Qorong'i rejim"}
             >
               {theme === 'dark' ? (
                 <Sun className="w-4 h-4 text-amber-400" />
@@ -332,10 +332,10 @@ export default function Header() {
               )}
             </button>
 
-            {/* Wishlist Icon */}
+            {/* Wishlist Icon (Desktop & Tablet) */}
             <Link
               to="/wishlist"
-              className="relative p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition active:scale-95"
+              className="relative hidden sm:flex p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition active:scale-95"
               title={t.wishlist}
             >
               <Heart className="w-4 h-4" />
@@ -349,7 +349,7 @@ export default function Header() {
             {/* Cart Icon */}
             <Link
               to="/cart"
-              className="relative p-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 transition active:scale-95 shadow-md shadow-indigo-500/25"
+              className="relative p-2 sm:p-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:opacity-95 transition active:scale-95 shadow-md shadow-indigo-500/25"
               title={t.cart}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -360,21 +360,21 @@ export default function Header() {
               )}
             </Link>
 
-            {/* Rocker Admin Panel Direct Link - Faqat admin/owner tizimga kirganda ko'rinadi */}
+            {/* Rocker Admin Panel Direct Link (Desktop & Tablet) */}
             {user && (user.role === 'admin' || user.role === 'owner') && (
               <Link
                 to="/admin"
-                className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-black shadow-md shadow-cyan-500/25 active:scale-95 transition animate-in fade-in"
+                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white text-xs font-black shadow-md shadow-cyan-500/25 active:scale-95 transition"
                 title="Rocker Admin Panel"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span className="hidden sm:inline">Admin Panel</span>
+                <span className="hidden md:inline">Admin Panel</span>
               </Link>
             )}
 
-            {/* User Profile / Admin Badge / Login */}
+            {/* User Profile / Login (Desktop & Tablet) */}
             {user ? (
-              <div className="flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
+              <div className="hidden sm:flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
                   {user.role === 'owner' ? (
                     <Crown className="w-3.5 h-3.5 text-amber-500" />
@@ -399,7 +399,7 @@ export default function Header() {
             ) : (
               <button
                 onClick={() => setIsAuthOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-extrabold hover:opacity-90 transition active:scale-95 shadow-sm"
+                className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs font-extrabold hover:opacity-90 transition active:scale-95 shadow-sm"
               >
                 <User className="w-3.5 h-3.5" />
                 <span>{t.login}</span>
@@ -409,7 +409,8 @@ export default function Header() {
             {/* Mobile Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300"
+              className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 transition active:scale-95"
+              aria-label="Menyu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -596,6 +597,67 @@ export default function Header() {
                   </Link>
                 );
               })}
+
+              {/* Mobile Language Selector & User Profile */}
+              <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2.5">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 font-bold">
+                  <span>Tilni tanlang:</span>
+                  <div className="flex items-center gap-1">
+                    {[
+                      { code: 'uz', name: "UZ" },
+                      { code: 'ru', name: 'RU' },
+                      { code: 'en', name: 'EN' }
+                    ].map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => changeLanguage(l.code)}
+                        className={`px-2.5 py-1 rounded-lg font-black transition ${
+                          lang === l.code
+                            ? 'bg-indigo-600 text-white'
+                            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                        }`}
+                      >
+                        {l.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {user ? (
+                  <div className="flex items-center justify-between p-2 rounded-xl bg-slate-100 dark:bg-slate-800/80">
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-indigo-600 text-white flex items-center justify-center font-black text-xs">
+                        {user.name?.[0]?.toUpperCase() || 'U'}
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-slate-900 dark:text-white leading-tight">{user.name}</span>
+                        <span className="block text-[10px] text-slate-500 font-semibold">{user.role}</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setMobileMenuOpen(false);
+                        navigate('/');
+                      }}
+                      className="px-2.5 py-1 rounded-lg text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 text-xs font-bold"
+                    >
+                      Chiqish
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      setIsAuthOpen(true);
+                    }}
+                    className="w-full py-2.5 rounded-xl bg-indigo-600 text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2"
+                  >
+                    <User className="w-4 h-4" />
+                    <span>{t.login}</span>
+                  </button>
+                )}
+              </div>
 
             </div>
           </div>
