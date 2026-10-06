@@ -2512,63 +2512,64 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* 7. PRINTABLE INVOICE / RECEIPT MODAL */}
+      {/* 7. PRINTABLE INVOICE / RECEIPT MODAL (Full Dark Mode & Clean Print Support) */}
       {isInvoiceModalOpen && viewingOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-white text-slate-900 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 font-sans relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-in fade-in">
+          <div className="bg-[#131929] text-white border border-[#1e2740] print:border-none print:bg-white print:text-black rounded-3xl max-w-lg w-full p-6 sm:p-7 shadow-2xl space-y-4 font-sans relative">
             <button
               onClick={() => setIsInvoiceModalOpen(false)}
-              className="absolute top-4 right-4 text-slate-400 hover:text-black p-1 print:hidden"
+              className="absolute top-4 right-4 text-slate-400 hover:text-white p-1 print:hidden transition rounded-full hover:bg-white/10"
+              title="Yopish"
             >
               <X className="w-5 h-5" />
             </button>
 
             {/* Receipt Header */}
-            <div className="text-center border-b pb-4">
-              <h2 className="text-2xl font-black tracking-tight text-slate-900">VOV SHOP</h2>
-              <p className="text-xs text-slate-500">Elektronika va Smart Qurilmalar Markazi</p>
-              <p className="text-[11px] text-slate-400 font-mono mt-1">Buyurtma #{viewingOrder.id}</p>
-              <p className="text-[10px] text-slate-400">{viewingOrder.formattedDate || viewingOrder.date}</p>
+            <div className="text-center border-b border-[#1e2740] print:border-black/20 pb-4 space-y-1">
+              <h2 className="text-2xl font-black tracking-tight text-white print:text-black">VOV SHOP</h2>
+              <p className="text-xs text-slate-400 print:text-slate-600">Elektronika va Smart Qurilmalar Markazi</p>
+              <p className="text-[11px] text-cyan-400 print:text-slate-800 font-mono font-bold">Buyurtma #{viewingOrder.id}</p>
+              <p className="text-[10px] text-slate-400 print:text-slate-600">{viewingOrder.formattedDate || viewingOrder.date}</p>
             </div>
 
             {/* Customer Details */}
-            <div className="text-xs space-y-1 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div className="text-xs space-y-1.5 bg-[#0b0f19] print:bg-slate-100 p-3.5 rounded-2xl border border-[#1e2740] print:border-slate-300">
               <div className="flex justify-between">
-                <span className="text-slate-500">Mijoz:</span>
-                <span className="font-bold">{viewingOrder.customer?.fullName}</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">Mijoz:</span>
+                <span className="font-bold text-white print:text-black">{viewingOrder.customer?.fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Telefon:</span>
-                <span className="font-bold font-mono">{viewingOrder.customer?.phone}</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">Telefon:</span>
+                <span className="font-bold font-mono text-cyan-300 print:text-black">{viewingOrder.customer?.phone}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Manzil:</span>
-                <span className="font-bold">{viewingOrder.customer?.address}</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">Manzil:</span>
+                <span className="font-bold text-white print:text-black">{viewingOrder.customer?.address}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">To'lov:</span>
-                <span className="font-bold uppercase">{viewingOrder.customer?.paymentMethod}</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">To'lov:</span>
+                <span className="font-bold uppercase text-emerald-400 print:text-black">{viewingOrder.customer?.paymentMethod}</span>
               </div>
             </div>
 
             {/* Items Table */}
-            <div className="text-xs space-y-2 max-h-48 overflow-y-auto">
+            <div className="text-xs space-y-2 max-h-48 overflow-y-auto pr-1">
               {(viewingOrder.items || []).map((it, idx) => (
-                <div key={idx} className="flex justify-between items-center py-1 border-b border-slate-100">
+                <div key={idx} className="flex justify-between items-center py-1.5 border-b border-[#1e2740] print:border-slate-200">
                   <div className="min-w-0 pr-2">
-                    <span className="font-bold block truncate">{it.product?.title || 'Mahsulot'}</span>
-                    <span className="text-[10px] text-slate-500">{it.quantity} dona × ${it.product?.price}</span>
+                    <span className="font-bold block truncate text-white print:text-black">{it.product?.title || 'Mahsulot'}</span>
+                    <span className="text-[10px] text-slate-400 print:text-slate-600">{it.quantity} dona × ${it.product?.price}</span>
                   </div>
-                  <span className="font-black">${((it.product?.price || 0) * (it.quantity || 1)).toFixed(2)}</span>
+                  <span className="font-black text-cyan-300 print:text-black">${((it.product?.price || 0) * (it.quantity || 1)).toFixed(2)}</span>
                 </div>
               ))}
             </div>
 
             {/* Total */}
-            <div className="pt-2 border-t space-y-1 text-xs">
-              <div className="flex justify-between text-base font-black text-slate-900 pt-1 border-t">
+            <div className="pt-2 border-t border-[#1e2740] print:border-black/20 space-y-1 text-xs">
+              <div className="flex justify-between text-base font-black text-white print:text-black pt-1">
                 <span>Jami To'lov:</span>
-                <span className="text-cyan-600">${viewingOrder.totalAmount?.toFixed(2)}</span>
+                <span className="text-cyan-400 print:text-black text-lg">${viewingOrder.totalAmount?.toFixed(2)}</span>
               </div>
             </div>
 
@@ -2576,13 +2577,13 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-end gap-3 pt-3 print:hidden">
               <button
                 onClick={() => setIsInvoiceModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-black"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition"
               >
                 Yopish
               </button>
               <button
                 onClick={() => window.print()}
-                className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-black text-white font-extrabold text-xs flex items-center gap-1.5 shadow"
+                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 transition"
               >
                 <Printer className="w-4 h-4" />
                 <span>Chop etish (Print)</span>
