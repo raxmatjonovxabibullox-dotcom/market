@@ -1157,6 +1157,18 @@ export default function AdminDashboard() {
             </div>
           )}
 
+          {user?.role === 'owner' && (
+            <Link
+              to="/owner"
+              onClick={() => playSound('click', soundEnabled)}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-black text-amber-300 bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 transition shadow-sm"
+              title="Loyiha Egasi (Owner) Boshqaruv Paneli"
+            >
+              <Crown className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
+              {!isSidebarCollapsed && <span>👑 Owner Panel</span>}
+            </Link>
+          )}
+
           <Link
             to="/"
             onClick={() => playSound('click', soundEnabled)}
@@ -1313,6 +1325,16 @@ export default function AdminDashboard() {
 
             {/* Quick Action Buttons */}
             <div className="flex flex-wrap items-center gap-2.5 z-10">
+              {user?.role === 'owner' && (
+                <Link
+                  to="/owner"
+                  className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-extrabold text-xs shadow-lg shadow-amber-500/25 transition flex items-center gap-1.5 active:scale-95 animate-pulse"
+                >
+                  <Crown className="w-4 h-4 text-yellow-200" />
+                  <span>👑 Owner Panel</span>
+                </Link>
+              )}
+
               <button
                 onClick={() => handleOpenAddModal()}
                 className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/25 transition flex items-center gap-1.5 active:scale-95"

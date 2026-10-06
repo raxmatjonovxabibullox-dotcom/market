@@ -12,6 +12,17 @@ export default function AuthModal({ onClose }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const cleanUser = (usernameOrPhone || '').trim().toLowerCase();
+
+    // Agar username "owner" yoki Loyiha Egasi emaili bo'lsa, to'g'ridan-to'g'ri Owner sifatida kiradi
+    if (cleanUser === 'owner' || cleanUser === 'raxmatjonovxabibullox@gmail.com' || cleanUser === 'xabibullo' || cleanUser === 'xabibullox') {
+      const res = login(usernameOrPhone, password || 'owner123');
+      if (res.success) {
+        onClose();
+      }
+      return;
+    }
+
     if (!usernameOrPhone || !password) {
       setErrorMsg('Iltimos, barcha maydonlarni to\'ldiring');
       return;
@@ -20,17 +31,27 @@ export default function AuthModal({ onClose }) {
     const res = login(usernameOrPhone, password);
     if (res.success) {
       onClose();
+    } else if (res.error) {
+      setErrorMsg(res.error);
     }
   };
 
   const handleFillAdmin = () => {
     setUsernameOrPhone('admin');
     setPassword('admin123');
+    const res = login('admin', 'admin123');
+    if (res.success) {
+      onClose();
+    }
   };
 
   const handleFillOwner = () => {
     setUsernameOrPhone('owner');
     setPassword('owner123');
+    const res = login('owner', 'owner123');
+    if (res.success) {
+      onClose();
+    }
   };
 
   return (

@@ -138,7 +138,7 @@ export default function Header() {
 
   const [isSearchFocused, setIsSearchFocused] = useState(false);
 
-  // 5 Asosiy Sahifa + Rocker Admin Panel + Qo'shimchalar
+  // 5 Asosiy Sahifa + Rocker Admin Panel + Owner Panel + Qo'shimchalar
   const navLinks = [
     { path: '/', label: '1. ' + t.home, icon: null },
     { path: '/shop', label: '2. ' + t.shop, icon: null },
@@ -148,6 +148,8 @@ export default function Header() {
     { path: '/shop?filter=flash', label: 'Aksiyalar', icon: Flame, isAksiya: true },
     { path: '#track', label: 'Buyurtma holati', icon: Package, isAction: 'track' },
     { path: '#warranty', label: 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
+    ...(user && user.role === 'owner' ? [{ path: '/owner', label: '👑 Owner Panel', icon: Crown, isOwner: true }] : []),
+    ...(user && (user.role === 'admin' || user.role === 'owner') ? [{ path: '/admin', label: '🛡️ Admin Panel', icon: ShieldCheck, isAdmin: true }] : [])
   ];
 
   return (
@@ -360,6 +362,18 @@ export default function Header() {
               )}
             </Link>
 
+            {/* Owner Panel Direct Link (Desktop & Tablet) */}
+            {user && user.role === 'owner' && (
+              <Link
+                to="/owner"
+                className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white text-xs font-black shadow-md shadow-amber-500/25 active:scale-95 transition"
+                title="👑 Loyiha Egasi (Owner) Boshqaruv Paneli"
+              >
+                <Crown className="w-4 h-4 text-yellow-200" />
+                <span className="hidden md:inline">Owner Panel</span>
+              </Link>
+            )}
+
             {/* Rocker Admin Panel Direct Link (Desktop & Tablet) */}
             {user && (user.role === 'admin' || user.role === 'owner') && (
               <Link
@@ -375,16 +389,26 @@ export default function Header() {
             {/* User Profile / Login (Desktop & Tablet) */}
             {user ? (
               <div className="hidden sm:flex items-center gap-2.5 pl-2.5 border-l border-slate-200 dark:border-slate-800">
-                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-800 dark:text-slate-200">
+                <Link
+                  to={user.role === 'owner' ? '/owner' : (user.role === 'admin' ? '/admin' : '#')}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold transition ${
+                    user.role === 'owner'
+                      ? 'bg-amber-500/10 dark:bg-amber-950/40 border-amber-500/40 text-amber-700 dark:text-amber-300 hover:bg-amber-500/20'
+                      : user.role === 'admin'
+                      ? 'bg-cyan-500/10 dark:bg-cyan-950/40 border-cyan-500/40 text-cyan-700 dark:text-cyan-300 hover:bg-cyan-500/20'
+                      : 'bg-slate-100 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200'
+                  }`}
+                  title={user.role === 'owner' ? "Owner Panelga o'tish" : (user.role === 'admin' ? "Admin Panelga o'tish" : "Foydalanuvchi profili")}
+                >
                   {user.role === 'owner' ? (
-                    <Crown className="w-3.5 h-3.5 text-amber-500" />
+                    <Crown className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
                   ) : user.role === 'admin' ? (
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
                   ) : (
                     <User className="w-3.5 h-3.5 text-indigo-500" />
                   )}
-                  <span className="max-w-[85px] truncate font-extrabold">{user.name}</span>
-                </div>
+                  <span className="max-w-[110px] truncate font-extrabold">{user.name}</span>
+                </Link>
                 <button
                   onClick={() => {
                     logout();
@@ -473,6 +497,19 @@ export default function Header() {
                   );
                 }
 
+                if (link.isOwner) {
+                  return (
+                    <Link
+                      key={link.path}
+                      to={link.path}
+                      className="transition-all duration-200 px-3.5 py-2 rounded-xl flex items-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-md shadow-amber-500/25 hover:scale-105 active:scale-95 animate-pulse"
+                    >
+                      <Crown className="w-4 h-4 text-yellow-200" />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                }
+
                 if (link.isAdmin) {
                   return (
                     <Link
@@ -530,6 +567,21 @@ export default function Header() {
             </form>
 
             <div className="flex flex-col space-y-1.5 text-xs font-bold">
+              {/* Direct Owner Panel Link for Mobile */}
+              {user?.role === 'owner' && (
+                <Link
+                  to="/owner"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-black bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white shadow-md shadow-amber-500/25"
+                >
+                  <div className="flex items-center gap-2">
+                    <Crown className="w-4 h-4 text-yellow-200" />
+                    <span>👑 Loyiha Egasi (Owner Panel)</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4" />
+                </Link>
+              )}
+
               {/* Direct Rocker Admin Link for Mobile - faqat admin yoki owner tizimga kirganda */}
               {(user?.role === 'admin' || user?.role === 'owner') && (
                 <Link
@@ -539,7 +591,7 @@ export default function Header() {
                 >
                   <div className="flex items-center gap-2">
                     <ShieldCheck className="w-4 h-4" />
-                    <span>👑 Rocker Admin Panel (Dashboard)</span>
+                    <span>🛡️ Rocker Admin Panel (Dashboard)</span>
                   </div>
                   <ChevronRight className="w-4 h-4" />
                 </Link>
