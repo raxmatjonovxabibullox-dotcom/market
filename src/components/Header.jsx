@@ -159,9 +159,9 @@ export default function Header() {
     { path: '/wishlist', label: '3. ' + t.wishlist, icon: Heart, count: wishlistCount },
     { path: '/cart', label: '4. ' + t.cart, icon: ShoppingBag, count: totalCartCount },
     { path: '/about', label: '5. ' + t.about, icon: null },
-    { path: '/shop?filter=flash', label: 'Aksiyalar', icon: Flame, isAksiya: true },
-    { path: '#track', label: 'Buyurtma holati', icon: Package, isAction: 'track' },
-    { path: '#warranty', label: 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
+    { path: '/shop?filter=flash', label: t.nav_deals || 'Aksiyalar', icon: Flame, isAksiya: true },
+    { path: '#track', label: t.nav_order_status || 'Buyurtma holati', icon: Package, isAction: 'track' },
+    { path: '#warranty', label: t.nav_warranty || 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
     ...(user && user.role === 'owner' ? [{ path: '/owner', label: '👑 Owner Panel', icon: Crown, isOwner: true }] : []),
     ...(user && (user.role === 'admin' || user.role === 'owner') ? [{ path: '/admin', label: '🛡️ Admin Panel', icon: ShieldCheck, isAdmin: true }] : [])
   ];
@@ -189,7 +189,7 @@ export default function Header() {
             </Link>
             <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-slate-800/80 border border-indigo-100 dark:border-slate-700 text-xs font-bold text-indigo-700 dark:text-indigo-300">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span>Dasturchi: <b>Xabibullo Raxmatjonov</b></span>
+              <span>{t.developer_badge || "Dasturchi: Xabibullo Raxmatjonov"}</span>
             </div>
           </div>
 
@@ -561,7 +561,7 @@ export default function Header() {
             {/* Quick Notice on right side of sub-row */}
             <div className="hidden xl:flex items-center gap-2.5 text-xs font-semibold text-slate-500 dark:text-slate-400">
               <Truck className="w-4 h-4 text-indigo-500" />
-              <span>O'zbekiston bo'ylab tezkor yetkazib berish</span>
+              <span>{t.nav_fast_delivery || "O'zbekiston bo'ylab tezkor yetkazib berish"}</span>
             </div>
           </div>
         </div>

@@ -88,7 +88,7 @@ export default function HomePage() {
             </div>
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-400/40 text-xs font-black shadow-sm">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-              <span>Dasturchi: <b>Xabibullo Raxmatjonov</b></span>
+              <span>{t.developer_badge || "Dasturchi: Xabibullo Raxmatjonov"}</span>
             </div>
           </div>
 
@@ -111,7 +111,7 @@ export default function HomePage() {
             <div className="relative flex items-center">
               <input
                 type="text"
-                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : "Gadjetlar, brendlar yoki tovar nomini qidiring..."}
+                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : (t.search_placeholder || "Mahsulotlarni izlash...")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-white dark:bg-white/10 backdrop-blur-xl border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-xl dark:shadow-2xl transition"
@@ -121,12 +121,12 @@ export default function HomePage() {
                 type="submit"
                 className="absolute right-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-extrabold text-xs shadow-md hover:opacity-90 active:scale-95 transition"
               >
-                Qidirish
+                {t.search_action || "Qidirish"}
               </button>
             </div>
             {/* Quick Keyword Chips with Animated Typewriter Click */}
             <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-600 dark:text-gray-300">
-              <span className="text-slate-400 dark:text-gray-400 font-bold">Ommabop:</span>
+              <span className="text-slate-400 dark:text-gray-400 font-bold">{t.hero_popular || "Ommabop:"}</span>
               {['iPhone 15', 'Smart TV', 'MacBook Pro', 'AirPods', 'Gaming'].map(tag => (
                 <button
                   type="button"
@@ -174,14 +174,14 @@ export default function HomePage() {
               {t.featured_categories}
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Eng talabgir texnika turlari
+              {t.category_sub || "Eng talabgir texnika turlari"}
             </p>
           </div>
           <Link
             to="/shop"
             className="text-xs font-extrabold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
           >
-            <span>Barchasi</span>
+            <span>{t.view_all || "Barchasi"}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -202,7 +202,7 @@ export default function HomePage() {
                   {cat.label}
                 </span>
                 <span className="mt-1 text-[11px] text-gray-400">
-                  {products.filter(p => p.category === cat.key).length} mahsulot
+                  {products.filter(p => p.category === cat.key).length} {t.items_count || "mahsulot"}
                 </span>
               </div>
             );
@@ -219,7 +219,7 @@ export default function HomePage() {
               <span>{t.flash_sale}</span>
             </div>
             <h3 className="text-2xl md:text-3xl font-black">
-              Shoshiling! Maxsus Narxlar Ketmoqda
+              {t.flash_sale_heading || "Shoshiling! Maxsus Narxlar Ketmoqda"}
             </h3>
             <p className="text-xs md:text-sm text-white/90">
               {t.flash_sale_desc}
@@ -229,9 +229,9 @@ export default function HomePage() {
           {/* Countdown timer */}
           <div className="flex items-center gap-3">
             {[
-              { label: 'SOAT', val: String(timeLeft.hours).padStart(2, '0') },
-              { label: 'DAQIQA', val: String(timeLeft.minutes).padStart(2, '0') },
-              { label: 'SONIYA', val: String(timeLeft.seconds).padStart(2, '0') },
+              { label: t.countdown_hours || 'SOAT', val: String(timeLeft.hours).padStart(2, '0') },
+              { label: t.countdown_minutes || 'DAQIQA', val: String(timeLeft.minutes).padStart(2, '0') },
+              { label: t.countdown_seconds || 'SONIYA', val: String(timeLeft.seconds).padStart(2, '0') },
             ].map((tItem, idx) => (
               <div key={idx} className="flex flex-col items-center">
                 <div className="w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center font-black text-xl md:text-2xl shadow-inner">
@@ -263,7 +263,7 @@ export default function HomePage() {
               {t.best_sellers}
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Mijozlarimiz eng ko'p tanlagan flasman gadjetlar
+              {t.best_sellers_sub || "Mijozlarimiz eng ko'p tanlagan flagman gadjetlar"}
             </p>
           </div>
         </div>
