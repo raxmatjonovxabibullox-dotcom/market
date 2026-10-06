@@ -33,19 +33,21 @@ export default function QuickViewModal({ product, onClose }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Left Image Section */}
-        <div className="w-full md:w-1/2 bg-gray-100 dark:bg-gray-950 p-6 flex items-center justify-center relative">
+        {/* Left Image Section with Smooth Ambience */}
+        <div className="w-full md:w-1/2 bg-gradient-to-br from-slate-100 via-white to-slate-200/50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 p-8 flex items-center justify-center relative overflow-hidden group">
           <img
             src={product.image}
             alt={product.title}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+              e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=85&w=900&auto=format&fit=crop";
             }}
-            className="max-h-72 md:max-h-96 w-auto object-contain rounded-2xl shadow-lg"
+            className="max-h-72 md:max-h-96 w-auto object-contain rounded-2xl shadow-xl transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-105 transform-gpu"
+            loading="eager"
+            decoding="async"
           />
           {product.isFlashSale && (
-            <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-amber-500 text-white font-extrabold text-xs shadow">
+            <span className="absolute top-4 left-4 px-3 py-1 rounded-full bg-amber-500 text-white font-extrabold text-xs shadow-md">
               ⚡ Flash Sale
             </span>
           )}

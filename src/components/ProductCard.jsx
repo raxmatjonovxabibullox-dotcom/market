@@ -58,18 +58,22 @@ export default function ProductCard({ product, onQuickView, onEdit, onDelete }) 
   return (
     <div className="group relative bg-white dark:bg-gray-800 rounded-3xl overflow-hidden border border-gray-100 dark:border-gray-700/60 shadow-sm hover:shadow-2xl transition-all duration-300 flex flex-col justify-between">
 
-      {/* Image Container */}
-      <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-900 cursor-pointer" onClick={() => onQuickView(product)}>
+      {/* Image Container with ultra-smooth styling & ambient sheen */}
+      <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-slate-200/50 dark:from-slate-800/80 dark:via-slate-900 dark:to-slate-950/80 cursor-pointer select-none" onClick={() => onQuickView(product)}>
         <img
           src={product.image}
           alt={product.title}
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+            e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=85&w=900&auto=format&fit=crop";
           }}
-          className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-500 ease-out"
+          className="w-full h-full object-cover object-center transform-gpu transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-108 group-hover:brightness-105 will-change-transform"
           loading="lazy"
+          decoding="async"
         />
+
+        {/* Smooth ambient hover glare overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
 
         {/* Top Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">

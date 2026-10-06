@@ -152,7 +152,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 64,
     isFlashSale: false,
     isNew: false,
-    image: "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1609592424074-6014e76a6cfb?q=85&w=900&auto=format&fit=crop",
     description: "Ultra-fast multi-device charging with smart digital display and compact portable body.",
     specs: {
       Capacity: "20,000mAh (72Wh)",

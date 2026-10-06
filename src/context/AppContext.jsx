@@ -187,20 +187,14 @@ export const AppProvider = ({ children }) => {
       }
     }
 
+    // Always synchronize high-definition original images from INITIAL_PRODUCTS master list
+    const masterImageMap = new Map(INITIAL_PRODUCTS.map(ip => [ip.id, ip.image]));
     return loaded.map(p => {
-      if (p.id === 'p8' || !p.image || p.image.includes('1544816155-12df9643f363') || p.image.includes('1583863788434') || p.image.includes('1609592424074')) {
-        return { ...p, image: REAL_POWERBANK_IMAGE };
-      }
-      if (p.id === 'p24' || (p.image && p.image.includes('1626806787461'))) {
-        return { ...p, image: REAL_GAMING_MOUSE_IMAGE };
-      }
-      if (p.id === 'p25') return { ...p, image: '/images/tv_samsung_neo_qled.jpg' };
-      if (p.id === 'p26') return { ...p, image: '/images/tv_lg_oled_evo.jpg' };
-      if (p.id === 'p27') return { ...p, image: '/images/tv_sony_bravia_xr.jpg' };
-      if (p.id === 'p28') return { ...p, image: '/images/tv_xiaomi_max_86.jpg' };
-      if (p.id === 'p29') return { ...p, image: '/images/tv_tcl_qled_gaming.jpg' };
-      if (p.id === 'p30') return { ...p, image: '/images/tv_samsung_frame.jpg' };
-      return p;
+      const originalImage = masterImageMap.get(p.id);
+      return {
+        ...p,
+        image: originalImage || p.image || REAL_POWERBANK_IMAGE
+      };
     });
   });
 
