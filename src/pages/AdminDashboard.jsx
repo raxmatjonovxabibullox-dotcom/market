@@ -1008,7 +1008,7 @@ export default function AdminDashboard() {
             <div className="space-y-1">
               {!isSidebarCollapsed && (
                 <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-                  <span>Dashboard</span>
+                  <span>{t.admin_sidebar_dashboard || "Dashboard"}</span>
                   <ChevronDown className="w-3 h-3 text-slate-500" />
                 </div>
               )}
@@ -1025,7 +1025,7 @@ export default function AdminDashboard() {
                   }`}
                 >
                   <span className={`w-2 h-2 rounded-full ${activeTab === 'alternate' ? 'bg-cyan-400 animate-pulse' : 'border border-slate-500'}`}></span>
-                  {!isSidebarCollapsed && <span>Alternate (Analytics)</span>}
+                  {!isSidebarCollapsed && <span>{t.admin_sidebar_analytics || "Alternate (Analytics)"}</span>}
                 </button>
 
                 <button
@@ -1040,7 +1040,7 @@ export default function AdminDashboard() {
                   }`}
                 >
                   <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                  {!isSidebarCollapsed && <span>System & Monitor</span>}
+                  {!isSidebarCollapsed && <span>{t.admin_sidebar_system || "System & Monitor"}</span>}
                 </button>
               </div>
             </div>
@@ -1049,7 +1049,7 @@ export default function AdminDashboard() {
             <div className="space-y-1">
               {!isSidebarCollapsed && (
                 <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  Magazin Boshqaruvi
+                  {t.admin_sidebar_store_mgmt || "Magazin Boshqaruvi"}
                 </div>
               )}
               <div className="space-y-1 pt-1">
@@ -1067,7 +1067,7 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <ShoppingCart className="w-4 h-4 text-cyan-400" />
-                    {!isSidebarCollapsed && <span>eCommerce (Tovarlar)</span>}
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_ecommerce || "eCommerce (Tovarlar)"}</span>}
                   </div>
                   {!isSidebarCollapsed && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-black">
@@ -1090,7 +1090,7 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <ShoppingBag className="w-4 h-4 text-emerald-400" />
-                    {!isSidebarCollapsed && <span>Buyurtmalar (Orders)</span>}
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_orders || "Buyurtmalar (Orders)"}</span>}
                   </div>
                   {!isSidebarCollapsed && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-black">
@@ -1105,7 +1105,7 @@ export default function AdminDashboard() {
             <div className="space-y-1">
               {!isSidebarCollapsed && (
                 <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  Avtomatika & Bot
+                  {t.admin_sidebar_automation || "Avtomatika & Bot"}
                 </div>
               )}
               <div className="space-y-1 pt-1">
@@ -1122,7 +1122,7 @@ export default function AdminDashboard() {
                 >
                   <div className="flex items-center gap-3">
                     <Send className="w-4 h-4 text-sky-400" />
-                    {!isSidebarCollapsed && <span>Telegram Bot</span>}
+                    {!isSidebarCollapsed && <span>{t.admin_tab_telegram || "Telegram Bot"}</span>}
                   </div>
                   {!isSidebarCollapsed && (
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-400/20 animate-pulse"></span>
@@ -1140,7 +1140,7 @@ export default function AdminDashboard() {
           {!isSidebarCollapsed && (
             <div className="space-y-1.5">
               <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">
-                Neon Ranglar
+                {t.admin_sidebar_neon_colors || "Neon Ranglar"}
               </span>
               <div className="flex items-center gap-1.5">
                 {Object.keys(accentStyles).map(col => (
@@ -1168,7 +1168,7 @@ export default function AdminDashboard() {
               title="Loyiha Egasi (Owner) Boshqaruv Paneli"
             >
               <Crown className="w-4 h-4 text-amber-400 shrink-0 animate-pulse" />
-              {!isSidebarCollapsed && <span>👑 Owner Panel</span>}
+              {!isSidebarCollapsed && <span>{t.admin_owner_panel || "👑 Owner Panel"}</span>}
             </Link>
           )}
 
@@ -1178,7 +1178,7 @@ export default function AdminDashboard() {
             className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-[#151d2e] transition"
           >
             <Globe className="w-4 h-4 text-cyan-400 shrink-0" />
-            {!isSidebarCollapsed && <span>Do'konga qaytish</span>}
+            {!isSidebarCollapsed && <span>{t.admin_sidebar_back_store || "Do'konga qaytish"}</span>}
           </Link>
 
           <button
@@ -1191,7 +1191,7 @@ export default function AdminDashboard() {
             title="Tizimdan chiqish va do'konga qaytish"
           >
             <LogOut className="w-4 h-4 shrink-0" />
-            {!isSidebarCollapsed && <span>Chiqish</span>}
+            {!isSidebarCollapsed && <span>{t.admin_sidebar_logout || "Chiqish"}</span>}
           </button>
         </div>
       </aside>
@@ -1217,7 +1217,7 @@ export default function AdminDashboard() {
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
-                placeholder="Qidiruv (Buyurtma, tovar)..."
+                placeholder={t.admin_search_placeholder || "Qidiruv (Buyurtma, tovar)..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#162033] border border-[#222e46] text-white placeholder-slate-400 outline-none focus:border-cyan-500/60 transition font-medium"
@@ -1231,8 +1231,8 @@ export default function AdminDashboard() {
             {/* Live Clock Badge */}
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-[#162033] border border-[#222e46] text-xs font-mono font-bold text-cyan-400">
               <Clock className="w-3.5 h-3.5 text-cyan-400" />
-              <span>{currentTime.toLocaleTimeString('uz-UZ')}</span>
-              <span className="text-[10px] text-slate-400">UZ</span>
+              <span>{currentTime.toLocaleTimeString(lang === 'ru' ? 'ru-RU' : lang === 'en' ? 'en-US' : 'uz-UZ')}</span>
+              <span className="text-[10px] text-slate-400 uppercase">{lang}</span>
             </div>
 
             {/* Sound FX Toggle */}
@@ -1243,7 +1243,7 @@ export default function AdminDashboard() {
                   ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
                   : 'bg-slate-800 text-slate-400 border-slate-700'
               }`}
-              title={soundEnabled ? "Tovush effektlari faol" : "Tovush o'chirilgan"}
+              title={soundEnabled ? (t.admin_sound_on || "Tovush effektlari faol") : (t.admin_sound_off || "Tovush o'chirilgan")}
             >
               {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
@@ -1252,7 +1252,7 @@ export default function AdminDashboard() {
             <button
               onClick={handleToggleFullscreen}
               className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-700 transition"
-              title="To'liq ekran"
+              title={t.admin_fullscreen || "To'liq ekran"}
             >
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
@@ -1283,7 +1283,7 @@ export default function AdminDashboard() {
                   onMouseDown={(e) => e.stopPropagation()}
                 >
                   <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-[#1a2338] mb-1">
-                    Tilni tanlang:
+                    {t.admin_select_lang || "Tilni tanlang:"}
                   </div>
                   {[
                     { code: 'uz', flag: '🇺🇿', label: "O'zbekcha" },
@@ -1351,7 +1351,7 @@ export default function AdminDashboard() {
               </div>
               <div className="hidden sm:block text-left">
                 <span className="block text-xs font-bold text-white leading-tight">Xabibullo Raxmatjonov</span>
-                <span className="block text-[10px] text-cyan-400 font-semibold">Loyiha Muallifi & Bosh Admin</span>
+                <span className="block text-[10px] text-cyan-400 font-semibold">{t.admin_author_role || "Loyiha Muallifi & Bosh Admin"}</span>
               </div>
             </div>
 
@@ -1367,15 +1367,15 @@ export default function AdminDashboard() {
             <div className="space-y-1 z-10">
               <div className="flex items-center gap-2">
                 <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-sm">
-                  ⚡ Boshqaruv Markazi
+                  {t.admin_control_center || "⚡ Boshqaruv Markazi"}
                 </span>
                 <span className="flex items-center gap-1 text-[11px] text-emerald-400 font-bold">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  Barcha tizimlar barqaror
+                  {t.admin_all_systems_ok || "Barcha tizimlar barqaror"}
                 </span>
               </div>
               <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
-                Xush kelibsiz, Xabibullo Raxmatjonov! Do'kon boshqaruv paneli
+                {t.admin_welcome_msg || "Xush kelibsiz, Xabibullo Raxmatjonov! Do'kon boshqaruv paneli"}
               </h2>
             </div>
 
@@ -1387,7 +1387,7 @@ export default function AdminDashboard() {
                   className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-500 text-white font-extrabold text-xs shadow-lg shadow-amber-500/25 transition flex items-center gap-1.5 active:scale-95 animate-pulse"
                 >
                   <Crown className="w-4 h-4 text-yellow-200" />
-                  <span>👑 Owner Panel</span>
+                  <span>{t.admin_owner_panel || "👑 Owner Panel"}</span>
                 </Link>
               )}
 
@@ -1396,7 +1396,7 @@ export default function AdminDashboard() {
                 className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/25 transition flex items-center gap-1.5 active:scale-95"
               >
                 <Plus className="w-4 h-4" />
-                <span>Tovar Qo'shish</span>
+                <span>{t.admin_add_product || "Tovar Qo'shish"}</span>
               </button>
 
               <button
@@ -1407,7 +1407,7 @@ export default function AdminDashboard() {
                 className="px-3.5 py-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-300 border border-sky-500/40 font-bold text-xs transition flex items-center gap-1.5 active:scale-95"
               >
                 <Send className="w-4 h-4" />
-                <span>Telegram E'lon</span>
+                <span>{t.admin_telegram_announce || "Telegram E'lon"}</span>
               </button>
 
               <button
@@ -1416,7 +1416,7 @@ export default function AdminDashboard() {
                 title="Telegram botga sinov buyurtmasi yuboradi"
               >
                 <Zap className="w-4 h-4 text-amber-400" />
-                <span>Test Buyurtma</span>
+                <span>{t.admin_test_order || "Test Buyurtma"}</span>
               </button>
 
               <button
@@ -1424,18 +1424,18 @@ export default function AdminDashboard() {
                 className="px-3.5 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 font-bold text-xs transition flex items-center gap-1.5 active:scale-95"
               >
                 <Download className="w-4 h-4" />
-                <span>CSV Eksport</span>
+                <span>{t.admin_csv_export || "CSV Eksport"}</span>
               </button>
           </div>
 
           {/* Quick Dashboard Navigation Tabs (Mobil va desktopda qulay gorizontal skroll) */}
           <div className="flex overflow-x-auto no-scrollbar items-center gap-2 pt-4 border-t border-[#1e2a47] mt-4 pb-1">
             {[
-              { id: 'ecommerce', label: '📦 Mahsulotlar (CRUD)', count: products.length, color: 'cyan' },
-              { id: 'tables', label: '🛍️ Buyurtmalar (Orders)', count: orders.length, color: 'emerald' },
-              { id: 'alternate', label: '📊 Savdo & Analitika', count: null, color: 'indigo' },
-              { id: 'telegram', label: '🤖 Telegram Bot', count: 'Online', color: 'sky' },
-              { id: 'system', label: '⚙️ Tizim & Server Monitor', count: null, color: 'purple' },
+              { id: 'ecommerce', label: t.admin_tab_products || '📦 Mahsulotlar (CRUD)', count: products.length, color: 'cyan' },
+              { id: 'tables', label: t.admin_tab_orders || '🛍️ Buyurtmalar (Orders)', count: orders.length, color: 'emerald' },
+              { id: 'alternate', label: t.admin_tab_analytics || '📊 Savdo & Analitika', count: null, color: 'indigo' },
+              { id: 'telegram', label: t.admin_tab_telegram || '🤖 Telegram Bot', count: 'Online', color: 'sky' },
+              { id: 'system', label: t.admin_tab_system || '⚙️ Tizim & Server Monitor', count: null, color: 'purple' },
             ].map(tab => (
               <button
                 key={tab.id}
@@ -1478,33 +1478,38 @@ export default function AdminDashboard() {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div>
                       <h3 className="font-bold text-sm text-white flex items-center gap-2">
-                        <span>Sales Overview</span>
+                        <span>{t.admin_sales_overview || "Sales Overview"}</span>
                         <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold">
-                          +{chartTimeframe === 'bugun' ? '12%' : chartTimeframe === 'haftalik' ? '25%' : '48%'} o'sish
+                          +{chartTimeframe === 'bugun' ? '12%' : chartTimeframe === 'haftalik' ? '25%' : '48%'} {t.admin_growth || "o'sish"}
                         </span>
                       </h3>
                       <p className="text-[11px] text-slate-400">
-                        Kunlik tashriflar va muvaffaqiyatli xaridlar dinamikasi
+                        {t.admin_daily_stats || "Kunlik tashriflar va muvaffaqiyatli xaridlar dinamikasi"}
                       </p>
                     </div>
 
                     <div className="flex items-center gap-3">
                       {/* Timeframe Filter Buttons */}
                       <div className="flex items-center bg-[#0b0f19] p-1 rounded-xl border border-[#1e2740] text-[10px] font-bold">
-                        {['bugun', 'haftalik', 'oylik', 'yillik'].map((tf) => (
+                        {[
+                          { key: 'bugun', label: t.admin_today || 'Bugun' },
+                          { key: 'haftalik', label: t.admin_weekly || 'Haftalik' },
+                          { key: 'oylik', label: t.admin_monthly || 'Oylik' },
+                          { key: 'yillik', label: t.admin_yearly || 'Yillik' }
+                        ].map((tf) => (
                           <button
-                            key={tf}
+                            key={tf.key}
                             onClick={() => {
-                              setChartTimeframe(tf);
+                              setChartTimeframe(tf.key);
                               playSound('click', soundEnabled);
                             }}
                             className={`px-2.5 py-1 rounded-lg uppercase transition ${
-                              chartTimeframe === tf
+                              chartTimeframe === tf.key
                                 ? 'bg-cyan-500 text-black font-extrabold shadow'
                                 : 'text-slate-400 hover:text-white'
                             }`}
                           >
-                            {tf}
+                            {tf.label}
                           </button>
                         ))}
                       </div>
@@ -1513,11 +1518,11 @@ export default function AdminDashboard() {
                       <div className="hidden sm:flex items-center gap-3 text-[11px] text-slate-400 font-semibold">
                         <div className="flex items-center gap-1.5">
                           <span className="w-3.5 h-1.5 bg-[#f59e0b] rounded-sm"></span>
-                          <span>Visits</span>
+                          <span>{t.admin_visits || "Visits"}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
                           <span className="w-3.5 h-1.5 bg-[#00d2ff] rounded-sm"></span>
-                          <span>Sales</span>
+                          <span>{t.admin_sales || "Sales"}</span>
                         </div>
                       </div>
                     </div>
@@ -1651,8 +1656,8 @@ export default function AdminDashboard() {
                 <div className="lg:col-span-4 bg-[#131929] border border-[#1d273f] rounded-2xl p-5 space-y-4 shadow-xl">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="font-bold text-sm text-white">Order Status</h3>
-                      <p className="text-[10px] text-slate-400">Oylik buyurtmalar taqsimoti</p>
+                      <h3 className="font-bold text-sm text-white">{t.admin_order_status || "Order Status"}</h3>
+                      <p className="text-[10px] text-slate-400">{t.admin_monthly_stats || "Oylik buyurtmalar taqsimoti"}</p>
                     </div>
                     <span className="px-2 py-0.5 rounded-full bg-pink-500/20 text-pink-300 text-[10px] font-bold">
                       2026
@@ -2009,7 +2014,7 @@ export default function AdminDashboard() {
                     className="px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/20 hover:opacity-95 transition flex items-center gap-1.5"
                   >
                     <Plus className="w-4 h-4" />
-                    <span>Yangi Mahsulot Qo'shish</span>
+                    <span>{t.add_new_product || "Yangi Mahsulot Qo'shish"}</span>
                   </button>
                 </div>
               </div>
@@ -2020,7 +2025,7 @@ export default function AdminDashboard() {
                 <div className="md:col-span-4 relative">
                   <input
                     type="text"
-                    placeholder="Mahsulot nomi yoki ID bo'yicha qidirish..."
+                    placeholder={t.admin_product_search || "Mahsulot nomi yoki ID bo'yicha qidirish..."}
                     value={productSearch}
                     onChange={(e) => setProductSearch(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-cyan-500 transition"
@@ -2035,12 +2040,12 @@ export default function AdminDashboard() {
                     onChange={(e) => setProductCategoryFilter(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-cyan-500"
                   >
-                    <option value="all">Barcha Kategoriyalar</option>
-                    <option value="cat_smartphones">Smartfonlar ({categoryCounts.smartphones})</option>
-                    <option value="cat_laptops">Noutbuklar ({categoryCounts.laptops})</option>
-                    <option value="cat_audio">Audio Qurilmalar ({categoryCounts.audio})</option>
-                    <option value="cat_tv">Smart Televizorlar ({categoryCounts.tv})</option>
-                    <option value="cat_wearables">Aksessuarlar ({categoryCounts.wearables})</option>
+                    <option value="all">{t.admin_all_categories || "Barcha Kategoriyalar"}</option>
+                    <option value="cat_smartphones">{t.cat_smartphones || "Smartfonlar"} ({categoryCounts.smartphones})</option>
+                    <option value="cat_laptops">{t.cat_laptops || "Noutbuklar"} ({categoryCounts.laptops})</option>
+                    <option value="cat_audio">{t.cat_audio || "Audio Qurilmalar"} ({categoryCounts.audio})</option>
+                    <option value="cat_tv">{t.cat_tv || "Smart Televizorlar"} ({categoryCounts.tv})</option>
+                    <option value="cat_wearables">{t.cat_accessories || "Aksessuarlar"} ({categoryCounts.wearables})</option>
                   </select>
                 </div>
 
@@ -2051,10 +2056,10 @@ export default function AdminDashboard() {
                     onChange={(e) => setStockStatusFilter(e.target.value)}
                     className="w-full px-3 py-2 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-cyan-500"
                   >
-                    <option value="all">Ombor Holati</option>
-                    <option value="in_stock">Yetarli (&gt;5)</option>
-                    <option value="low">Kam qoldi (1-5)</option>
-                    <option value="out">Tugagan (0)</option>
+                    <option value="all">{t.admin_all_stock || "Ombor Holati"}</option>
+                    <option value="in_stock">{t.admin_in_stock || "Yetarli (>5)"}</option>
+                    <option value="low">{t.admin_low_stock || "Kam qoldi (1-5)"}</option>
+                    <option value="out">{t.admin_out_of_stock || "Tugagan (0)"}</option>
                   </select>
                 </div>
 
@@ -2073,12 +2078,12 @@ export default function AdminDashboard() {
                         className="px-2.5 py-1.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-bold hover:bg-rose-500/30 transition flex items-center gap-1"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
-                        <span>({selectedProductIds.length}) O'chirish</span>
+                        <span>({selectedProductIds.length}) {t.delete_product || "O'chirish"}</span>
                       </button>
                     </>
                   ) : (
                     <span className="text-[11px] text-slate-500">
-                      Jami mahsulotlar: {products.length} ta
+                      {t.total_products || "Jami mahsulotlar"}: {products.length}
                     </span>
                   )}
                 </div>
@@ -2100,12 +2105,12 @@ export default function AdminDashboard() {
                           className="rounded accent-cyan-500 cursor-pointer"
                         />
                       </th>
-                      <th className="p-3">Rasm</th>
-                      <th className="p-3">Mahsulot Nomi & ID</th>
-                      <th className="p-3">Kategoriya</th>
-                      <th className="p-3">Narxi ($)</th>
-                      <th className="p-3">Omborda (Tezkor +/-)</th>
-                      <th className="p-3 text-right">Amallar</th>
+                      <th className="p-3">{t.image_url || "Rasm"}</th>
+                      <th className="p-3">{t.product_title || "Mahsulot Nomi"} & ID</th>
+                      <th className="p-3">{t.category || "Kategoriya"}</th>
+                      <th className="p-3">{t.price || "Narxi ($)"}</th>
+                      <th className="p-3">{t.stock || "Omborda"}</th>
+                      <th className="p-3 text-right">{t.actions || "Amallar"}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1d273f]">
@@ -2248,11 +2253,11 @@ export default function AdminDashboard() {
               {/* Status Filter Tabs */}
               <div className="flex flex-wrap items-center gap-2 text-xs font-bold">
                 {[
-                  { key: 'all', label: 'Barchasi', count: orders.length },
-                  { key: 'pending', label: 'Kutilmoqda', count: orders.filter(o => !o.status || o.status.includes('pending')).length },
-                  { key: 'processing', label: 'Yetkazilmoqda', count: orders.filter(o => o.status === 'processing').length },
-                  { key: 'delivered', label: 'Yetkazib berildi', count: orders.filter(o => o.status === 'delivered' || o.status === 'status_delivered').length },
-                  { key: 'cancelled', label: 'Bekor qilingan', count: orders.filter(o => o.status === 'cancelled').length }
+                  { key: 'all', label: t.admin_all_categories || 'Barchasi', count: orders.length },
+                  { key: 'pending', label: t.status_pending || 'Kutilmoqda', count: orders.filter(o => !o.status || o.status.includes('pending')).length },
+                  { key: 'processing', label: lang === 'ru' ? 'В пути' : lang === 'en' ? 'Processing' : 'Yetkazilmoqda', count: orders.filter(o => o.status === 'processing').length },
+                  { key: 'delivered', label: t.status_completed || 'Yetkazib berildi', count: orders.filter(o => o.status === 'delivered' || o.status === 'status_delivered').length },
+                  { key: 'cancelled', label: t.status_cancelled || 'Bekor qilingan', count: orders.filter(o => o.status === 'cancelled').length }
                 ].map(tab => (
                   <button
                     key={tab.key}
@@ -2260,7 +2265,7 @@ export default function AdminDashboard() {
                       setOrderStatusFilter(tab.key);
                       playSound('click', soundEnabled);
                     }}
-                    className={`px-3 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
+                    className={`px-3.5 py-1.5 rounded-xl transition flex items-center gap-1.5 ${
                       orderStatusFilter === tab.key
                         ? 'bg-cyan-500 text-black font-black shadow'
                         : 'bg-[#0b0f19] text-slate-400 hover:text-white border border-[#1e2740]'
@@ -2277,14 +2282,14 @@ export default function AdminDashboard() {
                 <table className="w-full text-left border-collapse text-xs">
                   <thead>
                     <tr className="bg-[#0b0f19] text-slate-400 uppercase text-[10px] tracking-wider border-b border-[#1d273f]">
-                      <th className="p-3">ID</th>
-                      <th className="p-3">Sana & Vaqt</th>
-                      <th className="p-3">Mijoz Ismi</th>
-                      <th className="p-3">Telefon</th>
-                      <th className="p-3">To'lov</th>
-                      <th className="p-3">Jami Summa</th>
-                      <th className="p-3">Holati</th>
-                      <th className="p-3 text-right">Amallar</th>
+                      <th className="p-3">{t.order_id || "ID"}</th>
+                      <th className="p-3">{t.admin_order_date || "Sana & Vaqt"}</th>
+                      <th className="p-3">{t.customer || "Mijoz Ismi"}</th>
+                      <th className="p-3">{t.admin_order_phone || "Telefon"}</th>
+                      <th className="p-3">{t.payment_method || "To'lov"}</th>
+                      <th className="p-3">{t.admin_order_total || "Jami Summa"}</th>
+                      <th className="p-3">{t.status || "Holati"}</th>
+                      <th className="p-3 text-right">{t.actions || "Amallar"}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1d273f]">
@@ -2404,7 +2409,7 @@ export default function AdminDashboard() {
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-bold text-slate-300">
-                        Telegram Bot Token
+                        {t.bot_token || "Telegram Bot Token"}
                       </label>
                       <button
                         type="button"
@@ -2436,7 +2441,7 @@ export default function AdminDashboard() {
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-xs font-bold text-slate-300">
-                        Admin Chat ID
+                        {t.chat_id || "Admin Chat ID"}
                       </label>
                       <button
                         type="button"
@@ -2460,7 +2465,7 @@ export default function AdminDashboard() {
                       type="submit"
                       className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs hover:opacity-90 transition shadow-lg shadow-cyan-500/20"
                     >
-                      Saqlash
+                      {t.save || "Saqlash"}
                     </button>
 
                     <button
@@ -2474,7 +2479,7 @@ export default function AdminDashboard() {
                       ) : (
                         <Sparkles className="w-4 h-4 text-amber-400" />
                       )}
-                      <span>{isTestingBot ? "Sinov xabari yuborilmoqda..." : "Bot Aloqasini Sinash"}</span>
+                      <span>{isTestingBot ? "Sinov..." : (t.test_telegram_bot || "Bot Aloqasini Sinash")}</span>
                     </button>
 
                     <button
@@ -2483,7 +2488,7 @@ export default function AdminDashboard() {
                       className="px-4 py-2.5 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/40 font-bold text-xs hover:bg-purple-500/30 transition flex items-center gap-1.5"
                     >
                       <Radio className="w-4 h-4 text-purple-400" />
-                      <span>Xabar Yozish & E'lon</span>
+                      <span>{t.admin_telegram_broadcast || "Xabar Yozish & E'lon"}</span>
                     </button>
                   </div>
 
@@ -3055,7 +3060,7 @@ export default function AdminDashboard() {
           <div className="bg-[#131929] rounded-3xl max-w-lg w-full p-6 border border-[#1e2740] shadow-2xl space-y-4 text-white">
             <div className="flex items-center justify-between border-b border-[#1e2740] pb-3">
               <h3 className="font-extrabold text-lg text-white">
-                {editingProduct ? 'Mahsulotni Tahrirlash' : 'Yangi Mahsulot Qo\'shish'}
+                {editingProduct ? (t.edit_product || 'Mahsulotni Tahrirlash') : (t.add_new_product || "Yangi Mahsulot Qo'shish")}
               </h3>
               <button
                 onClick={() => {
@@ -3071,7 +3076,7 @@ export default function AdminDashboard() {
             <form onSubmit={handleSaveProduct} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
-                  Mahsulot Nomi *
+                  {t.product_title || "Mahsulot Nomi"} *
                 </label>
                 <input
                   type="text"
@@ -3085,24 +3090,24 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Kategoriya
+                    {t.category || "Kategoriya"}
                   </label>
                   <select
                     value={prodCategory}
                     onChange={(e) => setProdCategory(e.target.value)}
                     className="w-full p-2.5 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-cyan-500"
                   >
-                    <option value="cat_smartphones">Smartphones</option>
-                    <option value="cat_laptops">Laptops</option>
-                    <option value="cat_audio">Audio</option>
-                    <option value="cat_tv">Smart Televizorlar</option>
-                    <option value="cat_wearables">Wearables</option>
+                    <option value="cat_smartphones">{t.cat_smartphones || "Smartphones"}</option>
+                    <option value="cat_laptops">{t.cat_laptops || "Laptops"}</option>
+                    <option value="cat_audio">{t.cat_audio || "Audio"}</option>
+                    <option value="cat_tv">{t.cat_tv || "Smart Televizorlar"}</option>
+                    <option value="cat_wearables">{t.cat_accessories || "Wearables"}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Narxi ($) *
+                    {t.price || "Narxi ($)"} *
                   </label>
                   <input
                     type="number"
@@ -3117,7 +3122,7 @@ export default function AdminDashboard() {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Eski Narxi ($)
+                    {t.admin_old_price || "Eski Narxi ($)"}
                   </label>
                   <input
                     type="number"
@@ -3129,7 +3134,7 @@ export default function AdminDashboard() {
 
                 <div>
                   <label className="block text-xs font-bold text-slate-300 mb-1">
-                    Ombordagi Soni
+                    {t.stock || "Ombordagi Soni"}
                   </label>
                   <input
                     type="number"
@@ -3142,7 +3147,7 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
-                  Rasm URL
+                  {t.image_url || "Rasm URL"}
                 </label>
                 <input
                   type="text"
@@ -3155,7 +3160,7 @@ export default function AdminDashboard() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
-                  Tavsif
+                  {t.description || "Tavsif"}
                 </label>
                 <textarea
                   rows="3"
@@ -3174,13 +3179,13 @@ export default function AdminDashboard() {
                   }}
                   className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition"
                 >
-                  Bekor qilish
+                  {t.cancel || "Bekor qilish"}
                 </button>
                 <button
                   type="submit"
                   className="px-6 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-lg shadow-cyan-500/20 hover:opacity-95 transition"
                 >
-                  Saqlash
+                  {t.save || "Saqlash"}
                 </button>
               </div>
             </form>
@@ -3195,7 +3200,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between border-b border-[#1e2740] pb-3">
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
                 <Send className="w-5 h-5 text-sky-400" />
-                <span>Telegram E'lon Yuborish</span>
+                <span>{t.admin_telegram_broadcast_title || "Telegram E'lon Yuborish"}</span>
               </h3>
               <button
                 onClick={() => setIsBroadcastModalOpen(false)}
@@ -3206,14 +3211,14 @@ export default function AdminDashboard() {
             </div>
 
             <p className="text-xs text-slate-400">
-              Yozgan xabaringiz admin chatiga va bog'langan kanalga to'g'ridan-to'g'ri yuboriladi.
+              {lang === 'ru' ? 'Ваше сообщение будет мгновенно отправлено в чат администратора Telegram.' : lang === 'en' ? 'Your message will be dispatched directly to the Telegram admin chat.' : "Yozgan xabaringiz admin chatiga to'g'ridan-to'g'ri yuboriladi."}
             </p>
 
             <textarea
               rows="4"
               value={broadcastMessage}
               onChange={(e) => setBroadcastMessage(e.target.value)}
-              placeholder="Masalan: 🎉 Diqqat! Barcha televizorlarga 20% gacha bahorgi chegirma e'lon qilindi!"
+              placeholder={t.admin_telegram_broadcast_placeholder || "Xabar matnini kiriting..."}
               className="w-full p-3 rounded-2xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-cyan-500"
             />
 
@@ -3222,7 +3227,7 @@ export default function AdminDashboard() {
                 onClick={() => setIsBroadcastModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white"
               >
-                Bekor qilish
+                {t.cancel || "Bekor qilish"}
               </button>
               <button
                 disabled={isBroadcasting || !broadcastMessage.trim()}
@@ -3230,7 +3235,7 @@ export default function AdminDashboard() {
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 text-white font-extrabold text-xs shadow-lg hover:opacity-95 transition disabled:opacity-50 flex items-center gap-1.5"
               >
                 {isBroadcasting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
-                <span>Yuborish</span>
+                <span>{t.admin_telegram_broadcast_send || "Yuborish"}</span>
               </button>
             </div>
           </div>
@@ -3260,19 +3265,19 @@ export default function AdminDashboard() {
             {/* Customer Details */}
             <div className="text-xs space-y-1.5 bg-[#0b0f19] print:bg-slate-100 p-3.5 rounded-2xl border border-[#1e2740] print:border-slate-300">
               <div className="flex justify-between">
-                <span className="text-slate-400 print:text-slate-600 font-medium">Mijoz:</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">{t.customer || "Mijoz"}:</span>
                 <span className="font-bold text-white print:text-black">{viewingOrder.customer?.fullName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 print:text-slate-600 font-medium">Telefon:</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">{t.admin_order_phone || "Telefon"}:</span>
                 <span className="font-bold font-mono text-cyan-300 print:text-black">{viewingOrder.customer?.phone}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 print:text-slate-600 font-medium">Manzil:</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">{t.admin_order_address || "Manzil"}:</span>
                 <span className="font-bold text-white print:text-black">{viewingOrder.customer?.address}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400 print:text-slate-600 font-medium">To'lov:</span>
+                <span className="text-slate-400 print:text-slate-600 font-medium">{t.payment_method || "To'lov"}:</span>
                 <span className="font-bold uppercase text-emerald-400 print:text-black">{viewingOrder.customer?.paymentMethod}</span>
               </div>
             </div>
@@ -3293,7 +3298,7 @@ export default function AdminDashboard() {
             {/* Total */}
             <div className="pt-2 border-t border-[#1e2740] print:border-black/20 space-y-1 text-xs">
               <div className="flex justify-between text-base font-black text-white print:text-black pt-1">
-                <span>Jami To'lov:</span>
+                <span>{t.total_amount || "Jami To'lov"}:</span>
                 <span className="text-cyan-400 print:text-black text-lg">${viewingOrder.totalAmount?.toFixed(2)}</span>
               </div>
             </div>
@@ -3304,14 +3309,14 @@ export default function AdminDashboard() {
                 onClick={() => setIsInvoiceModalOpen(false)}
                 className="px-4 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition"
               >
-                Yopish
+                {t.cancel || "Yopish"}
               </button>
               <button
                 onClick={() => window.print()}
                 className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs flex items-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-95 transition"
               >
                 <Printer className="w-4 h-4" />
-                <span>Chop etish (Print)</span>
+                <span>{t.admin_print || "Chop etish"}</span>
               </button>
             </div>
           </div>
