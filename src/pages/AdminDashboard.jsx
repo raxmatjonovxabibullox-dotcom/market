@@ -116,6 +116,8 @@ const playSound = (type = 'click', enabled = true) => {
 export default function AdminDashboard() {
   const {
     t,
+    lang,
+    changeLanguage,
     products,
     addProduct,
     updateProduct,
@@ -149,6 +151,7 @@ export default function AdminDashboard() {
   const [soundEnabled, setSoundEnabled] = useState(() => localStorage.getItem('rocker_sound') !== 'false');
   const [accentColor, setAccentColor] = useState(() => localStorage.getItem('rocker_accent') || 'cyan'); // cyan, violet, emerald, amber, rose
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   
   // Admin Auth Gate State
   const [adminUsernameInput, setAdminUsernameInput] = useState('');
@@ -1254,9 +1257,62 @@ export default function AdminDashboard() {
               {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
             </button>
 
-            {/* Country Flag (UZ) */}
-            <div className="w-7 h-7 rounded-full overflow-hidden flex items-center justify-center bg-slate-800 border border-slate-700 text-xs shadow cursor-pointer hover:scale-105 transition" title="Til: O'zbekiston">
-              🇺🇿
+            {/* Country / Language Selector with Interactive Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setLangDropdownOpen(prev => !prev);
+                  playSound('click', soundEnabled);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[#162033] hover:bg-[#1f2c45] border border-[#222e46] text-xs font-black text-slate-200 transition shadow-sm active:scale-95"
+                title="Tilni tanlash (Language)"
+              >
+                <span className="text-sm">
+                  {lang === 'uz' ? '🇺🇿' : lang === 'ru' ? '🇷🇺' : '🇬🇧'}
+                </span>
+                <span className="uppercase text-[11px] font-black text-cyan-400">
+                  {lang}
+                </span>
+                <ChevronDown className="w-3 h-3 text-slate-400" />
+              </button>
+
+              {langDropdownOpen && (
+                <div
+                  className="absolute right-0 mt-2 w-36 bg-[#101726] border border-[#222e46] rounded-2xl shadow-2xl p-1.5 z-50 animate-in fade-in slide-in-from-top-2"
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <div className="px-2.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-[#1a2338] mb-1">
+                    Tilni tanlang:
+                  </div>
+                  {[
+                    { code: 'uz', flag: '🇺🇿', label: "O'zbekcha" },
+                    { code: 'ru', flag: '🇷🇺', label: "Русский" },
+                    { code: 'en', flag: '🇬🇧', label: "English" }
+                  ].map(l => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      onClick={() => {
+                        changeLanguage(l.code);
+                        setLangDropdownOpen(false);
+                        playSound('success', soundEnabled);
+                      }}
+                      className={`w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-xs font-bold transition ${
+                        lang === l.code
+                          ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40'
+                          : 'text-slate-300 hover:text-white hover:bg-[#162033]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span>{l.flag}</span>
+                        <span>{l.label}</span>
+                      </div>
+                      {lang === l.code && <Check className="w-3.5 h-3.5 text-cyan-400" />}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Theme Toggle */}
