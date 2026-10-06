@@ -110,6 +110,7 @@ export default function AdminDashboard() {
     addProduct,
     updateProduct,
     deleteProduct,
+    deleteMultipleProducts,
     orders,
     placeOrder,
     updateOrderStatus,
@@ -439,10 +440,11 @@ export default function AdminDashboard() {
   const handleDeleteSelectedProducts = () => {
     if (selectedProductIds.length === 0) return;
     if (confirm(`${selectedProductIds.length} ta tanlangan mahsulotni o'chirishni tasdiqlaysizmi?`)) {
-      selectedProductIds.forEach(id => deleteProduct(id));
+      deleteMultipleProducts(selectedProductIds);
+      const count = selectedProductIds.length;
       setSelectedProductIds([]);
-      showToast(`${selectedProductIds.length} ta mahsulot o'chirildi!`);
-      addActivity(`${selectedProductIds.length} ta mahsulot guruhlab o'chirildi`, 'trash', 'rose');
+      showToast(`${count} ta mahsulot o'chirildi!`);
+      addActivity(`${count} ta mahsulot guruhlab o'chirildi`, 'trash', 'rose');
     }
   };
 

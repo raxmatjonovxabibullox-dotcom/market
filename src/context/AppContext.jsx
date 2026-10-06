@@ -175,17 +175,42 @@ export const AppProvider = ({ children }) => {
   const FALLBACK_PRODUCT_IMAGE = REAL_POWERBANK_IMAGE;
 
   const [products, setProducts] = useState(() => {
-    const saved = localStorage.getItem('app_products');
-    let loaded = saved ? JSON.parse(saved) : INITIAL_PRODUCTS;
+    let deletedList = [];
+    try {
+      const delSaved = localStorage.getItem('app_deleted_products');
+      deletedList = delSaved ? JSON.parse(delSaved) : [];
+    } catch (e) {}
 
-    // Automatically append any new assortment products from INITIAL_PRODUCTS
-    if (loaded) {
-      const existingIds = new Set(loaded.map(p => p.id));
-      const missing = INITIAL_PRODUCTS.filter(p => !existingIds.has(p.id));
-      if (missing.length > 0) {
-        loaded = [...loaded, ...missing];
+    const saved = localStorage.getItem('app_products');
+    let loaded = null;
+    if (saved) {
+      try {
+        loaded = JSON.parse(saved);
+      } catch (e) {
+        loaded = null;
       }
     }
+
+    if (!loaded || !Array.isArray(loaded)) {
+      loaded = INITIAL_PRODUCTS;
+    }
+
+    // Filter out permanently deleted IDs
+    if (deletedList.length > 0) {
+      loaded = loaded.filter(p => !deletedList.includes(p.id));
+    }
+
+    // Sort standard products by their natural order in INITIAL_PRODUCTS
+    const initialOrderMap = new Map(INITIAL_PRODUCTS.map((p, idx) => [p.id, idx]));
+    loaded.sort((a, b) => {
+      const orderA = initialOrderMap.has(a.id) ? initialOrderMap.get(a.id) : -1;
+      const orderB = initialOrderMap.has(b.id) ? initialOrderMap.get(b.id) : -1;
+      // User created custom products stay at top (-1)
+      if (orderA === -1 && orderB !== -1) return -1;
+      if (orderA !== -1 && orderB === -1) return 1;
+      if (orderA !== -1 && orderB !== -1) return orderA - orderB;
+      return 0;
+    });
 
     // Always synchronize high-definition original images from INITIAL_PRODUCTS master list
     const masterImageMap = new Map(INITIAL_PRODUCTS.map(ip => [ip.id, ip.image]));
@@ -221,7 +246,34 @@ export const AppProvider = ({ children }) => {
   };
 
   const deleteProduct = (id) => {
-    setProducts(prev => prev.filter(p => p.id !== id));
+    setProducts(prev => {
+      const updated = prev.filter(p => p.id !== id);
+      try {
+        localStorage.setItem('app_products', JSON.stringify(updated));
+        const delSaved = localStorage.getItem('app_deleted_products');
+        const list = delSaved ? JSON.parse(delSaved) : [];
+        if (!list.includes(id)) {
+          localStorage.setItem('app_deleted_products', JSON.stringify([...list, id]));
+        }
+      } catch (e) {}
+      return updated;
+    });
+  };
+
+  const deleteMultipleProducts = (ids) => {
+    if (!Array.isArray(ids) || ids.length === 0) return;
+    const idSet = new Set(ids);
+    setProducts(prev => {
+      const updated = prev.filter(p => !idSet.has(p.id));
+      try {
+        localStorage.setItem('app_products', JSON.stringify(updated));
+        const delSaved = localStorage.getItem('app_deleted_products');
+        const list = delSaved ? JSON.parse(delSaved) : [];
+        const merged = Array.from(new Set([...list, ...ids]));
+        localStorage.setItem('app_deleted_products', JSON.stringify(merged));
+      } catch (e) {}
+      return updated;
+    });
   };
 
   // 5. Wishlist state
@@ -631,6 +683,7 @@ export const AppProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
+        deleteMultipleProducts,
         wishlist,
         toggleWishlist,
         isInWishlist,
