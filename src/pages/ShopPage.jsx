@@ -4,6 +4,7 @@ import { Filter, SlidersHorizontal, RotateCcw, Search, Grid, List, Plus, ShieldC
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
+import { useTypewriter } from '../hooks/useTypewriter';
 
 export default function ShopPage() {
   const { 
@@ -14,6 +15,7 @@ export default function ShopPage() {
     deleteProduct,
     searchQuery, 
     setSearchQuery, 
+    typeSearchQuery,
     selectedCategory, 
     setSelectedCategory,
     priceRange,
@@ -22,6 +24,15 @@ export default function ShopPage() {
     setSortBy,
     user
   } = useApp();
+
+  const animatedPlaceholder = useTypewriter([
+    "Samsung Galaxy S25 Ultra...",
+    "Apple iPhone 16 Pro Max...",
+    "Samsung The Frame Smart TV...",
+    "Apple MacBook Pro 16...",
+    "Sony PlayStation 5 Pro...",
+    "AirPods Pro 2 yoki ID (#p2)..."
+  ]);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const isFlashOnly = searchParams.get('filter') === 'flash';
@@ -429,10 +440,10 @@ export default function ShopPage() {
             <div className="relative flex items-center">
               <input
                 type="text"
-                placeholder="Mahsulot nomi, toifa yoki ID (#p1) bo'yicha qidiring..."
+                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : "Mahsulot nomi, toifa yoki ID (#p1)..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-24 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm font-medium"
+                className="w-full pl-11 pr-24 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:ring-2 focus:ring-indigo-500 text-xs sm:text-sm font-medium shadow-inner"
               />
               <Search className="w-5 h-5 text-indigo-500 absolute left-3.5 pointer-events-none" />
               {searchQuery && (
@@ -447,7 +458,7 @@ export default function ShopPage() {
               )}
             </div>
 
-            {/* Live Search Info & Popular Search Tags */}
+            {/* Live Search Info & Popular Search Tags with Animated Typing */}
             <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
               <div className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
                 {searchQuery ? (
@@ -464,8 +475,8 @@ export default function ShopPage() {
                   <button
                     key={tag}
                     type="button"
-                    onClick={() => setSearchQuery(tag)}
-                    className="px-2 py-0.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-medium transition"
+                    onClick={() => typeSearchQuery(tag)}
+                    className="px-2.5 py-0.5 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 font-bold transition active:scale-95 shadow-sm"
                   >
                     {tag}
                   </button>

@@ -722,6 +722,20 @@ export const AppProvider = ({ children }) => {
   const [priceRange, setPriceRange] = useState([0, 5000]);
   const [sortBy, setSortBy] = useState('newest');
 
+  const typeSearchQuery = (text, onFinish) => {
+    let index = 0;
+    setSearchQuery('');
+    const target = String(text || '');
+    const interval = setInterval(() => {
+      index++;
+      setSearchQuery(target.slice(0, index));
+      if (index >= target.length) {
+        clearInterval(interval);
+        if (onFinish) onFinish();
+      }
+    }, 45);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -769,6 +783,7 @@ export const AppProvider = ({ children }) => {
         telegramLogs,
         searchQuery,
         setSearchQuery,
+        typeSearchQuery,
         selectedCategory,
         setSelectedCategory,
         priceRange,

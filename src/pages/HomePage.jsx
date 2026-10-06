@@ -23,11 +23,21 @@ import {
 import { useApp } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import QuickViewModal from '../components/QuickViewModal';
+import { useTypewriter } from '../hooks/useTypewriter';
 
 export default function HomePage() {
-  const { t, products, setSelectedCategory, searchQuery, setSearchQuery, user } = useApp();
+  const { t, products, setSelectedCategory, searchQuery, setSearchQuery, typeSearchQuery, user } = useApp();
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const navigate = useNavigate();
+
+  const animatedPlaceholder = useTypewriter([
+    "Gadjetlar yoki tovar nomini qidiring...",
+    "Samsung Galaxy S25 Ultra...",
+    "Apple iPhone 16 Pro Max...",
+    "Samsung The Frame Smart TV...",
+    "Apple MacBook Pro 16...",
+    "Sony PlayStation 5 Pro..."
+  ]);
 
   // Flash Sale Countdown Timer
   const [timeLeft, setTimeLeft] = useState({ hours: 4, minutes: 45, seconds: 30 });
@@ -101,7 +111,7 @@ export default function HomePage() {
             <div className="relative flex items-center">
               <input
                 type="text"
-                placeholder="Gadjetlar, brendlar yoki tovar nomini qidiring (masalan: iPhone 15, Neo QLED)..."
+                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : "Gadjetlar, brendlar yoki tovar nomini qidiring..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-white dark:bg-white/10 backdrop-blur-xl border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-xl dark:shadow-2xl transition"
@@ -114,7 +124,7 @@ export default function HomePage() {
                 Qidirish
               </button>
             </div>
-            {/* Quick Keyword Chips */}
+            {/* Quick Keyword Chips with Animated Typewriter Click */}
             <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-600 dark:text-gray-300">
               <span className="text-slate-400 dark:text-gray-400 font-bold">Ommabop:</span>
               {['iPhone 15', 'Smart TV', 'MacBook Pro', 'AirPods', 'Gaming'].map(tag => (
@@ -122,10 +132,11 @@ export default function HomePage() {
                   type="button"
                   key={tag}
                   onClick={() => {
-                    setSearchQuery(tag);
-                    navigate('/shop');
+                    typeSearchQuery(tag, () => {
+                      setTimeout(() => navigate('/shop'), 150);
+                    });
                   }}
-                  className="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white transition text-[10px] font-bold shadow-sm"
+                  className="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white transition text-[10px] font-bold shadow-sm active:scale-95"
                 >
                   {tag}
                 </button>

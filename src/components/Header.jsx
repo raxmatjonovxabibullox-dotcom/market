@@ -29,8 +29,21 @@ import {
 import { useApp } from '../context/AppContext';
 import AuthModal from './AuthModal';
 import QuickViewModal from './QuickViewModal';
+import { useTypewriter } from '../hooks/useTypewriter';
 
 export default function Header() {
+  const animatedPlaceholder = useTypewriter([
+    "Samsung Galaxy S25 Ultra...",
+    "Apple iPhone 16 Pro Max...",
+    "Samsung The Frame Smart TV...",
+    "Apple MacBook Pro 16...",
+    "Sony PlayStation 5 Pro...",
+    "Apple AirPods Pro 2...",
+    "LG OLED evo Smart TV...",
+    "Xiaomi 15 Ultra 5G...",
+    "Gadjetlar yoki ID (#p2)..."
+  ]);
+
   const {
     t,
     lang,
@@ -46,6 +59,7 @@ export default function Header() {
     addToCart,
     searchQuery,
     setSearchQuery,
+    typeSearchQuery,
     isAdminPanelOpen,
     toggleAdminPanel
   } = useApp();
@@ -187,7 +201,7 @@ export default function Header() {
             >
               <input
                 type="text"
-                placeholder={t.search_placeholder || "Mahsulotlar yoki ID (#p2)..."}
+                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : "Mahsulotlar yoki ID (#p2)..."}
                 value={searchQuery}
                 onFocus={() => setIsSearchFocused(true)}
                 onChange={(e) => {
@@ -558,7 +572,7 @@ export default function Header() {
             <form onSubmit={handleSearchSubmit} className="relative">
               <input
                 type="text"
-                placeholder={t.search_placeholder}
+                placeholder={animatedPlaceholder ? `🔍 ${animatedPlaceholder}` : "Mahsulotlarni qidirish..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white"
