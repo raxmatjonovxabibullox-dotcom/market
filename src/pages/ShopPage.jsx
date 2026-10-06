@@ -30,6 +30,7 @@ export default function ShopPage() {
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [isTableViewOpen, setIsTableViewOpen] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
 
   // Quick Add Product Modal state
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -472,6 +473,173 @@ export default function ShopPage() {
               </div>
             </div>
           </div>
+
+          {/* Controls Bar: Sort, View Mode, Count */}
+          <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-sm">
+            <div className="flex items-center gap-2 text-xs font-bold text-gray-700 dark:text-gray-300">
+              <span className="text-slate-400">Natijalar:</span>
+              <span className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 font-black">
+                {filteredProducts.length} ta tovar
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3">
+              {/* Sort By Dropdown */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold text-gray-500 hidden sm:inline">Saralash:</span>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                  className="px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 outline-none focus:ring-2 focus:ring-indigo-500"
+                >
+                  <option value="newest">Yangi kelganlar</option>
+                  <option value="price_low">Narx: Arzondan qimmatga</option>
+                  <option value="price_high">Narx: Qimmatdan arzonga</option>
+                  <option value="rating">Reyting bo'yicha</option>
+                </select>
+              </div>
+
+              {/* Grid / List Switcher */}
+              <div className="flex items-center p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('grid')}
+                  className={`p-1.5 rounded-lg transition ${
+                    viewMode === 'grid'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                  }`}
+                  title="Kataklar ko'rinishi (Grid)"
+                >
+                  <Grid className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('list')}
+                  className={`p-1.5 rounded-lg transition ${
+                    viewMode === 'list'
+                      ? 'bg-white dark:bg-slate-700 text-indigo-600 dark:text-white shadow-sm'
+                      : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
+                  }`}
+                  title="Ro'yxat ko'rinishi (List)"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* PRODUCT CARDS LIST / GRID */}
+          {filteredProducts.length === 0 ? (
+            <div className="text-center py-20 px-6 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-gray-200 dark:border-gray-800 space-y-4">
+              <div className="w-16 h-16 rounded-3xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-500 mx-auto flex items-center justify-center">
+                <Package className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-black text-gray-900 dark:text-white">
+                  Hech qanday mahsulot topilmadi
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto">
+                  Qidiruv so'zini o'zgartirib ko'ring yoki filtrlarni tozalang.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs hover:bg-indigo-500 transition shadow"
+              >
+                Barcha filtrlarni tozalash
+              </button>
+            </div>
+          ) : viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredProducts.map(product => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onQuickView={(p) => setQuickViewProduct(p)}
+                  onEdit={(p) => handleOpenEdit(p)}
+                  onDelete={(p) => handleDeleteProduct(p.id, p.title)}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {filteredProducts.map(product => (
+                <div
+                  key={product.id}
+                  className="bg-white dark:bg-slate-900 p-4 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-md transition flex flex-col sm:flex-row items-center justify-between gap-4"
+                >
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <img
+                      src={product.image}
+                      alt={product.title}
+                      className="w-20 h-20 object-cover rounded-2xl bg-slate-100 dark:bg-slate-800 shrink-0"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop";
+                      }}
+                    />
+                    <div className="space-y-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] text-slate-400 font-bold">#{product.id}</span>
+                        <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
+                          {t[product.category] || product.category}
+                        </span>
+                      </div>
+                      <h4 className="font-black text-sm text-slate-900 dark:text-white truncate">
+                        {product.title}
+                      </h4>
+                      <p className="text-xs text-slate-500 line-clamp-1">
+                        {product.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800">
+                    <div className="text-right">
+                      <div className="font-black text-base text-slate-900 dark:text-white">
+                        ${product.price}
+                      </div>
+                      {product.oldPrice && (
+                        <div className="text-xs text-slate-400 line-through">
+                          ${product.oldPrice}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setQuickViewProduct(product)}
+                        className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-50 text-slate-600 dark:text-slate-300 hover:text-indigo-600 transition"
+                        title="Tezkor ko'rish"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </button>
+                      {user && (user.role === 'admin' || user.role === 'owner') && (
+                        <>
+                          <button
+                            onClick={() => handleOpenEdit(product)}
+                            className="p-2.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 hover:bg-indigo-100 text-indigo-600 transition"
+                            title="Tahrirlash"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id, product.title)}
+                            className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/50 hover:bg-rose-100 text-rose-600 transition"
+                            title="O'chirish"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           
         </main>
       </div>
