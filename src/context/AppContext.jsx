@@ -15,7 +15,11 @@ export const AppProvider = ({ children }) => {
   };
 
   // 2. Dark/Light Theme state
-  const [theme, setTheme] = useState(() => localStorage.getItem('app_theme') || 'light');
+  const [theme, setTheme] = useState(() => {
+    const saved = localStorage.getItem('app_theme');
+    if (saved) return saved;
+    return 'dark';
+  });
 
   useEffect(() => {
     const root = document.documentElement;

@@ -65,28 +65,28 @@ export default function HomePage() {
     <div className="space-y-12 pb-16">
 
       {/* 1. HERO SECTION WITH PROMINENT SEARCH */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-950 via-gray-900 to-gray-950 text-white rounded-3xl mt-4 p-8 md:p-14 border border-indigo-900/50 shadow-2xl">
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-50/90 via-purple-50/40 to-slate-50 dark:from-indigo-950 dark:via-gray-900 dark:to-gray-950 text-slate-900 dark:text-white rounded-3xl mt-4 p-8 md:p-14 border border-indigo-100/80 dark:border-indigo-900/50 shadow-xl transition-colors duration-300">
         {/* Decorative background lights */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-500/10 dark:bg-indigo-500/20 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-500/10 dark:bg-pink-500/20 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 max-w-3xl space-y-6">
           <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs font-bold text-indigo-300">
-              <Sparkles className="w-4 h-4 text-yellow-400 animate-spin-slow" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-100/80 dark:bg-white/10 backdrop-blur-md border border-indigo-200/60 dark:border-white/20 text-xs font-bold text-indigo-700 dark:text-indigo-300 shadow-sm">
+              <Sparkles className="w-4 h-4 text-amber-500 dark:text-yellow-400 animate-spin-slow" />
               <span>{t.hero_badge}</span>
             </div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400/40 text-xs font-black shadow-lg shadow-cyan-500/10">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 dark:bg-cyan-500/20 text-cyan-800 dark:text-cyan-300 border border-cyan-400/40 text-xs font-black shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
               <span>Dasturchi: <b>Xabibullo Raxmatjonov</b></span>
             </div>
           </div>
 
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight">
+          <h1 className="text-3xl md:text-5xl lg:text-6xl font-black tracking-tight leading-tight text-slate-900 dark:text-white">
             {t.hero_title}
           </h1>
 
-          <p className="text-sm md:text-lg text-gray-300 font-normal leading-relaxed max-w-2xl">
+          <p className="text-sm md:text-lg text-slate-600 dark:text-gray-300 font-normal leading-relaxed max-w-2xl">
             {t.hero_subtitle}
           </p>
 
@@ -104,19 +104,19 @@ export default function HomePage() {
                 placeholder="Gadjetlar, brendlar yoki tovar nomini qidiring (masalan: iPhone 15, Neo QLED)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-2xl"
+                className="w-full pl-12 pr-28 py-3.5 rounded-2xl bg-white dark:bg-white/10 backdrop-blur-xl border border-slate-200 dark:border-white/20 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 text-xs sm:text-sm font-medium shadow-xl dark:shadow-2xl transition"
               />
-              <Search className="w-5 h-5 text-indigo-400 absolute left-4 pointer-events-none" />
+              <Search className="w-5 h-5 text-indigo-500 dark:text-indigo-400 absolute left-4 pointer-events-none" />
               <button
                 type="submit"
-                className="absolute right-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-extrabold text-xs shadow-md hover:opacity-90 transition"
+                className="absolute right-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-extrabold text-xs shadow-md hover:opacity-90 active:scale-95 transition"
               >
                 Qidirish
               </button>
             </div>
             {/* Quick Keyword Chips */}
-            <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-gray-300">
-              <span className="text-gray-400">Ommabop:</span>
+            <div className="flex flex-wrap items-center gap-2 pt-2 text-[11px] text-slate-600 dark:text-gray-300">
+              <span className="text-slate-400 dark:text-gray-400 font-bold">Ommabop:</span>
               {['iPhone 15', 'Smart TV', 'MacBook Pro', 'AirPods', 'Gaming'].map(tag => (
                 <button
                   type="button"
@@ -125,7 +125,7 @@ export default function HomePage() {
                     setSearchQuery(tag);
                     navigate('/shop');
                   }}
-                  className="px-2 py-0.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/10 text-white transition text-[10px]"
+                  className="px-2.5 py-1 rounded-lg bg-white/80 dark:bg-white/10 hover:bg-white dark:hover:bg-white/20 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white transition text-[10px] font-bold shadow-sm"
                 >
                   {tag}
                 </button>
