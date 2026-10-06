@@ -5,6 +5,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import IntegratedAdminPanel from './components/IntegratedAdminPanel';
 import ErrorBoundary from './components/ErrorBoundary';
+import { TopLoadingBar, ScrollToTop, AnimatedPageWrapper } from './components/PageTransition';
 
 // Pages
 import HomePage from './pages/HomePage';
@@ -20,8 +21,10 @@ function MainShopLayout({ children }) {
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
       <Header />
       <IntegratedAdminPanel />
-      <main className="flex-1">
-        {children}
+      <main className="flex-1 flex flex-col">
+        <AnimatedPageWrapper>
+          {children}
+        </AnimatedPageWrapper>
       </main>
       <Footer />
     </div>
@@ -33,6 +36,8 @@ export default function App() {
     <ErrorBoundary>
       <AppProvider>
         <Router>
+          <ScrollToTop />
+          <TopLoadingBar />
           <Routes>
             {/* Main Shop Routes with Storefront Header, Integrated In-Page Admin Panel & Footer */}
             <Route path="/" element={<MainShopLayout><HomePage /></MainShopLayout>} />
@@ -41,11 +46,11 @@ export default function App() {
             <Route path="/cart" element={<MainShopLayout><CartCheckoutPage /></MainShopLayout>} />
             <Route path="/about" element={<MainShopLayout><AboutMapPage /></MainShopLayout>} />
             
-            {/* Dedicated Rocker-style Admin Dashboard */}
-            <Route path="/admin" element={<AdminDashboard />} />
+            {/* Dedicated Rocker-style Admin Dashboard with smooth transition */}
+            <Route path="/admin" element={<AnimatedPageWrapper><AdminDashboard /></AnimatedPageWrapper>} />
 
-            {/* Standalone Owner / Superadmin Dashboard */}
-            <Route path="/owner" element={<OwnerDashboard />} />
+            {/* Standalone Owner / Superadmin Dashboard with smooth transition */}
+            <Route path="/owner" element={<AnimatedPageWrapper><OwnerDashboard /></AnimatedPageWrapper>} />
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

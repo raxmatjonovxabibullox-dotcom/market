@@ -101,3 +101,36 @@
   scrollbar-width: none;
 }
 
+/* Page Transition Keyframe Animations */
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.page-enter-animation {
+  animation: pageEnter 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+@keyframes topProgress {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.animate-top-progress {
+  animation: topProgress 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
