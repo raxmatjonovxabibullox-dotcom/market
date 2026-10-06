@@ -600,7 +600,7 @@ export const INITIAL_PRODUCTS = [
     reviewsCount: 26,
     isFlashSale: false,
     isNew: true,
-    image: "/images/tv_samsung_frame.jpg",
+    image: "/images/tv_samsung_frame.jpg?v=2026",
     description: "Mat ekran (Anti-Reflection), san'at asari kabi devorga o'rnatish, San'at rejimi (Art Mode) va magnit ramkalar.",
     specs: {
       Screen: "55 dyuym Matte QLED 4K",
