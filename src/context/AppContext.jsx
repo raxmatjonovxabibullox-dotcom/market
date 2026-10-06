@@ -45,11 +45,11 @@ export const AppProvider = ({ children }) => {
       if (
         parsed &&
         (String(parsed.username || '').toLowerCase() === 'owner' ||
-         String(parsed.name || '').toLowerCase() === 'owner' ||
-         String(parsed.name || '').toLowerCase().includes('loyiha egasi') ||
-         String(parsed.email || '').toLowerCase() === 'raxmatjonovxabibullox@gmail.com' ||
-         String(parsed.username || '').toLowerCase() === 'xabibullo' ||
-         String(parsed.username || '').toLowerCase() === 'xabibullox')
+          String(parsed.name || '').toLowerCase() === 'owner' ||
+          String(parsed.name || '').toLowerCase().includes('loyiha egasi') ||
+          String(parsed.email || '').toLowerCase() === 'raxmatjonovxabibullox@gmail.com' ||
+          String(parsed.username || '').toLowerCase() === 'xabibullo' ||
+          String(parsed.username || '').toLowerCase() === 'xabibullox')
       ) {
         const ownerUser = {
           username: 'owner',
@@ -70,8 +70,8 @@ export const AppProvider = ({ children }) => {
     if (
       user &&
       (String(user.username || '').toLowerCase() === 'owner' ||
-       String(user.name || '').toLowerCase() === 'owner' ||
-       String(user.username || '').toLowerCase() === 'xabibullo') &&
+        String(user.name || '').toLowerCase() === 'owner' ||
+        String(user.username || '').toLowerCase() === 'xabibullo') &&
       user.role !== 'owner'
     ) {
       const fixedOwner = {
@@ -233,7 +233,7 @@ export const AppProvider = ({ children }) => {
     try {
       const delSaved = localStorage.getItem('app_deleted_products');
       deletedList = delSaved ? JSON.parse(delSaved) : [];
-    } catch (e) {}
+    } catch (e) { }
 
     const saved = localStorage.getItem('app_products');
     let loaded = null;
@@ -309,7 +309,7 @@ export const AppProvider = ({ children }) => {
         if (!list.includes(id)) {
           localStorage.setItem('app_deleted_products', JSON.stringify([...list, id]));
         }
-      } catch (e) {}
+      } catch (e) { }
       return updated;
     });
   };
@@ -325,7 +325,7 @@ export const AppProvider = ({ children }) => {
         const list = delSaved ? JSON.parse(delSaved) : [];
         const merged = Array.from(new Set([...list, ...ids]));
         localStorage.setItem('app_deleted_products', JSON.stringify(merged));
-      } catch (e) {}
+      } catch (e) { }
       return updated;
     });
   };

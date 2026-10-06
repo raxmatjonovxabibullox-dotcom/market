@@ -1,7 +1,7 @@
 export const INITIAL_PRODUCTS = [
   {
     id: "p1",
-    title: "iPhone 16 Pro Max 256GB Natural Titanium",
+    title: "Apple iPhone 16 Pro Max 256GB (Natural Titanium) Smartfon",
     category: "cat_smartphones",
     price: 1399,
     oldPrice: 1549,
@@ -22,7 +22,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p2",
-    title: "Samsung Galaxy S25 Ultra 5G 512GB",
+    title: "Samsung Galaxy S25 Ultra 5G 512GB (Titanium Black) Smartfon",
     category: "cat_smartphones",
     price: 1299,
     oldPrice: 1429,
@@ -43,7 +43,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p3",
-    title: "MacBook Pro 16 M3 Max 36GB / 1TB SSD Space Black",
+    title: "Apple MacBook Pro 16\" M3 Max (36GB RAM / 1TB SSD) Noutbuk",
     category: "cat_laptops",
     price: 3499,
     oldPrice: 3799,
@@ -64,7 +64,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p4",
-    title: "Sony WH-1000XM5 Noise Canceling Headphones",
+    title: "Sony WH-1000XM5 Shovqinni So'ndiruvchi Simsiz Quloqchin",
     category: "cat_audio",
     price: 389,
     oldPrice: 449,
@@ -84,7 +84,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p5",
-    title: "Apple Watch Ultra 2 GPS + Cellular 49mm Titanium",
+    title: "Apple Watch Ultra 2 (49mm Titanium GPS + Cellular) Aqlli Soat",
     category: "cat_watches",
     price: 799,
     oldPrice: 899,
@@ -104,7 +104,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p6",
-    title: "ASUS ROG Strix SCAR 18 i9-14900HX RTX 4090",
+    title: "ASUS ROG Strix SCAR 18 (i9-14900HX / RTX 4090 / 64GB) Geyming Noutbuk",
     category: "cat_gaming",
     price: 3899,
     oldPrice: 4199,
@@ -124,7 +124,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p7",
-    title: "AirPods Pro 2nd Gen USB-C Active Noise Cancellation",
+    title: "Apple AirPods Pro 2 (USB-C MagSafe Case) Simsiz Quloqchin",
     category: "cat_audio",
     price: 239,
     oldPrice: 279,
@@ -143,7 +143,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p8",
-    title: "Anker Prime 20,000mAh Power Bank 200W Output",
+    title: "Anker Prime 20,000mAh (200W Tezkor Quvvatlovchi) Portativ Powerbank",
     category: "cat_accessories",
     price: 119,
     oldPrice: 149,
@@ -162,7 +162,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p9",
-    title: "Google Pixel 9 Pro XL 256GB Obsidian",
+    title: "Google Pixel 9 Pro XL 256GB (Obsidian) Smartfon",
     category: "cat_smartphones",
     price: 1099,
     oldPrice: 1199,
@@ -183,7 +183,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p10",
-    title: "Xiaomi 15 Ultra Leica Optics 512GB",
+    title: "Xiaomi 15 Ultra 5G (Leica Optics 512GB) Flagman Smartfon",
     category: "cat_smartphones",
     price: 1049,
     oldPrice: 1199,
@@ -204,7 +204,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p11",
-    title: "MacBook Air 15 M3 16GB / 512GB Midnight",
+    title: "Apple MacBook Air 15\" M3 (16GB RAM / 512GB SSD) Noutbuk",
     category: "cat_laptops",
     price: 1499,
     oldPrice: 1699,
@@ -225,7 +225,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p12",
-    title: "Dell XPS 16 OLED Core Ultra 9 32GB RTX 4070",
+    title: "Dell XPS 16 9640 (OLED 4K / Core Ultra 9 / RTX 4070) Noutbuk",
     category: "cat_laptops",
     price: 2899,
     oldPrice: 3199,
@@ -246,7 +246,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p13",
-    title: "Lenovo ThinkPad X1 Carbon Gen 12 Ultralight",
+    title: "Lenovo ThinkPad X1 Carbon Gen 12 (Core Ultra 7 / 32GB) Biznes Noutbuk",
     category: "cat_laptops",
     price: 1899,
     oldPrice: 2099,
@@ -267,7 +267,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p14",
-    title: "Marshall Major IV Wireless Bluetooth Headphones",
+    title: "Marshall Major IV Bluetooth Simsiz Quloqchin",
     category: "cat_audio",
     price: 149,
     oldPrice: 179,
@@ -287,7 +287,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p15",
-    title: "JBL Boombox 3 Wi-Fi & Bluetooth Massive Bass",
+    title: "JBL Boombox 3 Wi-Fi & Bluetooth Portativ Akustik Kolonka",
     category: "cat_audio",
     price: 499,
     oldPrice: 599,
@@ -307,7 +307,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p16",
-    title: "Samsung Galaxy Watch Ultra 47mm LTE Titanium",
+    title: "Samsung Galaxy Watch Ultra 47mm LTE Titanium Aqlli Soat",
     category: "cat_watches",
     price: 649,
     oldPrice: 729,
@@ -327,7 +327,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p17",
-    title: "Garmin Fenix 7X Pro Solar Sapphire Multisport",
+    title: "Garmin Fenix 7X Pro Solar Sapphire Professional Sport Soati",
     category: "cat_watches",
     price: 899,
     oldPrice: 999,
@@ -347,7 +347,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p18",
-    title: "Apple Watch Series 10 Jet Black 46mm GPS",
+    title: "Apple Watch Series 10 (46mm Jet Black GPS) Aqlli Soat",
     category: "cat_watches",
     price: 429,
     oldPrice: 479,
@@ -367,7 +367,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p19",
-    title: "Logitech MX Master 3S Wireless Performance Mouse",
+    title: "Logitech MX Master 3S Bluetooth Simsiz Ofis Sichqonchasi",
     category: "cat_accessories",
     price: 99,
     oldPrice: 119,
@@ -387,7 +387,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p20",
-    title: "Apple MagSafe Duo Wireless Fast Charger",
+    title: "Apple MagSafe Duo Simsiz 2-in-1 Tezkor Zaryadlash Stansiyasi",
     category: "cat_accessories",
     price: 129,
     oldPrice: 149,
@@ -406,7 +406,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p21",
-    title: "Baseus GaN5 Pro 140W Desktop Fast Charger Hub",
+    title: "Baseus GaN5 Pro 140W Tezkor Tarmoq Zaryadlash Qurilmasi",
     category: "cat_accessories",
     price: 79,
     oldPrice: 99,
@@ -426,7 +426,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p22",
-    title: "Sony PlayStation 5 Pro 2TB 4K 120fps Console",
+    title: "Sony PlayStation 5 Pro 2TB (4K 120fps) O'yin Konsoli (PS5 Pro)",
     category: "cat_gaming",
     price: 699,
     oldPrice: 749,
@@ -446,7 +446,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p23",
-    title: "Nintendo Switch OLED Model Mario Red Edition",
+    title: "Nintendo Switch OLED Model (Mario Red Edition) Portativ O'yin Konsoli",
     category: "cat_gaming",
     price: 349,
     oldPrice: 399,
@@ -466,7 +466,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p24",
-    title: "Razer DeathAdder V3 Pro Wireless Gaming Mouse",
+    title: "Razer DeathAdder V3 Pro Simsiz Ultra-Yengil Geymer Sichqonchasi",
     category: "cat_gaming",
     price: 149,
     oldPrice: 169,
@@ -486,7 +486,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p25",
-    title: "Samsung Neo QLED 65\" 4K Smart TV (QN90D 2026)",
+    title: "Samsung Neo QLED 65\" 4K Ultra HD Smart Televizor (QN90D 2026)",
     category: "cat_tv",
     price: 1799,
     oldPrice: 2099,
@@ -507,7 +507,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p26",
-    title: "LG OLED evo 55\" 4K Cinema Smart TV (C4 Series)",
+    title: "LG OLED evo 55\" 4K Cinema Smart Televizor (C4 Series 2026)",
     category: "cat_tv",
     price: 1499,
     oldPrice: 1699,
@@ -528,7 +528,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p27",
-    title: "Sony BRAVIA XR 75\" Mini LED 4K Google TV (X95L)",
+    title: "Sony BRAVIA XR 75\" Mini LED 4K Google Smart Televizor (X95L)",
     category: "cat_tv",
     price: 2499,
     oldPrice: 2899,
@@ -549,7 +549,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p28",
-    title: "Xiaomi TV Max 86\" Ultra Large 4K Smart TV",
+    title: "Xiaomi TV Max 86\" Ultra Large 4K Smart Televizor",
     category: "cat_tv",
     price: 1399,
     oldPrice: 1599,
@@ -570,7 +570,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p29",
-    title: "TCL 65\" QD-Mini LED 4K 144Hz Gaming TV (C755)",
+    title: "TCL 65\" QD-Mini LED 4K 144Hz Geyming Smart Televizor (C755)",
     category: "cat_tv",
     price: 899,
     oldPrice: 1049,
@@ -591,7 +591,7 @@ export const INITIAL_PRODUCTS = [
   },
   {
     id: "p30",
-    title: "Samsung The Frame 55\" QLED 4K Art Mode TV",
+    title: "Samsung The Frame 55\" 4K QLED Smart Televizor (Art Mode & Stend)",
     category: "cat_tv",
     price: 1199,
     oldPrice: 1350,
