@@ -78,6 +78,10 @@ export default function ShopPage() {
 
   const handleSaveEditProduct = (e) => {
     e.preventDefault();
+    if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+      alert("Faqat administrator yoki do'kon egasi tovarni tahrirlashi mumkin!");
+      return;
+    }
     if (!editingProduct || !editTitle || !editPrice) return;
     updateProduct(editingProduct.id, {
       title: editTitle,
@@ -96,6 +100,10 @@ export default function ShopPage() {
   };
 
   const handleDeleteProduct = (productId, title) => {
+    if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+      alert("Faqat administrator yoki do'kon egasi tovarni o'chirishi mumkin!");
+      return;
+    }
     if (window.confirm(`"${title}" mahsulotini o'chirmoqchimisiz?`)) {
       deleteProduct(productId);
     }
@@ -103,6 +111,10 @@ export default function ShopPage() {
 
   const handleAddNewProduct = (e) => {
     e.preventDefault();
+    if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
+      alert("Faqat administrator yoki do'kon egasi yangi tovar qo'sha oladi!");
+      return;
+    }
     if (!newTitle || !newPrice) return;
     addProduct({
       title: newTitle,
@@ -197,40 +209,40 @@ export default function ShopPage() {
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
       
-      {/* Admin Quick Action Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
-        <div className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
-            <Package className="w-5 h-5" />
+      {/* Admin Quick Action Banner - Faqat Admin va Owner uchun */}
+      {user && (user.role === 'admin' || user.role === 'owner') && (
+        <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-indigo-500/30 rounded-2xl p-4 shadow-xl flex flex-wrap items-center justify-between gap-3 text-white">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center">
+              <Package className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-black text-xs sm:text-sm block">Mahsulotlar Boshqaruvi (Admin & CRUD Tools)</span>
+              <span className="text-[10px] text-slate-400">Yangi tovar qo'shish, tahrirlash yoki o'chirish ({user.name})</span>
+            </div>
           </div>
-          <div>
-            <span className="font-black text-xs sm:text-sm block">Mahsulotlar Boshqaruvi (Admin & CRUD Tools)</span>
-            <span className="text-[10px] text-slate-400">Yangi tovar qo'shish, tahrirlash yoki o'chirish (Xabibullo Raxmatjonov)</span>
-          </div>
-        </div>
 
-        <div className="flex items-center gap-2 flex-wrap">
-          <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-cyan-500/25 hover:opacity-90 flex items-center gap-1.5 transition"
-          >
-            <Plus className="w-4 h-4" />
-            <span>➕ Yangi Tovar Qo'shish</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold text-xs shadow-md shadow-cyan-500/25 hover:opacity-90 flex items-center gap-1.5 transition"
+            >
+              <Plus className="w-4 h-4" />
+              <span>➕ Yangi Tovar Qo'shish</span>
+            </button>
 
-          <button
-            onClick={() => setIsTableViewOpen(!isTableViewOpen)}
-            className={`px-3.5 py-2 rounded-xl border font-bold text-xs flex items-center gap-1.5 transition ${
-              isTableViewOpen
-                ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-lg shadow-cyan-500/30'
-                : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border-slate-700'
-            }`}
-          >
-            <Table className="w-4 h-4 text-cyan-400" />
-            <span>{isTableViewOpen ? 'Jadvalni Yopish' : '📋 Tovarlar Jadvali (CRUD)'}</span>
-          </button>
+            <button
+              onClick={() => setIsTableViewOpen(!isTableViewOpen)}
+              className={`px-3.5 py-2 rounded-xl border font-bold text-xs flex items-center gap-1.5 transition ${
+                isTableViewOpen
+                  ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-black shadow-lg shadow-cyan-500/30'
+                  : 'bg-slate-800 hover:bg-slate-700 text-cyan-300 border-slate-700'
+              }`}
+            >
+              <Table className="w-4 h-4 text-cyan-400" />
+              <span>{isTableViewOpen ? 'Jadvalni Yopish' : '📋 Tovarlar Jadvali (CRUD)'}</span>
+            </button>
 
-          {user && (user.role === 'admin' || user.role === 'owner') && (
             <Link
               to="/admin"
               className="px-3.5 py-2 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-black text-xs flex items-center gap-1.5 shadow transition"
@@ -238,12 +250,12 @@ export default function ShopPage() {
               <ShieldCheck className="w-4 h-4" />
               <span>👑 Rocker Admin Panel ➔</span>
             </Link>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* CRUD TABLE VIEW (Agar bosilsa ochiladi) */}
-      {isTableViewOpen && (
+      {/* CRUD TABLE VIEW (Faqat Admin va Owner uchun) */}
+      {user && (user.role === 'admin' || user.role === 'owner') && isTableViewOpen && (
         <div className="bg-white dark:bg-slate-900 rounded-3xl p-5 border border-cyan-500/40 shadow-xl space-y-4 animate-in fade-in slide-in-from-top-3">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
             <div>
@@ -664,7 +676,7 @@ export default function ShopPage() {
       )}
 
       {/* Quick Add Product Modal */}
-      {isAddModalOpen && (
+      {isAddModalOpen && user && (user.role === 'admin' || user.role === 'owner') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">
@@ -794,7 +806,7 @@ export default function ShopPage() {
       )}
 
       {/* Edit Product Modal (CRUD Tahrirlash) */}
-      {editingProduct && (
+      {editingProduct && user && (user.role === 'admin' || user.role === 'owner') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
           <div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
             <div className="flex items-center justify-between border-b pb-3 border-slate-200 dark:border-slate-800">

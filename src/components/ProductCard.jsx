@@ -89,25 +89,28 @@ export default function ProductCard({ product, onQuickView, onEdit, onDelete }) 
           )}
         </div>
 
-        {/* Action Overlay Buttons - Tahrirlash, O'chirish, Sevimlilar, Tezkor ko'rish */}
+        {/* Action Overlay Buttons - Sevimlilar, Tezkor ko'rish va faqat Admin/Owner uchun CRUD */}
         <div className="absolute top-3 right-3 flex flex-col gap-2 z-10">
-          {/* CRUD: Tahrirlash (Edit) */}
-          <button
-            onClick={handleEditClick}
-            className="p-2 rounded-2xl bg-indigo-600/90 hover:bg-indigo-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
-            title="Mahsulotni tahrirlash (Edit)"
-          >
-            <Edit3 className="w-4 h-4" />
-          </button>
+          {/* CRUD: Faqat Admin va Owner uchun Tahrirlash va O'chirish */}
+          {user && (user.role === 'admin' || user.role === 'owner') && (
+            <>
+              <button
+                onClick={handleEditClick}
+                className="p-2 rounded-2xl bg-indigo-600/90 hover:bg-indigo-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
+                title="Mahsulotni tahrirlash (Edit)"
+              >
+                <Edit3 className="w-4 h-4" />
+              </button>
 
-          {/* CRUD: O'chirish (Delete) */}
-          <button
-            onClick={handleDeleteClick}
-            className="p-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
-            title="Mahsulotni o'chirish (Delete)"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+              <button
+                onClick={handleDeleteClick}
+                className="p-2 rounded-2xl bg-rose-600/90 hover:bg-rose-600 text-white backdrop-blur-md transition-all shadow-lg active:scale-90"
+                title="Mahsulotni o'chirish (Delete)"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </>
+          )}
 
           {/* Sevimlilar (Wishlist) */}
           <button
