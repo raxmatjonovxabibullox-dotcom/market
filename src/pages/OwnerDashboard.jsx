@@ -82,6 +82,12 @@ export default function OwnerDashboard() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [productSearch, setProductSearch] = useState('');
+  const [toastMessage, setToastMessage] = useState(null);
+
+  const showToast = (msg, type = 'success') => {
+    setToastMessage({ msg, type });
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   // Form states for product
   const [prodTitle, setProdTitle] = useState('');
@@ -285,21 +291,23 @@ export default function OwnerDashboard() {
     if (!prodTitle || !prodPrice) return;
 
     const payload = {
-      title: prodTitle,
+      title: prodTitle.trim(),
       category: prodCategory,
       price: Number(prodPrice),
       oldPrice: prodOldPrice ? Number(prodOldPrice) : null,
-      stock: Number(prodStock),
-      image: prodImage || 'https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop',
-      description: prodDesc
+      stock: Number(prodStock) || 0,
+      image: (prodImage || '').trim() || 'https://images.unsplash.com/photo-1525858907241-d230b66fb9fa?q=80&w=800&auto=format&fit=crop',
+      description: (prodDesc || '').trim()
     };
 
     if (editingProduct) {
       updateProduct(editingProduct.id, payload);
       setEditingProduct(null);
+      showToast("Mahsulot muvaffaqiyatli tahrirlandi! ✏️");
     } else {
       addProduct(payload);
       setIsAddModalOpen(false);
+      showToast("Yangi mahsulot omborga muvaffaqiyatli qo'shildi! 🎉");
     }
   };
 
@@ -349,8 +357,18 @@ export default function OwnerDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col md:flex-row font-sans transition-colors duration-300">
+    <div className="min-h-screen bg-slate-900 text-slate-100 flex flex-col md:flex-row font-sans transition-colors duration-300 relative">
       
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-[150] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-2xl backdrop-blur-xl border border-white/10 animate-in slide-in-from-top duration-300 bg-slate-900/95 text-white">
+          <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${toastMessage.type === 'success' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>
+            <CheckCircle2 className="w-4 h-4" />
+          </div>
+          <span className="text-xs font-bold">{toastMessage.msg}</span>
+        </div>
+      )}
+
       {/* OWNER SIDEBAR */}
       <aside className="w-full md:w-68 md:h-screen md:sticky md:top-0 bg-slate-950 border-r border-slate-800 p-5 flex flex-col justify-between shrink-0 shadow-2xl overflow-y-auto">
         <div className="space-y-6">
@@ -1053,8 +1071,13 @@ export default function OwnerDashboard() {
 
       {/* ADD / EDIT ADMIN MODAL */}
       {isAdminModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-slate-800 rounded-3xl max-w-md w-full p-6 border border-amber-500/30 shadow-2xl space-y-4 text-white">
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAdminModalOpen(false);
+          }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto"
+        >
+          <div className="bg-slate-800 rounded-3xl max-w-md w-full p-6 border border-amber-500/30 shadow-2xl space-y-4 text-white max-h-[90vh] overflow-y-auto my-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-slate-700 pb-3">
               <h3 className="font-extrabold text-lg text-white flex items-center gap-2">
                 <UserPlus className="w-5 h-5 text-amber-400" />
@@ -1146,8 +1169,16 @@ export default function OwnerDashboard() {
 
       {/* ADD / EDIT PRODUCT MODAL */}
       {(isAddModalOpen || editingProduct) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-slate-800 rounded-3xl max-w-lg w-full p-6 border border-slate-700 shadow-2xl space-y-4 text-white">
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsAddModalOpen(false);
+              setEditingProduct(null);
+            }
+          }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto"
+        >
+          <div className="bg-slate-800 rounded-3xl max-w-lg w-full p-5 sm:p-6 border border-slate-700 shadow-2xl space-y-4 text-white max-h-[90vh] overflow-y-auto my-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-slate-700 pb-3">
               <h3 className="font-extrabold text-lg text-white">
                 {editingProduct ? 'Mahsulotni Tahrirlash' : 'Yangi Mahsulot Qo\'shish'}
@@ -1163,6 +1194,43 @@ export default function OwnerDashboard() {
               </button>
             </div>
 
+            {/* Quick Presets for Owner */}
+            {!editingProduct && (
+              <div className="flex items-center gap-2 pb-1 overflow-x-auto text-[11px]">
+                <span className="text-slate-400 font-bold shrink-0">Shablon:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProdTitle('Samsung Smart TV Neo QLED 65" 4K');
+                    setProdCategory('cat_tv');
+                    setProdPrice('1450');
+                    setProdOldPrice('1690');
+                    setProdStock('8');
+                    setProdImage('/images/tv_samsung_neo_qled.jpg');
+                    setProdDesc('Premium Quantum Matrix, 144Hz, HDR2000 smart televizor');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold hover:bg-purple-500/30 transition shrink-0"
+                >
+                  📺 Smart TV
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProdTitle('iPhone 16 Pro Max 256GB Desert Titanium');
+                    setProdCategory('cat_smartphones');
+                    setProdPrice('1399');
+                    setProdOldPrice('1550');
+                    setProdStock('12');
+                    setProdImage('https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=800&auto=format&fit=crop');
+                    setProdDesc('A18 Pro chip, titan korpus va 5x optik zoom kamerasi');
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold hover:bg-cyan-500/30 transition shrink-0"
+                >
+                  📱 Smartfon
+                </button>
+              </div>
+            )}
+
             <form onSubmit={handleSaveProduct} className="space-y-3">
               <div>
                 <label className="block text-xs font-bold text-slate-300 mb-1">
@@ -1173,7 +1241,8 @@ export default function OwnerDashboard() {
                   required
                   value={prodTitle}
                   onChange={(e) => setProdTitle(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                  placeholder="Masalan: iPhone 16 Pro Max"
+                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -1185,15 +1254,15 @@ export default function OwnerDashboard() {
                   <select
                     value={prodCategory}
                     onChange={(e) => setProdCategory(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-semibold"
+                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none font-semibold focus:border-amber-500"
                   >
-                    <option value="cat_smartphones">{t.cat_smartphones}</option>
-                    <option value="cat_laptops">{t.cat_laptops}</option>
+                    <option value="cat_smartphones">{t.cat_smartphones || 'Smartfonlar'}</option>
+                    <option value="cat_laptops">{t.cat_laptops || 'Noutbuklar'}</option>
                     <option value="cat_tv">{t.cat_tv || 'Televizorlar & Smart TV'}</option>
-                    <option value="cat_audio">{t.cat_audio}</option>
-                    <option value="cat_watches">{t.cat_watches}</option>
-                    <option value="cat_accessories">{t.cat_accessories}</option>
-                    <option value="cat_gaming">{t.cat_gaming}</option>
+                    <option value="cat_audio">{t.cat_audio || 'Quloqchinlar & Audio'}</option>
+                    <option value="cat_watches">{t.cat_watches || 'Aqlli soatlar'}</option>
+                    <option value="cat_accessories">{t.cat_accessories || 'Aksessuarlar'}</option>
+                    <option value="cat_gaming">{t.cat_gaming || 'Geyming'}</option>
                   </select>
                 </div>
 
@@ -1206,7 +1275,8 @@ export default function OwnerDashboard() {
                     required
                     value={prodPrice}
                     onChange={(e) => setProdPrice(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                    placeholder="1200"
+                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -1220,7 +1290,8 @@ export default function OwnerDashboard() {
                     type="number"
                     value={prodOldPrice}
                     onChange={(e) => setProdOldPrice(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                    placeholder="1350"
+                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                   />
                 </div>
 
@@ -1232,7 +1303,8 @@ export default function OwnerDashboard() {
                     type="number"
                     value={prodStock}
                     onChange={(e) => setProdStock(e.target.value)}
-                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                    placeholder="10"
+                    className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                   />
                 </div>
               </div>
@@ -1245,7 +1317,8 @@ export default function OwnerDashboard() {
                   type="text"
                   value={prodImage}
                   onChange={(e) => setProdImage(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                  placeholder="https://images.unsplash.com/... yoki /images/..."
+                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                 />
               </div>
 
@@ -1257,11 +1330,12 @@ export default function OwnerDashboard() {
                   rows="2"
                   value={prodDesc}
                   onChange={(e) => setProdDesc(e.target.value)}
-                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none"
+                  placeholder="Mahsulot haqida qisqacha ma'lumot..."
+                  className="w-full p-2.5 rounded-xl text-xs bg-slate-900 border border-slate-700 text-white outline-none focus:border-amber-500"
                 ></textarea>
               </div>
 
-              <div className="pt-2 flex items-center justify-end gap-2">
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-slate-700/60">
                 <button
                   type="button"
                   onClick={() => {
@@ -1274,7 +1348,7 @@ export default function OwnerDashboard() {
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 text-white text-xs font-black shadow"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-indigo-600 hover:from-amber-400 hover:to-indigo-500 text-white text-xs font-black shadow-lg shadow-amber-500/20 active:scale-95 transition"
                 >
                   {editingProduct ? 'Saqlash' : 'Mahsulotni Joylash'}
                 </button>

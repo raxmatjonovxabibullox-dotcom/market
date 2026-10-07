@@ -589,8 +589,16 @@ export default function IntegratedAdminPanel() {
 
       {/* 3. ADD / EDIT PRODUCT MODAL (WORKS IN-PAGE) */}
       {(isAdminAddModalOpen || adminEditingProduct) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsAdminAddModalOpen(false);
+              setAdminEditingProduct(null);
+            }
+          }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in overflow-y-auto"
+        >
+          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-2xl space-y-4 text-slate-900 dark:text-white max-h-[90vh] overflow-y-auto my-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
               <h3 className="font-black text-base text-slate-900 dark:text-white flex items-center gap-2">
                 <Package className="w-5 h-5 text-indigo-500" />
