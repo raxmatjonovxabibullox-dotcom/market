@@ -565,6 +565,22 @@ export default function AdminDashboard() {
     setIsAddModalOpen(true);
   };
 
+  const handleQuickAddTV = () => {
+    playSound('success', soundEnabled);
+    const newTv = {
+      title: 'Samsung Smart TV Neo QLED 65" 4K Ultra HD',
+      category: 'cat_tv',
+      price: 1450,
+      oldPrice: 1690,
+      stock: 8,
+      image: '/images/tv_samsung_neo_qled.jpg',
+      description: 'Premium Quantum Matrix, 144Hz, HDR2000 smart televizor'
+    };
+    addProduct(newTv);
+    showToast("📺 Samsung Smart TV muvaffaqiyatli omborga qo'shildi! 🎉", 'success');
+    addActivity('Tezkor TV: Samsung Smart TV 65" omborga kiritildi', 'plus', 'emerald');
+  };
+
   const handleOpenEditModal = (p) => {
     playSound('click', soundEnabled);
     setEditingProduct(p);
@@ -1993,18 +2009,11 @@ export default function AdminDashboard() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5">
-                  {/* Category Presets Quick Add Dropdown */}
+                  {/* Tezkor 1-bosishda TV Mahsulotini Omborga Qo'shish */}
                   <button
-                    onClick={() => handleOpenAddModal({
-                      title: 'Samsung Smart TV Neo QLED 65" 4K',
-                      category: 'cat_tv',
-                      price: '1450',
-                      oldPrice: '1690',
-                      stock: '8',
-                      image: '/images/tv_samsung_neo_qled.jpg',
-                      desc: 'Premium Quantum Matrix, 144Hz, HDR2000 smart televizor'
-                    })}
-                    className="px-3 py-2 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold text-xs hover:bg-purple-500/30 transition flex items-center gap-1.5"
+                    onClick={handleQuickAddTV}
+                    className="px-3 py-2 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold text-xs hover:bg-purple-500/30 active:scale-95 transition flex items-center gap-1.5 shadow-sm"
+                    title="1 bosishda Samsung Smart TV ni katalogga tezkor qo'shish"
                   >
                     <span>📺 Tezkor TV</span>
                   </button>
@@ -3056,8 +3065,16 @@ export default function AdminDashboard() {
 
       {/* 5. ADD / EDIT PRODUCT MODAL */}
       {(isAddModalOpen || editingProduct) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="bg-[#131929] rounded-3xl max-w-lg w-full p-6 border border-[#1e2740] shadow-2xl space-y-4 text-white">
+        <div 
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsAddModalOpen(false);
+              setEditingProduct(null);
+            }
+          }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in overflow-y-auto"
+        >
+          <div className="bg-[#131929] rounded-3xl max-w-lg w-full p-6 border border-[#1e2740] shadow-2xl space-y-4 text-white max-h-[90vh] overflow-y-auto my-auto custom-scrollbar">
             <div className="flex items-center justify-between border-b border-[#1e2740] pb-3">
               <h3 className="font-extrabold text-lg text-white">
                 {editingProduct ? (t.edit_product || 'Mahsulotni Tahrirlash') : (t.add_new_product || "Yangi Mahsulot Qo'shish")}
@@ -3072,6 +3089,45 @@ export default function AdminDashboard() {
                 <X className="w-5 h-5" />
               </button>
             </div>
+
+            {/* Quick Templates Bar in Modal */}
+            {!editingProduct && (
+              <div className="flex items-center gap-2 pb-1 overflow-x-auto text-[11px]">
+                <span className="text-slate-400 font-bold shrink-0">Shablon:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProdTitle('Samsung Smart TV Neo QLED 65" 4K');
+                    setProdCategory('cat_tv');
+                    setProdPrice('1450');
+                    setProdOldPrice('1690');
+                    setProdStock('8');
+                    setProdImage('/images/tv_samsung_neo_qled.jpg');
+                    setProdDesc('Premium Quantum Matrix, 144Hz, HDR2000 smart televizor');
+                    playSound('click', soundEnabled);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-purple-500/20 text-purple-300 border border-purple-500/30 font-semibold hover:bg-purple-500/30 transition shrink-0"
+                >
+                  📺 Smart TV
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setProdTitle('iPhone 16 Pro Max 256GB Desert Titanium');
+                    setProdCategory('cat_smartphones');
+                    setProdPrice('1399');
+                    setProdOldPrice('1550');
+                    setProdStock('12');
+                    setProdImage('https://images.unsplash.com/photo-1695048133142-1a20484d2569?q=80&w=800&auto=format&fit=crop');
+                    setProdDesc('A18 Pro chip, titan korpus va 5x optik zoom kamerasi');
+                    playSound('click', soundEnabled);
+                  }}
+                  className="px-2.5 py-1 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-semibold hover:bg-cyan-500/30 transition shrink-0"
+                >
+                  📱 Smartfon
+                </button>
+              </div>
+            )}
 
             <form onSubmit={handleSaveProduct} className="space-y-3">
               <div>
