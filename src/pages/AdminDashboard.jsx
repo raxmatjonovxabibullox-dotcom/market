@@ -474,10 +474,45 @@ export default function AdminDashboard() {
 
     let responseLog = null;
 
-    // 1. Promocode Add Pattern (e.g. "add promo NAVROZ 25", "add promocode BONUS 30", "promo add VIP $50")
-    const addPromoMatch = rawCmd.match(/^(?:add\s+promo(?:code)?|promo(?:code)?\s+add)\s+([A-Za-z0-9_-]+)(?:\s+(\$?\d+%?|\d+\$?))?(?:\s+(.*))?$/i);
+    // 1. Promocode Add Parser - handles ANY syntax (+ promo idk, promo idk, add promo idk 20, + idk, promocod idk, etc.)
+    let addPromoData = null;
+    const isPromoDel = /^(?:promo(?:code|cod)?\s+(?:del|delete|rm|remove)|rm\s+promo(?:code|cod)?|del\s+promo(?:code|cod)?)/i.test(rawCmd);
+    const isPromoList = /^(?:promo\s*codes?|promo(?:code|cod)?s?|promo(?:code|cod)?\s+list|promolar)$/i.test(rawCmd);
+
+    if (!isPromoDel && !isPromoList) {
+      let rest = rawCmd.replace(/^(?:\+|\+?\s*(?:add|create|new))\s*(?:promo\s*codes?|promo\s*cod|promo(?:code|cod)?|promokod|kupon|promo)\s+/i, '');
+      if (rest === rawCmd) {
+        rest = rawCmd.replace(/^(?:promo\s*codes?|promo\s*cod|promo(?:code|cod)?|promokod|kupon|promo)\s+(?:add\s+)?/i, '');
+      }
+      if (rest === rawCmd) {
+        rest = rawCmd.replace(/^\+\s*(?:promo(?:code|cod)?\s*)?/i, '');
+      }
+
+      if (rest !== rawCmd && rest.trim()) {
+        const parts = rest.trim().split(/\s+/);
+        if (parts[0]) {
+          const promoCodeName = parts[0].toUpperCase();
+          let numericVal = 10;
+          let isFixed = false;
+          let descStartIndex = 1;
+
+          if (parts.length > 1) {
+            const second = parts[1];
+            if (second.includes('$') || /^\d+%?$/.test(second)) {
+              isFixed = second.includes('$');
+              numericVal = parseFloat(second.replace(/[^\d.]/g, '')) || 10;
+              descStartIndex = 2;
+            }
+          }
+
+          const desc = parts.slice(descStartIndex).join(' ') || (isFixed ? (`$${numericVal} Maxsus Chegirma`) : (`${numericVal}% Chegirma Promokodi`));
+          addPromoData = { code: promoCodeName, numericVal, isFixed, desc };
+        }
+      }
+    }
+
     // 2. Promocode Delete Pattern (e.g. "promo del NAVROZ", "rm promo NAVROZ", "del promo NAVROZ")
-    const delPromoMatch = rawCmd.match(/^(?:promo(?:code)?\s+(?:del|delete|rm|remove)|rm\s+promo(?:code)?|del\s+promo(?:code)?)\s+([A-Za-z0-9_-]+)$/i);
+    const delPromoMatch = rawCmd.match(/^(?:promo(?:code|cod)?\s+(?:del|delete|rm|remove)|rm\s+promo(?:code|cod)?|del\s+promo(?:code|cod)?)\s+([A-Za-z0-9_-]+)$/i);
     // 3. Product Add Pattern (e.g. "add tovar iPhone 16 999", "add product Smart TV 1400 cat_tv")
     const addProductMatch = rawCmd.match(/^(?:add\s+(?:product|tovar|mahsulot)|tovar\s+add)\s+(.+?)\s+(\d+(?:\.\d+)?)(?:\s+(cat_[a-z_]+))?$/i);
     // 4. Batch Discount Pattern (e.g. "discount all 15", "sale 20", "chegirma 10")
@@ -485,15 +520,10 @@ export default function AdminDashboard() {
     // 5. Telegram Broadcast Pattern (e.g. "broadcast Yangi aksiya!", "tg send Salom do'kon a'zolari")
     const tgSendMatch = rawCmd.match(/^(?:broadcast|tg\s+send|telegram\s+send)\s+(.+)$/i);
 
-    if (addPromoMatch) {
-      const promoCodeName = addPromoMatch[1].toUpperCase();
-      const valStr = addPromoMatch[2] || '10';
-      const isFixed = valStr.includes('$');
-      const numericVal = parseFloat(valStr.replace(/[^\d.]/g, '')) || 10;
-      const desc = addPromoMatch[3] || (isFixed ? `$${numericVal} Maxsus Chegirma` : `${numericVal}% Bayramona Chegirma`);
-
+    if (addPromoData) {
+      const { code, numericVal, isFixed, desc } = addPromoData;
       addPromoCode({
-        code: promoCodeName,
+        code,
         discountPercent: isFixed ? null : numericVal,
         fixedDiscount: isFixed ? numericVal : null,
         description: desc
@@ -503,9 +533,9 @@ export default function AdminDashboard() {
         id: Date.now() + 1,
         time: nowStr,
         level: 'SUCCESS',
-        msg: `PROMOKOD YARATILDI: "${promoCodeName}" (${isFixed ? '$' + numericVal : numericVal + '%'} chegirma). Xaridorlar savatda (Cart) bemalol ishlatishi mumkin! 🎟️`
+        msg: `PROMOKOD YARATILDI: "${code}" (${isFixed ? '$' + numericVal : numericVal + '%'} chegirma). Xaridorlar savatda (Cart) bemalol ishlatishi mumkin! 🎟️`
       };
-      showToast(`Promokod yaratildi: ${promoCodeName} 🎉`);
+      showToast(`Promokod yaratildi: ${code} 🎉`);
     } else if (delPromoMatch) {
       const codeToDelete = delPromoMatch[1].toUpperCase();
       deletePromoCode(codeToDelete);
