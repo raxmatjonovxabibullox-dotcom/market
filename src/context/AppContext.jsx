@@ -420,12 +420,53 @@ export const AppProvider = ({ children }) => {
     setAppliedPromo(null);
   };
 
-  // Promo Code handling
+  // 6. Cart state & Promo Code handling
+  const [promoCodes, setPromoCodes] = useState(() => {
+    const saved = localStorage.getItem('app_promo_codes');
+    return saved ? JSON.parse(saved) : INITIAL_PROMO_CODES;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('app_promo_codes', JSON.stringify(promoCodes));
+  }, [promoCodes]);
+
   const [appliedPromo, setAppliedPromo] = useState(null);
+
+  const addPromoCode = (newPromo) => {
+    const upperCode = (newPromo.code || '').trim().toUpperCase();
+    if (!upperCode) return { success: false, message: "Promokod kodi kiritilmadi" };
+
+    const discountP = newPromo.discountPercent ? Number(newPromo.discountPercent) : null;
+    const fixedD = newPromo.fixedDiscount ? Number(newPromo.fixedDiscount) : null;
+    const desc = newPromo.description || (discountP ? `${discountP}% Chegirma Promokodi` : `$${fixedD} Maxsus Chegirma`);
+
+    const promoObj = {
+      code: upperCode,
+      discountPercent: discountP,
+      fixedDiscount: fixedD,
+      description: desc
+    };
+
+    setPromoCodes(prev => {
+      const filtered = prev.filter(p => p.code !== upperCode);
+      return [promoObj, ...filtered];
+    });
+
+    return { success: true, message: `Promokod ${upperCode} muvaffaqiyatli saqlandi!`, promo: promoObj };
+  };
+
+  const deletePromoCode = (codeStr) => {
+    const upper = (codeStr || '').trim().toUpperCase();
+    setPromoCodes(prev => prev.filter(p => p.code !== upper));
+    if (appliedPromo?.code === upper) {
+      setAppliedPromo(null);
+    }
+    return { success: true, message: `Promokod ${upper} tizimdan olib tashlandi.` };
+  };
 
   const applyPromoCode = (codeStr) => {
     const codeUpper = (codeStr || '').trim().toUpperCase();
-    const found = INITIAL_PROMO_CODES.find(p => p.code === codeUpper);
+    const found = promoCodes.find(p => p.code === codeUpper);
     if (found) {
       setAppliedPromo(found);
       return { success: true, message: t.promo_applied, promo: found };
@@ -761,6 +802,9 @@ export const AppProvider = ({ children }) => {
         removeFromCart,
         updateQuantity,
         clearCart,
+        promoCodes,
+        addPromoCode,
+        deletePromoCode,
         appliedPromo,
         applyPromoCode,
         removePromo,

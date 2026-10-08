@@ -134,6 +134,9 @@ export default function AdminDashboard() {
     sendTelegramMessage,
     DEFAULT_TELEGRAM_BOT_TOKEN,
     DEFAULT_TELEGRAM_CHAT_ID,
+    promoCodes,
+    addPromoCode,
+    deletePromoCode,
     user,
     login,
     logout,
@@ -455,7 +458,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleExecuteTerminalCommand = (cmdStr) => {
+  const handleExecuteTerminalCommand = async (cmdStr) => {
     const rawCmd = (cmdStr !== undefined ? cmdStr : terminalInput).trim();
     const cmd = rawCmd ? rawCmd.toLowerCase() : 'status';
     setTerminalInput('');
@@ -471,13 +474,110 @@ export default function AdminDashboard() {
 
     let responseLog = null;
 
-    if (cmd === 'ping') {
+    // 1. Promocode Add Pattern (e.g. "add promo NAVROZ 25", "add promocode BONUS 30", "promo add VIP $50")
+    const addPromoMatch = rawCmd.match(/^(?:add\s+promo(?:code)?|promo(?:code)?\s+add)\s+([A-Za-z0-9_-]+)(?:\s+(\$?\d+%?|\d+\$?))?(?:\s+(.*))?$/i);
+    // 2. Promocode Delete Pattern (e.g. "promo del NAVROZ", "rm promo NAVROZ", "del promo NAVROZ")
+    const delPromoMatch = rawCmd.match(/^(?:promo(?:code)?\s+(?:del|delete|rm|remove)|rm\s+promo(?:code)?|del\s+promo(?:code)?)\s+([A-Za-z0-9_-]+)$/i);
+    // 3. Product Add Pattern (e.g. "add tovar iPhone 16 999", "add product Smart TV 1400 cat_tv")
+    const addProductMatch = rawCmd.match(/^(?:add\s+(?:product|tovar|mahsulot)|tovar\s+add)\s+(.+?)\s+(\d+(?:\.\d+)?)(?:\s+(cat_[a-z_]+))?$/i);
+    // 4. Batch Discount Pattern (e.g. "discount all 15", "sale 20", "chegirma 10")
+    const discountMatch = rawCmd.match(/^(?:discount\s+all|sale|chegirma)\s+(\d+)$/i);
+    // 5. Telegram Broadcast Pattern (e.g. "broadcast Yangi aksiya!", "tg send Salom do'kon a'zolari")
+    const tgSendMatch = rawCmd.match(/^(?:broadcast|tg\s+send|telegram\s+send)\s+(.+)$/i);
+
+    if (addPromoMatch) {
+      const promoCodeName = addPromoMatch[1].toUpperCase();
+      const valStr = addPromoMatch[2] || '10';
+      const isFixed = valStr.includes('$');
+      const numericVal = parseFloat(valStr.replace(/[^\d.]/g, '')) || 10;
+      const desc = addPromoMatch[3] || (isFixed ? `$${numericVal} Maxsus Chegirma` : `${numericVal}% Bayramona Chegirma`);
+
+      addPromoCode({
+        code: promoCodeName,
+        discountPercent: isFixed ? null : numericVal,
+        fixedDiscount: isFixed ? numericVal : null,
+        description: desc
+      });
+
+      responseLog = {
+        id: Date.now() + 1,
+        time: nowStr,
+        level: 'SUCCESS',
+        msg: `PROMOKOD YARATILDI: "${promoCodeName}" (${isFixed ? '$' + numericVal : numericVal + '%'} chegirma). Xaridorlar savatda (Cart) bemalol ishlatishi mumkin! 🎟️`
+      };
+      showToast(`Promokod yaratildi: ${promoCodeName} 🎉`);
+    } else if (delPromoMatch) {
+      const codeToDelete = delPromoMatch[1].toUpperCase();
+      deletePromoCode(codeToDelete);
+      responseLog = {
+        id: Date.now() + 1,
+        time: nowStr,
+        level: 'SUCCESS',
+        msg: `PROMOKOD O'CHIRILDI: "${codeToDelete}" tizimdan muvaffaqiyatli o'chirildi.`
+      };
+      showToast(`Promokod o'chirildi: ${codeToDelete}`);
+    } else if (cmd === 'promos' || cmd === 'promocodes' || cmd === 'promo list' || cmd === 'promolar') {
+      const listStr = (promoCodes || []).map(p => `${p.code} (${p.discountPercent ? '-' + p.discountPercent + '%' : '-$' + p.fixedDiscount})`).join(' | ');
+      responseLog = {
+        id: Date.now() + 1,
+        time: nowStr,
+        level: 'INFO',
+        msg: `MAVJUD PROMOKODLAR (${(promoCodes || []).length} ta): ${listStr || 'Hozircha promokodlar mavjud emas'}`
+      };
+    } else if (addProductMatch) {
+      const title = addProductMatch[1].trim();
+      const price = Number(addProductMatch[2]);
+      const cat = addProductMatch[3] || 'cat_smartphones';
+      addProduct({
+        title,
+        price,
+        category: cat,
+        stock: 12,
+        image: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop',
+        description: 'Rocker bash terminali orqali tezkor kiritildi'
+      });
+      responseLog = {
+        id: Date.now() + 1,
+        time: nowStr,
+        level: 'SUCCESS',
+        msg: `MAHSULOT QO'SHILDI: "${title}" ($${price}) do'kon katalogiga kiritildi! 📦`
+      };
+      showToast(`Yangi mahsulot qo'shildi: ${title}`);
+    } else if (discountMatch) {
+      const percent = Number(discountMatch[1]);
+      handleApplyBatchDiscount(percent);
+      responseLog = {
+        id: Date.now() + 1,
+        time: nowStr,
+        level: 'SUCCESS',
+        msg: `OMMAVIY CHEGIRMA: Do'kondagi barcha tovarlarga ${percent}% chegirma muvaffaqiyatli berildi! 🔥`
+      };
+    } else if (tgSendMatch) {
+      const msg = tgSendMatch[1];
+      const res = await sendTelegramMessage(`📢 <b>TERMINAL E'LONI:</b>\n\n${msg}`);
+      if (res.success) {
+        responseLog = {
+          id: Date.now() + 1,
+          time: nowStr,
+          level: 'SUCCESS',
+          msg: `TELEGRAM E'LONI YUBORILDI: "${msg}" bot orqali yetkazildi! 🚀`
+        };
+        showToast("E'lon Telegramga yuborildi! 🚀");
+      } else {
+        responseLog = {
+          id: Date.now() + 1,
+          time: nowStr,
+          level: 'ERROR',
+          msg: `TELEGRAM XATOLIK: ${res.error || 'Xabar yuborilmadi'}`
+        };
+      }
+    } else if (cmd === 'ping') {
       const p = Math.floor(18 + Math.random() * 15);
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `PONG: Server tezkor javob berdi (${p}ms). Telegram API: ${telegramPing}ms` };
     } else if (cmd === 'status') {
-      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `STATUS: Tizim 100% barqaror | Uptime: ${formattedUptime} | CPU: ${cpuUsage}% | RAM: ${ramUsage}MB` };
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `STATUS: Tizim 100% barqaror | Uptime: ${formattedUptime} | CPU: ${cpuUsage}% | RAM: ${ramUsage}MB | Tovarlar: ${products.length} ta | Promokodlar: ${(promoCodes || []).length} ta` };
     } else if (cmd === 'health' || cmd === 'check') {
-      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `HEALTH CHECK: Vite (Port 5173): OK | Telegram Bot: Online | LocalStorage: ${storageUsageKB}KB` };
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `HEALTH CHECK: Vite (Port 5173): OK | Telegram Bot: Online | LocalStorage: ${storageUsageKB}KB | Promokodlar: ${(promoCodes || []).length} faol` };
     } else if (cmd === 'clear' || cmd === 'cls' || cmd === 'tozalash') {
       setSystemLogs([]);
       showToast("Terminal tozalandi! 🧹");
@@ -485,11 +585,12 @@ export default function AdminDashboard() {
     } else if (cmd === 'backup' || cmd === 'zaxira') {
       handleExportDatabaseBackup();
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `ZAXIRA: Ma'lumotlar bazasi JSON fayli yuklab olindi.` };
-    } else if (cmd === 'products' || cmd === 'tovar' || cmd === 'mahsulot') {
-      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `MAHSULOTLAR: Jami ${products.length} ta mahsulot katalogda faol.` };
+    } else if (cmd === 'products' || cmd === 'tovar' || cmd === 'mahsulot' || cmd === 'products list') {
+      const sample = products.slice(0, 5).map(p => `[#${p.id}] ${p.title} ($${p.price})`).join(' | ');
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `MAHSULOTLAR (${products.length} ta): ${sample}...` };
     } else if (cmd === 'orders' || cmd === 'buyurtma') {
-      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `BUYURTMALAR: Jami ${orders.length} ta buyurtma qayd etilgan.` };
-    } else if (cmd === 'telegram' || cmd === 'bot') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `BUYURTMALAR: Jami ${orders.length} ta buyurtma qayd etilgan. Jami savdo: $${calculatedRealRevenue.toFixed(2)}` };
+    } else if (cmd === 'telegram' || cmd === 'bot' || cmd === 'tg ping') {
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `TELEGRAM BOT: @Kitobchalar_bot faol | Ulanish pingi: ${telegramPing}ms` };
     } else if (cmd === 'whoami' || cmd === 'user' || cmd === 'admin') {
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `FOYDALANUVCHI: Superadmin — Xabibullo Raxmatjonov (role: admin/owner)` };
@@ -498,13 +599,20 @@ export default function AdminDashboard() {
     } else if (cmd.startsWith('echo ')) {
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: rawCmd.slice(5) };
     } else if (cmd === 'help' || cmd === 'yordam' || cmd === '?') {
-      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `Mavjud buyruqlar: ping, status, health, tovar, buyurtma, telegram, backup, clear, help` };
+      responseLog = { 
+        id: Date.now() + 1, 
+        time: nowStr, 
+        level: 'INFO', 
+        msg: `BUYRUQLAR: 🎟 Promokod: 'add promo <KOD> <FOIZ>' (masalan: add promo NAVROZ 25), 'promo list', 'promo del <KOD>' | 📦 Tovar: 'add tovar <NOMI> <NARX>', 'products', 'sale <FOIZ>' | 📢 Telegram: 'broadcast <XABAR>', 'tg ping' | ⚙️ Tizim: 'status', 'ping', 'health', 'backup', 'clear'` 
+      };
     } else {
       responseLog = { id: Date.now() + 1, time: nowStr, level: 'WARN', msg: `Noma'lum buyruq: "${rawCmd}". Barcha buyruqlarni ko'rish uchun 'help' deb yozing.` };
     }
 
     setSystemLogs(prev => [...prev, echoLog, responseLog].slice(-50));
-    showToast(`Buyruq bajarildi: ${rawCmd || 'status'} ⚡`);
+    if (!addPromoMatch && !delPromoMatch && !addProductMatch && !discountMatch && !tgSendMatch) {
+      showToast(`Buyruq bajarildi: ${rawCmd || 'status'} ⚡`);
+    }
   };
   const totalOrdersCount = 8052 + orders.length;
   const calculatedRealRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
@@ -2973,14 +3081,22 @@ export default function AdminDashboard() {
 
                   <div className="flex items-center gap-2">
                     {/* Command suggestions chips */}
-                    <div className="hidden sm:flex items-center gap-1.5 text-[10px]">
-                      {['ping', 'status', 'health', 'clear'].map(cmd => (
+                    <div className="hidden sm:flex items-center gap-1.5 text-[10px] overflow-x-auto">
+                      {[
+                        { label: 'ping', run: 'ping' },
+                        { label: 'status', run: 'status' },
+                        { label: 'promos', run: 'promo list' },
+                        { label: '+ promo NAVROZ 25', run: 'add promo NAVROZ 25' },
+                        { label: 'health', run: 'health' },
+                        { label: 'help', run: 'help' }
+                      ].map(item => (
                         <button
-                          key={cmd}
-                          onClick={() => handleExecuteTerminalCommand(cmd)}
-                          className="px-2 py-0.5 rounded bg-[#131929] hover:bg-[#1e2740] text-cyan-300 border border-[#1e2740] transition"
+                          key={item.label}
+                          onClick={() => handleExecuteTerminalCommand(item.run)}
+                          className="px-2 py-0.5 rounded bg-[#131929] hover:bg-[#1e2740] hover:text-cyan-300 text-slate-300 border border-[#1e2740] transition cursor-pointer shrink-0 font-mono"
+                          title={`Buyruqni bajarish: ${item.run}`}
                         >
-                          {cmd}
+                          {item.label}
                         </button>
                       ))}
                     </div>

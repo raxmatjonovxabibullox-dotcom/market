@@ -34,6 +34,7 @@ export default function CartCheckoutPage() {
     deliveryFee,
     totalAmount,
     appliedPromo,
+    promoCodes,
     applyPromoCode,
     removePromo,
     placeOrder,
@@ -428,13 +429,14 @@ export default function CartCheckoutPage() {
                     Mavjud promokodlar:
                   </span>
                   <div className="flex flex-wrap gap-1.5">
-                    {['VOV2026', 'TEGO50', 'SUPER10'].map(code => (
+                    {(promoCodes || []).map(p => (
                       <button
-                        key={code}
-                        onClick={() => handleQuickPromoSelect(code)}
+                        key={p.code}
+                        onClick={() => handleQuickPromoSelect(p.code)}
                         className="px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-300 text-[10px] font-extrabold border border-indigo-200 dark:border-gray-600 hover:scale-105 transition"
+                        title={p.description}
                       >
-                        🏷️ {code}
+                        🏷️ {p.code} {p.discountPercent ? `(-${p.discountPercent}%)` : p.fixedDiscount ? `(-$${p.fixedDiscount})` : ''}
                       </button>
                     ))}
                   </div>
