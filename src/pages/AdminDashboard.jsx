@@ -284,6 +284,15 @@ export default function AdminDashboard() {
   const [viewingOrder, setViewingOrder] = useState(null);
   const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
 
+  // Promo codes management state
+  const [newPromoCodeInput, setNewPromoCodeInput] = useState('');
+  const [newPromoDiscountInput, setNewPromoDiscountInput] = useState('15');
+  const [newPromoDescInput, setNewPromoDescInput] = useState('');
+  const [promoSearch, setPromoSearch] = useState('');
+
+  // Customers CRM management state
+  const [customerSearch, setCustomerSearch] = useState('');
+
   // Telegram Settings & Broadcast State
   const [botToken, setBotToken] = useState(telegramConfig?.botToken || DEFAULT_TELEGRAM_BOT_TOKEN || '');
   const [chatId, setChatId] = useState(telegramConfig?.chatId || DEFAULT_TELEGRAM_CHAT_ID || '8170197389');
@@ -955,6 +964,87 @@ export default function AdminDashboard() {
     }
   }, [products, orders]);
 
+  // Unique Customers derived from orders (CRM)
+  const uniqueCustomers = useMemo(() => {
+    const map = new Map();
+    orders.forEach(o => {
+      const phone = o.customer?.phone || "Noma'lum";
+      const name = o.customer?.fullName || 'Mijoz';
+      const address = o.customer?.address || '-';
+      const pMethod = o.customer?.paymentMethod || 'click';
+      if (!map.has(phone)) {
+        map.set(phone, {
+          name,
+          phone,
+          address,
+          paymentMethod: pMethod,
+          ordersCount: 1,
+          totalSpent: Number(o.totalAmount || 0),
+          lastOrderDate: o.formattedDate || (o.date ? new Date(o.date).toLocaleDateString('uz-UZ') : 'Yaqinda')
+        });
+      } else {
+        const item = map.get(phone);
+        item.ordersCount += 1;
+        item.totalSpent += Number(o.totalAmount || 0);
+        item.lastOrderDate = o.formattedDate || (o.date ? new Date(o.date).toLocaleDateString('uz-UZ') : item.lastOrderDate);
+      }
+    });
+    return Array.from(map.values());
+  }, [orders]);
+
+  const filteredCustomers = useMemo(() => {
+    if (!customerSearch.trim()) return uniqueCustomers;
+    const q = customerSearch.toLowerCase();
+    return uniqueCustomers.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      c.phone.toLowerCase().includes(q) ||
+      c.address.toLowerCase().includes(q)
+    );
+  }, [uniqueCustomers, customerSearch]);
+
+  const filteredPromos = useMemo(() => {
+    if (!promoSearch.trim()) return promoCodes || [];
+    const q = promoSearch.toLowerCase();
+    return (promoCodes || []).filter(p =>
+      p.code.toLowerCase().includes(q) ||
+      (p.description && p.description.toLowerCase().includes(q))
+    );
+  }, [promoCodes, promoSearch]);
+
+  const handleCreatePromoCode = (e) => {
+    e.preventDefault();
+    if (!newPromoCodeInput.trim()) return;
+    const res = addPromoCode({
+      code: newPromoCodeInput.trim().toUpperCase(),
+      discountPercent: Number(newPromoDiscountInput) || 15,
+      description: newPromoDescInput.trim() || `${newPromoDiscountInput}% Chegirma Promokodi`
+    });
+    if (res?.success) {
+      playSound('success', soundEnabled);
+      showToast(res.message || "Yangi promokod yaratildi! 🎉");
+      addActivity(`Yangi promokod "${newPromoCodeInput.toUpperCase()}" yaratildi`, 'award', 'amber');
+      setNewPromoCodeInput('');
+      setNewPromoDescInput('');
+    } else {
+      showToast(res?.message || "Xatolik yuz berdi", "warn");
+    }
+  };
+
+  const handleCopyPromoCode = (code) => {
+    navigator.clipboard?.writeText(code);
+    playSound('click', soundEnabled);
+    showToast(`"${code}" promokodi nusxalandi! 📋`);
+  };
+
+  const handleJumpToTerminal = () => {
+    setActiveTab('system');
+    playSound('click', soundEnabled);
+    setIsMobileSidebarOpen(false);
+    setTimeout(() => {
+      terminalLogsContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
+  };
+
   // Agar tizimga admin yoki owner sifatida kirmagan bo'lsa, xavfsiz Kirish oynasini ko'rsatish
   if (!user || (user.role !== 'admin' && user.role !== 'owner')) {
     return (
@@ -1185,54 +1275,113 @@ export default function AdminDashboard() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="space-y-5 text-xs font-semibold">
+          <nav className="space-y-4 text-xs font-semibold">
             
-            {/* GROUP: DASHBOARD */}
+            {/* GROUP 1: DASHBOARD & ANALITIKA */}
             <div className="space-y-1">
               {!isSidebarCollapsed && (
                 <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
-                  <span>{t.admin_sidebar_dashboard || "Dashboard"}</span>
+                  <span>{t.admin_sidebar_dashboard || "Dashboard & Analitika"}</span>
                   <ChevronDown className="w-3 h-3 text-slate-500" />
                 </div>
               )}
               <div className="space-y-1 pt-1">
+                {/* Savdo & Analitika */}
                 <button
                   onClick={() => {
                     setActiveTab('alternate');
                     playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold transition ${
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
                     activeTab === 'alternate'
                       ? activeAccent.activeTab
                       : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
                   }`}
+                  title="Savdo grafiklari, daromad va dinamika"
                 >
-                  <span className={`w-2 h-2 rounded-full ${activeTab === 'alternate' ? 'bg-cyan-400 animate-pulse' : 'border border-slate-500'}`}></span>
-                  {!isSidebarCollapsed && <span>{t.admin_sidebar_analytics || "Alternate (Analytics)"}</span>}
+                  <div className="flex items-center gap-3">
+                    <BarChart3 className="w-4 h-4 text-cyan-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_analytics || "Savdo & Analitika"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-black">
+                      Live
+                    </span>
+                  )}
                 </button>
 
+                {/* Moliya & Kassa */}
+                <button
+                  onClick={() => {
+                    setActiveTab('alternate');
+                    playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-slate-400 hover:text-white hover:bg-[#151d2e]"
+                  title="Do'kon kassa tushumi va umumiy aylanma"
+                >
+                  <div className="flex items-center gap-3">
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_finance || "Moliya & Kassa"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                      ${totalRevenueDisplay}K
+                    </span>
+                  )}
+                </button>
+
+                {/* Tizim & Server Monitor */}
                 <button
                   onClick={() => {
                     setActiveTab('system');
                     playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl transition ${
+                  className={`w-full flex items-center justify-between px-3 py-2 rounded-xl transition ${
                     activeTab === 'system'
                       ? activeAccent.activeTab
                       : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
                   }`}
+                  title="Server resurslari, CPU, RAM va kesh"
                 >
-                  <Activity className="w-3.5 h-3.5 text-emerald-400" />
-                  {!isSidebarCollapsed && <span>{t.admin_sidebar_system || "System & Monitor"}</span>}
+                  <div className="flex items-center gap-3">
+                    <Activity className="w-3.5 h-3.5 text-purple-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_system || "Tizim & Monitor"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">
+                      100%
+                    </span>
+                  )}
+                </button>
+
+                {/* Server Terminali (bash) */}
+                <button
+                  onClick={handleJumpToTerminal}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-slate-400 hover:text-white hover:bg-[#151d2e]"
+                  title="Rocker server bash konsoli (ping, add promo, status)"
+                >
+                  <div className="flex items-center gap-3">
+                    <Terminal className="w-3.5 h-3.5 text-amber-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_terminal || "Server Terminali (bash)"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded font-mono bg-amber-500/10 text-amber-300 font-bold">
+                      bash
+                    </span>
+                  )}
                 </button>
               </div>
             </div>
 
-            {/* GROUP: UI ELEMENTS & COMMERCE */}
+            {/* GROUP 2: MAGAZIN BOSHQARUVI */}
             <div className="space-y-1">
               {!isSidebarCollapsed && (
-                <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  {t.admin_sidebar_store_mgmt || "Magazin Boshqaruvi"}
+                <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                  <span>{t.admin_sidebar_store_mgmt || "Magazin Boshqaruvi"}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
                 </div>
               )}
               <div className="space-y-1 pt-1">
@@ -1241,12 +1390,14 @@ export default function AdminDashboard() {
                   onClick={() => {
                     setActiveTab('ecommerce');
                     playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
                     activeTab === 'ecommerce'
                       ? activeAccent.activeTab
                       : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
                   }`}
+                  title="Mahsulotlar katalogi, narxlar va ombor"
                 >
                   <div className="flex items-center gap-3">
                     <ShoppingCart className="w-4 h-4 text-cyan-400" />
@@ -1264,12 +1415,14 @@ export default function AdminDashboard() {
                   onClick={() => {
                     setActiveTab('tables');
                     playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
                     activeTab === 'tables'
                       ? activeAccent.activeTab
                       : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
                   }`}
+                  title="Buyurtmalar, chek chiqarish va yetkazish"
                 >
                   <div className="flex items-center gap-3">
                     <ShoppingBag className="w-4 h-4 text-emerald-400" />
@@ -1281,27 +1434,81 @@ export default function AdminDashboard() {
                     </span>
                   )}
                 </button>
+
+                {/* Promokodlar & Chegirmalar */}
+                <button
+                  onClick={() => {
+                    setActiveTab('promos');
+                    playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
+                    activeTab === 'promos'
+                      ? activeAccent.activeTab
+                      : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
+                  }`}
+                  title="Chegirma promokodlari va kuponlar nazorati"
+                >
+                  <div className="flex items-center gap-3">
+                    <Percent className="w-4 h-4 text-amber-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_promos || "Promokodlar & Chegirmalar"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-black">
+                      {(promoCodes || []).length}
+                    </span>
+                  )}
+                </button>
+
+                {/* Mijozlar & CRM */}
+                <button
+                  onClick={() => {
+                    setActiveTab('customers');
+                    playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
+                    activeTab === 'customers'
+                      ? activeAccent.activeTab
+                      : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
+                  }`}
+                  title="Do'kon mijozlari va xarid tarixi (CRM)"
+                >
+                  <div className="flex items-center gap-3">
+                    <Users className="w-4 h-4 text-violet-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_customers || "Mijozlar & CRM"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-violet-500/20 text-violet-300 font-black">
+                      {uniqueCustomers.length}
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
 
-            {/* GROUP: INTEGRATIONS */}
+            {/* GROUP 3: AVTOMATIKA & ALOQA */}
             <div className="space-y-1">
               {!isSidebarCollapsed && (
-                <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                  {t.admin_sidebar_automation || "Avtomatika & Bot"}
+                <div className="px-3 text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center justify-between">
+                  <span>{t.admin_sidebar_automation || "Avtomatika & Bot"}</span>
+                  <ChevronDown className="w-3 h-3 text-slate-500" />
                 </div>
               )}
               <div className="space-y-1 pt-1">
+                {/* Telegram Bot */}
                 <button
                   onClick={() => {
                     setActiveTab('telegram');
                     playSound('click', soundEnabled);
+                    setIsMobileSidebarOpen(false);
                   }}
                   className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold transition ${
                     activeTab === 'telegram'
                       ? activeAccent.activeTab
                       : 'text-slate-400 hover:text-white hover:bg-[#151d2e]'
                   }`}
+                  title="Telegram bot ulanishi va sozlamalar"
                 >
                   <div className="flex items-center gap-3">
                     <Send className="w-4 h-4 text-sky-400" />
@@ -1309,6 +1516,46 @@ export default function AdminDashboard() {
                   </div>
                   {!isSidebarCollapsed && (
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 ring-4 ring-emerald-400/20 animate-pulse"></span>
+                  )}
+                </button>
+
+                {/* Ommaviy E'lon */}
+                <button
+                  onClick={() => {
+                    playSound('click', soundEnabled);
+                    setIsBroadcastModalOpen(true);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-slate-400 hover:text-white hover:bg-[#151d2e]"
+                  title="Telegram mijozlariga ommaviy xabarnoma yuborish"
+                >
+                  <div className="flex items-center gap-3">
+                    <Radio className="w-3.5 h-3.5 text-purple-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_broadcast || "Ommaviy E'lon"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[10px] text-purple-400 font-bold">📢</span>
+                  )}
+                </button>
+
+                {/* Zaxira & CSV */}
+                <button
+                  onClick={() => {
+                    playSound('click', soundEnabled);
+                    handleExportDatabaseBackup();
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-xl transition text-slate-400 hover:text-white hover:bg-[#151d2e]"
+                  title="Ma'lumotlar bazasini JSON zaxiralash"
+                >
+                  <div className="flex items-center gap-3">
+                    <Download className="w-3.5 h-3.5 text-emerald-400" />
+                    {!isSidebarCollapsed && <span>{t.admin_sidebar_backup || "Zaxira & Eksport"}</span>}
+                  </div>
+                  {!isSidebarCollapsed && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-mono font-bold">
+                      JSON
+                    </span>
                   )}
                 </button>
               </div>
@@ -1614,9 +1861,11 @@ export default function AdminDashboard() {
           {/* Quick Dashboard Navigation Tabs (Mobil va desktopda qulay gorizontal skroll) */}
           <div className="flex overflow-x-auto no-scrollbar items-center gap-2 pt-4 border-t border-[#1e2a47] mt-4 pb-1">
             {[
+              { id: 'alternate', label: t.admin_tab_analytics || '📊 Savdo & Analitika', count: 'Live', color: 'indigo' },
               { id: 'ecommerce', label: t.admin_tab_products || '📦 Mahsulotlar (CRUD)', count: products.length, color: 'cyan' },
               { id: 'tables', label: t.admin_tab_orders || '🛍️ Buyurtmalar (Orders)', count: orders.length, color: 'emerald' },
-              { id: 'alternate', label: t.admin_tab_analytics || '📊 Savdo & Analitika', count: null, color: 'indigo' },
+              { id: 'promos', label: '🎟️ Promokodlar', count: (promoCodes || []).length, color: 'amber' },
+              { id: 'customers', label: '👥 Mijozlar (CRM)', count: uniqueCustomers.length, color: 'violet' },
               { id: 'telegram', label: t.admin_tab_telegram || '🤖 Telegram Bot', count: 'Online', color: 'sky' },
               { id: 'system', label: t.admin_tab_system || '⚙️ Tizim & Server Monitor', count: null, color: 'purple' },
             ].map(tab => (
@@ -2548,6 +2797,324 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          )}
+
+          {/* TAB: PROMOCODES & DISCOUNTS (PREMIUM MANAGEMENT) */}
+          {activeTab === 'promos' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              
+              {/* Top Banner & Quick Add Card */}
+              <div className="bg-[#131929] border border-[#1d273f] rounded-2xl p-6 shadow-xl space-y-5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#1d273f]">
+                  <div>
+                    <h2 className="text-lg font-black text-white flex items-center gap-2">
+                      <Percent className="w-5 h-5 text-amber-400" />
+                      <span>Promokodlar & Chegirmalar Nazorati</span>
+                      <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold">
+                        {(promoCodes || []).length} ta faol
+                      </span>
+                    </h2>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      Xaridorlar savatda foydalanishi uchun yangi promokod va chegirmalarni yaratish
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={handleJumpToTerminal}
+                      className="px-3 py-2 rounded-xl bg-[#0b0f19] hover:bg-[#1a253e] text-slate-300 border border-[#1e2740] font-mono text-xs transition flex items-center gap-1.5 cursor-pointer"
+                      title="Terminal orqali buyruq bilan qo'shish"
+                    >
+                      <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+                      <span>add promo KOD FOIZ</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Create Promo Code Form */}
+                <form onSubmit={handleCreatePromoCode} className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                  <div className="sm:col-span-4">
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Promokod Nomi (Kodi)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Masalan: NAVROZ25, BAHOR15, VIP30"
+                      value={newPromoCodeInput}
+                      onChange={(e) => setNewPromoCodeInput(e.target.value.toUpperCase())}
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white uppercase font-mono font-bold tracking-wider outline-none focus:border-amber-500 transition"
+                      required
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Chegirma Miqdori (%)
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        placeholder="15"
+                        value={newPromoDiscountInput}
+                        onChange={(e) => setNewPromoDiscountInput(e.target.value)}
+                        className="w-full pl-3.5 pr-8 py-2.5 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white font-bold outline-none focus:border-amber-500 transition"
+                        required
+                      />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-xs">%</span>
+                    </div>
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <label className="block text-[11px] font-bold text-slate-300 mb-1">
+                      Tavsif (Ixtiyoriy)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Bahorgi chegirma aksiyasi"
+                      value={newPromoDescInput}
+                      onChange={(e) => setNewPromoDescInput(e.target.value)}
+                      className="w-full px-3.5 py-2.5 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-amber-500 transition"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-2">
+                    <button
+                      type="submit"
+                      className="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs shadow-lg shadow-amber-500/20 active:scale-95 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Qo'shish</span>
+                    </button>
+                  </div>
+                </form>
+
+                {/* Quick Preset Buttons */}
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-[#1e2740]/60">
+                  <span className="text-[11px] text-slate-400 font-medium">Tezkor shablonlar:</span>
+                  {[
+                    { code: 'BAHOR20', percent: 20 },
+                    { code: 'SUPER30', percent: 30 },
+                    { code: 'YANGI10', percent: 10 },
+                    { code: 'VIP50', percent: 50 }
+                  ].map(preset => (
+                    <button
+                      key={preset.code}
+                      type="button"
+                      onClick={() => {
+                        setNewPromoCodeInput(preset.code);
+                        setNewPromoDiscountInput(String(preset.percent));
+                        setNewPromoDescInput(`${preset.percent}% Maxsus Aksiya`);
+                        playSound('click', soundEnabled);
+                      }}
+                      className="px-2.5 py-1 rounded-lg bg-[#0b0f19] hover:bg-[#1a253e] text-slate-300 hover:text-amber-300 border border-[#1e2740] text-[11px] font-mono transition cursor-pointer"
+                    >
+                      +{preset.code} ({preset.percent}%)
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Promo codes List / Table */}
+              <div className="bg-[#131929] border border-[#1d273f] rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <h3 className="font-extrabold text-sm text-white flex items-center gap-2">
+                    <Award className="w-4 h-4 text-amber-400" />
+                    <span>Faol Promokodlar Ro'yxati</span>
+                  </h3>
+
+                  <div className="relative w-full sm:w-64">
+                    <input
+                      type="text"
+                      placeholder="Promokod qidirish..."
+                      value={promoSearch}
+                      onChange={(e) => setPromoSearch(e.target.value)}
+                      className="w-full pl-9 pr-3 py-1.5 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-amber-500 transition"
+                    />
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-[#1d273f]">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-[#0b0f19] text-slate-400 uppercase text-[10px] tracking-wider border-b border-[#1d273f]">
+                        <th className="p-3">Kodi</th>
+                        <th className="p-3">Chegirma</th>
+                        <th className="p-3">Tavsifi</th>
+                        <th className="p-3">Holati</th>
+                        <th className="p-3 text-right">Amallar</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1d273f]">
+                      {filteredPromos.length === 0 ? (
+                        <tr>
+                          <td colSpan="5" className="p-8 text-center text-slate-500">
+                            Hozircha promokodlar mavjud emas yoki qidiruv bo'yicha topilmadi.
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredPromos.map((promo, idx) => (
+                          <tr key={promo.code || idx} className="hover:bg-[#162033] transition">
+                            <td className="p-3">
+                              <span className="font-mono font-black text-amber-300 text-sm bg-amber-500/10 px-2.5 py-1 rounded-lg border border-amber-500/20 inline-block tracking-wider">
+                                {promo.code}
+                              </span>
+                            </td>
+                            <td className="p-3">
+                              <span className="font-black text-emerald-400 text-sm">
+                                {promo.discountPercent ? `${promo.discountPercent}% OFF` : `$${promo.fixedDiscount} OFF`}
+                              </span>
+                            </td>
+                            <td className="p-3 text-slate-300">
+                              {promo.description || "Chegirma promokodi"}
+                            </td>
+                            <td className="p-3">
+                              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                                Faol (24/7)
+                              </span>
+                            </td>
+                            <td className="p-3 text-right space-x-2">
+                              <button
+                                onClick={() => handleCopyPromoCode(promo.code)}
+                                className="px-2.5 py-1.5 rounded-lg bg-cyan-500/10 text-cyan-300 hover:bg-cyan-500/20 font-bold text-xs transition cursor-pointer"
+                                title="Nusxa olish"
+                              >
+                                Nusxa
+                              </button>
+                              <button
+                                onClick={() => {
+                                  if (confirm(`"${promo.code}" promokodini o'chirishni tasdiqlaysizmi?`)) {
+                                    deletePromoCode(promo.code);
+                                    playSound('warn', soundEnabled);
+                                    showToast(`"${promo.code}" promokodi o'chirildi!`);
+                                    addActivity(`"${promo.code}" promokodi o'chirildi`, 'trash', 'rose');
+                                  }
+                                }}
+                                className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 transition inline-block align-middle cursor-pointer"
+                                title="O'chirish"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+            </div>
+          )}
+
+          {/* TAB: CUSTOMERS CRM */}
+          {activeTab === 'customers' && (
+            <div className="space-y-6 animate-in fade-in duration-300">
+              
+              {/* Header Banner */}
+              <div className="bg-[#131929] border border-[#1d273f] rounded-2xl p-6 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h2 className="text-lg font-black text-white flex items-center gap-2">
+                    <Users className="w-5 h-5 text-violet-400" />
+                    <span>Mijozlar & Xaridorlar Bazasi (CRM)</span>
+                    <span className="px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300 text-xs font-bold">
+                      {uniqueCustomers.length} ta mijoz
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Buyurtma bergan barcha mijozlarning umumiy xaridlari, telefon raqamlari va manzillari
+                  </p>
+                </div>
+
+                {/* Search */}
+                <div className="relative w-full sm:w-72">
+                  <input
+                    type="text"
+                    placeholder="Mijoz ismi yoki telefoni..."
+                    value={customerSearch}
+                    onChange={(e) => setCustomerSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 rounded-xl text-xs bg-[#0b0f19] border border-[#1e2740] text-white outline-none focus:border-violet-500 transition"
+                  />
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+
+              {/* Customers Table */}
+              <div className="bg-[#131929] border border-[#1d273f] rounded-2xl p-6 shadow-xl space-y-4">
+                <div className="overflow-x-auto rounded-xl border border-[#1d273f]">
+                  <table className="w-full text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="bg-[#0b0f19] text-slate-400 uppercase text-[10px] tracking-wider border-b border-[#1d273f]">
+                        <th className="p-3">Mijoz Ismi</th>
+                        <th className="p-3">Telefon</th>
+                        <th className="p-3">Yetkazish Manzili</th>
+                        <th className="p-3">Buyurtmalar</th>
+                        <th className="p-3">Jami Xarid ($)</th>
+                        <th className="p-3">So'nggi Buyurtma</th>
+                        <th className="p-3 text-right">Amal</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1d273f]">
+                      {filteredCustomers.length === 0 ? (
+                        <tr>
+                          <td colSpan="7" className="p-8 text-center text-slate-500">
+                            Hozircha mijozlar topilmadi
+                          </td>
+                        </tr>
+                      ) : (
+                        filteredCustomers.map((c, i) => (
+                          <tr key={c.phone || i} className="hover:bg-[#162033] transition">
+                            <td className="p-3">
+                              <div className="flex items-center gap-2.5">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-500 to-indigo-600 flex items-center justify-center text-white font-black text-xs shrink-0">
+                                  {c.name.slice(0, 1).toUpperCase()}
+                                </div>
+                                <span className="font-bold text-white">{c.name}</span>
+                              </div>
+                            </td>
+                            <td className="p-3">
+                              <a href={`tel:${c.phone}`} className="text-cyan-400 hover:underline font-mono font-bold">
+                                {c.phone}
+                              </a>
+                            </td>
+                            <td className="p-3 text-slate-300 max-w-xs truncate">
+                              {c.address}
+                            </td>
+                            <td className="p-3">
+                              <span className="px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 font-black text-[11px]">
+                                {c.ordersCount} ta
+                              </span>
+                            </td>
+                            <td className="p-3 font-black text-emerald-400 text-sm">
+                              ${c.totalSpent.toFixed(2)}
+                            </td>
+                            <td className="p-3 text-slate-400 font-mono text-[11px]">
+                              {c.lastOrderDate}
+                            </td>
+                            <td className="p-3 text-right">
+                              <button
+                                onClick={() => {
+                                  setSearchQuery(c.phone);
+                                  setActiveTab('tables');
+                                  playSound('click', soundEnabled);
+                                }}
+                                className="px-2.5 py-1 rounded-lg bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30 text-xs font-bold transition cursor-pointer"
+                                title="Mijoz buyurtmalarini ko'rish"
+                              >
+                                Buyurtmalar ➔
+                              </button>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
             </div>
           )}
 
