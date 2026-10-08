@@ -161,9 +161,7 @@ export default function Header() {
     { path: '/about', label: '5. ' + t.about, icon: null },
     { path: '/shop?filter=flash', label: t.nav_deals || 'Aksiyalar', icon: Flame, isAksiya: true },
     { path: '#track', label: t.nav_order_status || 'Buyurtma holati', icon: Package, isAction: 'track' },
-    { path: '#warranty', label: t.nav_warranty || 'Kafolat & Servis', icon: Shield, isAction: 'warranty' },
-    ...(user && user.role === 'owner' ? [{ path: '/owner', label: '👑 Owner Panel', icon: Crown, isOwner: true }] : []),
-    ...(user && (user.role === 'admin' || user.role === 'owner') ? [{ path: '/admin', label: '🛡️ Admin Panel', icon: ShieldCheck, isAdmin: true }] : [])
+    { path: '#warranty', label: t.nav_warranty || 'Kafolat & Servis', icon: Shield, isAction: 'warranty' }
   ];
 
   return (
@@ -506,32 +504,6 @@ export default function Header() {
                       className="transition-all duration-200 px-3.5 py-2 rounded-xl flex items-center gap-2 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 active:scale-95 font-black border border-transparent hover:border-amber-500/20"
                     >
                       <Flame className="w-4 h-4 text-rose-500 animate-pulse" />
-                      <span>{link.label}</span>
-                    </Link>
-                  );
-                }
-
-                if (link.isOwner) {
-                  return (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      className="transition-all duration-200 px-3.5 py-2 rounded-xl flex items-center gap-2 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white font-black shadow-md shadow-amber-500/25 hover:scale-105 active:scale-95 animate-pulse"
-                    >
-                      <Crown className="w-4 h-4 text-yellow-200" />
-                      <span>{link.label}</span>
-                    </Link>
-                  );
-                }
-
-                if (link.isAdmin) {
-                  return (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      className="transition-all duration-200 px-3.5 py-2 rounded-xl flex items-center gap-2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-extrabold shadow-md shadow-cyan-500/20 hover:scale-105 active:scale-95"
-                    >
-                      <ShieldCheck className="w-4 h-4" />
                       <span>{link.label}</span>
                     </Link>
                   );
