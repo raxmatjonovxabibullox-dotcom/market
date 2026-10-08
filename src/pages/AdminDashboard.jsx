@@ -322,6 +322,7 @@ export default function AdminDashboard() {
   const [terminalInput, setTerminalInput] = useState('');
   const [systemUptimeSeconds, setSystemUptimeSeconds] = useState(85420);
   const systemRestoreInputRef = useRef(null);
+  const terminalLogsContainerRef = useRef(null);
 
   const [systemLogs, setSystemLogs] = useState(() => [
     { id: 1, time: '16:40:02', level: 'INFO', msg: 'Vite 8 HMR dev server listening on http://localhost:5173' },
@@ -338,6 +339,12 @@ export default function AdminDashboard() {
     }, 2500);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (terminalLogsContainerRef.current) {
+      terminalLogsContainerRef.current.scrollTop = terminalLogsContainerRef.current.scrollHeight;
+    }
+  }, [systemLogs]);
 
   const formattedUptime = useMemo(() => {
     const hours = Math.floor(systemUptimeSeconds / 3600);
@@ -449,33 +456,55 @@ export default function AdminDashboard() {
   };
 
   const handleExecuteTerminalCommand = (cmdStr) => {
-    const cmd = (cmdStr || terminalInput).trim().toLowerCase();
-    if (!cmd) return;
+    const rawCmd = (cmdStr !== undefined ? cmdStr : terminalInput).trim();
+    const cmd = rawCmd ? rawCmd.toLowerCase() : 'status';
     setTerminalInput('');
     playSound('click', soundEnabled);
     const nowStr = new Date().toTimeString().slice(0, 8);
+
+    const echoLog = {
+      id: Date.now() + Math.random(),
+      time: nowStr,
+      level: 'CMD',
+      msg: `admin@rocker:~$ ${rawCmd || 'status'}`
+    };
+
     let responseLog = null;
 
     if (cmd === 'ping') {
       const p = Math.floor(18 + Math.random() * 15);
-      responseLog = { id: Date.now(), time: nowStr, level: 'SUCCESS', msg: `PONG: Server javob berdi (${p}ms). Telegram API: ${telegramPing}ms` };
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `PONG: Server tezkor javob berdi (${p}ms). Telegram API: ${telegramPing}ms` };
     } else if (cmd === 'status') {
-      responseLog = { id: Date.now(), time: nowStr, level: 'INFO', msg: `STATUS: 100% Operational | Uptime: ${formattedUptime} | CPU: ${cpuUsage}% | RAM: ${ramUsage}MB` };
-    } else if (cmd === 'health') {
-      responseLog = { id: Date.now(), time: nowStr, level: 'SUCCESS', msg: `HEALTH CHECK: Vite (Port 5173): OK | Telegram Bot: Online | LocalStorage: ${storageUsageKB}KB` };
-    } else if (cmd === 'clear') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `STATUS: Tizim 100% barqaror | Uptime: ${formattedUptime} | CPU: ${cpuUsage}% | RAM: ${ramUsage}MB` };
+    } else if (cmd === 'health' || cmd === 'check') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `HEALTH CHECK: Vite (Port 5173): OK | Telegram Bot: Online | LocalStorage: ${storageUsageKB}KB` };
+    } else if (cmd === 'clear' || cmd === 'cls' || cmd === 'tozalash') {
       setSystemLogs([]);
+      showToast("Terminal tozalandi! 🧹");
       return;
-    } else if (cmd === 'backup') {
+    } else if (cmd === 'backup' || cmd === 'zaxira') {
       handleExportDatabaseBackup();
-      return;
-    } else if (cmd === 'help') {
-      responseLog = { id: Date.now(), time: nowStr, level: 'INFO', msg: `Mavjud buyruqlar: ping, status, health, clear, backup, help` };
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `ZAXIRA: Ma'lumotlar bazasi JSON fayli yuklab olindi.` };
+    } else if (cmd === 'products' || cmd === 'tovar' || cmd === 'mahsulot') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `MAHSULOTLAR: Jami ${products.length} ta mahsulot katalogda faol.` };
+    } else if (cmd === 'orders' || cmd === 'buyurtma') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `BUYURTMALAR: Jami ${orders.length} ta buyurtma qayd etilgan.` };
+    } else if (cmd === 'telegram' || cmd === 'bot') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'SUCCESS', msg: `TELEGRAM BOT: @Kitobchalar_bot faol | Ulanish pingi: ${telegramPing}ms` };
+    } else if (cmd === 'whoami' || cmd === 'user' || cmd === 'admin') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `FOYDALANUVCHI: Superadmin — Xabibullo Raxmatjonov (role: admin/owner)` };
+    } else if (cmd === 'date' || cmd === 'time' || cmd === 'vaqt') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `SANA VA VAQT: ${new Date().toLocaleString('uz-UZ')}` };
+    } else if (cmd.startsWith('echo ')) {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: rawCmd.slice(5) };
+    } else if (cmd === 'help' || cmd === 'yordam' || cmd === '?') {
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'INFO', msg: `Mavjud buyruqlar: ping, status, health, tovar, buyurtma, telegram, backup, clear, help` };
     } else {
-      responseLog = { id: Date.now(), time: nowStr, level: 'WARN', msg: `Noma'lum buyruq: "${cmd}". Yordam uchun 'help' deb yozing.` };
+      responseLog = { id: Date.now() + 1, time: nowStr, level: 'WARN', msg: `Noma'lum buyruq: "${rawCmd}". Barcha buyruqlarni ko'rish uchun 'help' deb yozing.` };
     }
 
-    setSystemLogs(prev => [responseLog, ...prev.slice(0, 25)]);
+    setSystemLogs(prev => [...prev, echoLog, responseLog].slice(-50));
+    showToast(`Buyruq bajarildi: ${rawCmd || 'status'} ⚡`);
   };
   const totalOrdersCount = 8052 + orders.length;
   const calculatedRealRevenue = orders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
@@ -2965,18 +2994,22 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* Log Stream Output Box */}
-                <div className="space-y-1.5 max-h-56 overflow-y-auto pr-2 custom-scrollbar">
+                <div 
+                  ref={terminalLogsContainerRef}
+                  className="space-y-1.5 max-h-56 overflow-y-auto pr-2 custom-scrollbar flex flex-col"
+                >
                   {systemLogs.map(log => (
                     <div key={log.id} className="flex items-start gap-2.5 text-[11px] leading-relaxed">
                       <span className="text-slate-500 select-none">[{log.time}]</span>
                       <span className={`font-bold select-none ${
+                        log.level === 'CMD' ? 'text-amber-400 font-mono' :
                         log.level === 'SUCCESS' ? 'text-emerald-400' :
                         log.level === 'WARN' ? 'text-amber-400' :
                         log.level === 'ERROR' ? 'text-rose-400' : 'text-cyan-400'
                       }`}>
                         [{log.level}]
                       </span>
-                      <span className="text-slate-200">{log.msg}</span>
+                      <span className={log.level === 'CMD' ? 'text-amber-200 font-bold' : 'text-slate-200'}>{log.msg}</span>
                     </div>
                   ))}
                   {systemLogs.length === 0 && (
@@ -2992,19 +3025,21 @@ export default function AdminDashboard() {
                   }}
                   className="flex items-center gap-2 pt-2 border-t border-[#1e2740]"
                 >
-                  <span className="text-emerald-400 font-bold select-none">admin@rocker:~$</span>
+                  <span className="text-emerald-400 font-bold select-none text-xs">admin@rocker:~$</span>
                   <input
                     type="text"
                     value={terminalInput}
                     onChange={(e) => setTerminalInput(e.target.value)}
-                    placeholder="Buyruq yozing (masalan: ping, status, health)..."
-                    className="flex-1 bg-transparent text-white outline-none placeholder:text-slate-600 text-xs"
+                    placeholder="Buyruq yozing (masalan: ping, status, health, help)..."
+                    className="flex-1 bg-transparent text-white outline-none placeholder:text-slate-600 text-xs py-1"
                   />
                   <button
                     type="submit"
-                    className="px-3 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/30 text-[10px] font-bold"
+                    className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-[11px] shadow-md shadow-cyan-500/20 active:scale-95 transition flex items-center gap-1 cursor-pointer shrink-0"
+                    title="Buyruqni yuborish (Enter)"
                   >
-                    Yuborish ↵
+                    <span>Yuborish</span>
+                    <span className="text-[12px] font-mono">↵</span>
                   </button>
                 </form>
 
